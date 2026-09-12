@@ -121,101 +121,6 @@
     text-shadow:2px 2px 0 var(--shadow-hard);
   }
 
-  /* ===== App 内引导层 ===== */
-  #inAppGuide{
-    position:fixed;inset:0;z-index:180;display:none;
-    align-items:center;justify-content:center;
-    background:rgba(10,14,26,.94);
-    padding:20px;pointer-events:auto;
-  }
-  #inAppGuide.show{display:flex}
-  .guide-box{
-    background:var(--panel);
-    border:3px solid var(--accent);
-    padding:26px 30px;max-width:440px;width:100%;
-    text-align:center;
-    box-shadow:
-      inset -3px -3px 0 rgba(0,0,0,0.4),
-      inset 3px 3px 0 rgba(255,255,255,0.12),
-      0 0 0 3px var(--bg),
-      0 0 32px rgba(255,208,64,0.55);
-  }
-  .guide-box h2{
-    color:var(--accent);font-size:18px;letter-spacing:3px;
-    margin-bottom:12px;
-    text-shadow:2px 2px 0 var(--shadow-hard),0 0 14px rgba(255,208,64,0.9);
-  }
-  .guide-box .guide-sub{
-    color:var(--text-2);font-size:12px;line-height:1.9;
-    margin-bottom:22px;letter-spacing:1px;
-  }
-  .guide-box .guide-sub b{color:var(--accent);text-shadow:1px 1px 0 var(--shadow-hard)}
-  .guide-btns{display:flex;flex-direction:column;gap:10px}
-  .guide-btn{
-    background:var(--panel-2);
-    border:3px solid var(--primary);
-    color:var(--text);
-    font-family:inherit;font-weight:900;
-    font-size:14px;padding:13px 20px;
-    cursor:pointer;letter-spacing:2px;
-    text-shadow:2px 2px 0 var(--shadow-hard);
-    box-shadow:inset -3px -3px 0 rgba(0,0,0,0.4),inset 3px 3px 0 rgba(255,255,255,0.15),0 0 0 2px var(--bg);
-    transition:transform .05s, background .1s;
-  }
-  .guide-btn:hover{background:#35507A}
-  .guide-btn:active{transform:translate(2px,2px)}
-  .guide-btn.primary{
-    border-color:var(--accent);color:var(--accent);
-    background:linear-gradient(180deg,#3A3010,#1A1408);
-    box-shadow:inset -3px -3px 0 rgba(0,0,0,0.4),inset 3px 3px 0 rgba(255,255,255,0.15),0 0 0 2px var(--bg),0 0 20px rgba(255,208,64,0.6);
-  }
-  .guide-btn.primary:hover{background:linear-gradient(180deg,#5A4820,#2A2010)}
-  .guide-btn.ghost{
-    background:transparent;border-color:var(--border-dim);color:var(--text-2);
-    font-size:12px;padding:10px 16px;
-  }
-
-  /* ===== 跳浏览器提示 ===== */
-  #browserTip{
-    position:fixed;inset:0;z-index:190;display:none;
-    background:rgba(10,14,26,.96);
-    padding:20px;pointer-events:auto;
-    flex-direction:column;align-items:center;justify-content:center;
-    gap:18px;text-align:center;
-  }
-  #browserTip.show{display:flex}
-  #browserTip .tip-arrow{
-    font-size:44px;color:var(--accent);
-    text-shadow:3px 3px 0 var(--shadow-hard),0 0 24px rgba(255,208,64,1);
-    position:absolute;top:60px;right:60px;
-    animation:tipArrow 1.2s ease-in-out infinite;
-  }
-  @keyframes tipArrow{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(8px,-8px) scale(1.2)}}
-  #browserTip .tip-title{
-    color:var(--accent);font-size:20px;font-weight:900;letter-spacing:3px;
-    text-shadow:3px 3px 0 var(--shadow-hard),0 0 16px rgba(255,208,64,0.9);
-  }
-  #browserTip .tip-content{
-    color:var(--text-2);font-size:13px;line-height:2;letter-spacing:1px;max-width:360px;
-  }
-  #browserTip .tip-content b{color:var(--accent);font-weight:900;text-shadow:1px 1px 0 var(--shadow-hard)}
-  #browserTip .tip-content .dot3{
-    display:inline-block;color:var(--accent);font-size:18px;font-weight:900;
-    margin:0 4px;padding:2px 10px;border-radius:0;
-    background:#2A2010;border:2px solid var(--accent);
-    text-shadow:1px 1px 0 var(--shadow-hard);
-  }
-  #browserTip .tip-close{
-    margin-top:10px;
-    background:var(--panel-2);border:3px solid var(--primary);
-    color:var(--text);font-family:inherit;font-weight:900;
-    font-size:13px;padding:11px 28px;cursor:pointer;letter-spacing:2px;
-    text-shadow:2px 2px 0 var(--shadow-hard);
-    box-shadow:inset -3px -3px 0 rgba(0,0,0,0.4),inset 3px 3px 0 rgba(255,255,255,0.15),0 0 0 2px var(--bg);
-    transition:transform .05s, background .1s;
-  }
-  #browserTip .tip-close:active{transform:translate(2px,2px)}
-
   #forceRotateHint{
     position:fixed;top:12px;left:50%;transform:translateX(-50%);
     z-index:170;display:none;
@@ -1040,18 +945,6 @@
     #bootScreen .boot-hint{font-size:13px;padding:11px 22px;letter-spacing:3px;margin-top:18px;border-width:2px}
     #bootScreen .boot-sub{font-size:11px;letter-spacing:2px}
 
-    .guide-box{padding:20px 22px}
-    .guide-box h2{font-size:15px;letter-spacing:2px}
-    .guide-box .guide-sub{font-size:11px;line-height:1.7;margin-bottom:16px}
-    .guide-btn{font-size:12px;padding:10px 16px;letter-spacing:2px}
-    .guide-btn.ghost{font-size:11px;padding:8px 14px}
-
-    #browserTip .tip-arrow{font-size:34px;top:40px;right:30px}
-    #browserTip .tip-title{font-size:16px;letter-spacing:2px}
-    #browserTip .tip-content{font-size:11.5px;line-height:1.9}
-    #browserTip .tip-content .dot3{font-size:15px;padding:1px 8px}
-    #browserTip .tip-close{font-size:11.5px;padding:9px 20px;letter-spacing:2px}
-
     .over-box,.victory-box{padding:16px 18px;border-width:2px}
     .over-box h2,.victory-box h2{font-size:17px;letter-spacing:3px;margin-bottom:4px}
     .over-box .over-sub,.victory-box .victory-sub{font-size:10px;letter-spacing:1.5px;margin-bottom:10px}
@@ -1116,34 +1009,6 @@
   <div class="boot-hint">点 击 屏 幕 开 始</div>
   <div class="boot-loading" id="bootLoading">初始化中…</div>
 </div>
-
-<div id="inAppGuide">
-  <div class="guide-box">
-    <h2>⚠ 检测到内置浏览器</h2>
-    <div class="guide-sub">
-      您正在 <b id="guideAppName">App</b> 内打开本页面。<br>
-      内置浏览器不支持自动横屏与全屏。
-    </div>
-    <div class="guide-btns">
-      <button class="guide-btn primary" id="guideGoBrowser">🌐 在浏览器打开（推荐）</button>
-      <button class="guide-btn" id="guideForceLandscape">🔄 强制横屏游玩</button>
-      <button class="guide-btn ghost" id="guideCancel">取 消</button>
-    </div>
-  </div>
-</div>
-
-<div id="browserTip">
-  <div class="tip-arrow">↗</div>
-  <div class="tip-title">在 浏 览 器 中 打 开</div>
-  <div class="tip-content">
-    点击右上角 <span class="dot3">···</span> 按钮<br>
-    选择 <b>"在浏览器打开"</b><br>
-    即可全屏横屏畅玩
-  </div>
-  <button class="tip-close" id="browserTipClose">我 知 道 了</button>
-</div>
-
-<div id="forceRotateHint">📱 请将手机横过来 · 两侧留白为 App 顶栏预留</div>
 
 <div id="gameWrapper">
 
@@ -1375,15 +1240,6 @@ const ENV = (() => {
 
 /* ============================================================
    ⭐⭐ 全局 Tap 事件系统（解决按钮穿透）
-   ------------------------------------------------------------
-   问题根源：touchend 后浏览器会"合成"一个 click 事件，
-   派发到 touchend 坐标处当前存在的元素上。
-   如果原按钮已经消失（如启动页），它下方的元素就会接收 click，
-   造成"点击穿透"。
-   
-   解决方案：
-   ① touchend 里 preventDefault()（passive:false）阻止 click 合成
-   ② 全局 click 捕获监听器兜底：500ms 内有过 tap 就拦截
    ============================================================ */
 let _globalLastTapTime = 0;
 
@@ -1414,17 +1270,14 @@ function bindTap(el, handler) {
   }, { passive: true });
 
   el.addEventListener('touchend', (e) => {
-    // ⭐ 只有没移动才算 tap（避免误触）
     if (touchMoved) return;
-    // ⭐ 关键：preventDefault 阻止后续 click 合成 → 直接消灭穿透
     e.preventDefault();
     e.stopPropagation();
     _globalLastTapTime = Date.now();
     handler(e);
-  }, { passive: false }); // ⭐ passive:false 才能 preventDefault
+  }, { passive: false });
 
   el.addEventListener('click', (e) => {
-    // 兜底：桌面端 & 未被 preventDefault 的情况
     if (Date.now() - _globalLastTapTime < 500) {
       e.stopPropagation();
       e.preventDefault();
@@ -1719,12 +1572,13 @@ function requestFullscreenSafe() {
   return false;
 }
 function tryLockLandscape() { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => {}); }
+
+/* ⭐ 识别到内置浏览器（读不到横屏信息）→ 直接强制横屏全屏 */
 function enableForceRotate() {
   state.forceRotate = true;
   document.getElementById('gameWrapper').classList.add('force-rotate');
-  document.getElementById('forceRotateHint').classList.add('show');
-  setTimeout(() => { document.getElementById('forceRotateHint').classList.remove('show'); }, 4000);
-  setTimeout(onResize, 100);
+  setTimeout(onResize, 60);
+  setTimeout(onResize, 260);
 }
 
 /* ============================================================
@@ -3450,14 +3304,14 @@ window.addEventListener('keydown', (e) => {
 });
 window.addEventListener('keyup', (e) => { keys[e.code] = false; });
 
-/* 触摸按钮（用 touchstart + touchstart 事件，不是 bindTap，因为需要按住持续触发） */
+/* 触摸按钮（用 touchstart 事件，不是 bindTap，因为需要按住持续触发） */
 function bindTouchButton(id, onDown, onUp) {
   const el = document.getElementById(id);
   if (!el) return;
   el.addEventListener('touchstart', (e) => {
     e.preventDefault(); e.stopPropagation();
     initAudio(); el.classList.add('pressed');
-    _globalLastTapTime = Date.now(); // 标记，防止后续 click 穿透
+    _globalLastTapTime = Date.now();
     if (onDown) onDown();
   }, { passive: false });
   el.addEventListener('touchend', (e) => {
@@ -3879,8 +3733,6 @@ function renderViewer(dt) {
    🚀 启动页 + 环境处理
    ============================================================ */
 const bootScreen = document.getElementById('bootScreen');
-const inAppGuide = document.getElementById('inAppGuide');
-const browserTip = document.getElementById('browserTip');
 
 function enterMainMenu(playBootTransition) {
   bootScreen.classList.add('fadeout');
@@ -3895,38 +3747,28 @@ function enterMainMenu(playBootTransition) {
   setTimeout(() => { initAudio(); startBGM('menu'); }, 400);
 }
 
-/* ⭐ 启动页用 bindTap，已内含防穿透 */
+/* ⭐ 启动页点击：内置浏览器直接强制横屏进主菜单，不再弹任何提示/引导 */
 let _bootTapped = false;
-bindTap(bootScreen, () => {
+function handleBootTap(e) {
+  if (e) { try { e.preventDefault(); e.stopPropagation(); } catch (err) {} }
   if (_bootTapped) return;
   _bootTapped = true;
+  _globalLastTapTime = Date.now();
   initAudio();
-  if (!ENV.detected) { requestFullscreenSafe(); tryLockLandscape(); }
-  if (ENV.detected && !ENV.canFullscreen) {
-    document.getElementById('guideAppName').textContent = ENV.name;
-    inAppGuide.classList.add('show');
-    return;
+
+  if (ENV.isMobile) {
+    if (ENV.detected && !ENV.canFullscreen) {
+      // 微信 / QQ / 钉钉 / 抖音等内置浏览器：读不到横屏信息 → 直接强制横屏全屏
+      enableForceRotate();
+    } else {
+      requestFullscreenSafe();
+      tryLockLandscape();
+    }
   }
   enterMainMenu(true);
-});
-
-bindTap(document.getElementById('guideGoBrowser'), () => {
-  inAppGuide.classList.remove('show');
-  browserTip.classList.add('show');
-});
-bindTap(document.getElementById('browserTipClose'), () => {
-  browserTip.classList.remove('show');
-  inAppGuide.classList.add('show');
-});
-bindTap(document.getElementById('guideForceLandscape'), () => {
-  inAppGuide.classList.remove('show');
-  enableForceRotate();
-  enterMainMenu(true);
-});
-bindTap(document.getElementById('guideCancel'), () => {
-  inAppGuide.classList.remove('show');
-  enterMainMenu(true);
-});
+}
+bootScreen.addEventListener('touchend', handleBootTap, { passive: false });
+bootScreen.addEventListener('click', handleBootTap);
 
 /* ============================================================
    🔁 onResize
