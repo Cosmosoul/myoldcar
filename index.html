@@ -38,7 +38,7 @@
     color:var(--text);
   }
   canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges}
-  #gameWrapper canvas,#menuBgCanvas{width:100%!important;height:100%!important;display:block!important;object-fit:contain}
+  #gameWrapper canvas,#menuBgCanvas{width:100%!important;height:100%!important;display:block!important}
 
   #gameWrapper{position:fixed;inset:0;overflow:hidden}
   #gameWrapper.force-rotate{
@@ -142,7 +142,7 @@
   .top-bar{
     position:absolute;top:calc(12px + env(safe-area-inset-top));
     left:50%;transform:translateX(-50%);
-    width:min(720px,88vw);
+    width:min(720px,88%);
     display:flex;flex-direction:column;gap:4px;
   }
   .bar-wrap{
@@ -185,7 +185,7 @@
     position:absolute;bottom:calc(12px + env(safe-area-inset-bottom));
     left:50%;transform:translateX(-50%);
     display:flex;gap:6px;flex-wrap:wrap;justify-content:center;
-    max-width:60vw;
+    max-width:60%;
   }
   .skill{
     width:48px;height:48px;
@@ -355,7 +355,7 @@
     border:3px solid var(--primary);
     padding:24px 28px;
     display:flex;flex-direction:column;gap:11px;
-    min-width:250px;max-width:92vw;
+    min-width:250px;max-width:92%;
     box-shadow:
       inset -3px -3px 0 rgba(0,0,0,0.4),
       inset 3px 3px 0 rgba(255,255,255,0.12),
@@ -439,7 +439,7 @@
   }
   .btn-grid{
     display:grid;grid-template-columns:1fr 1fr;gap:12px;
-    margin-top:20px;max-width:520px;width:90vw;
+    margin-top:20px;max-width:520px;width:90%;
   }
   .big-btn{
     background:var(--panel-2);
@@ -490,7 +490,7 @@
     background:var(--panel);border:3px solid var(--primary);
     padding:24px 28px;
     display:flex;flex-direction:column;gap:12px;
-    min-width:280px;max-width:92vw;
+    min-width:280px;max-width:92%;
     box-shadow:inset -3px -3px 0 rgba(0,0,0,0.4),inset 3px 3px 0 rgba(255,255,255,0.12),0 0 0 3px var(--bg),0 0 30px rgba(96,200,255,0.6);
   }
   .settings-box h2{
@@ -501,7 +501,7 @@
   .help-box{
     background:var(--panel);border:3px solid var(--primary);
     padding:24px 26px;
-    max-width:640px;width:100%;max-height:92vh;overflow-y:auto;
+    max-width:640px;width:100%;max-height:92%;overflow-y:auto;
     box-shadow:inset -3px -3px 0 rgba(0,0,0,0.4),inset 3px 3px 0 rgba(255,255,255,0.12),0 0 0 3px var(--bg),0 0 30px rgba(96,200,255,0.6);
   }
   .help-box h2{
@@ -538,7 +538,7 @@
   #galleryScreen.show{display:flex}
   .gallery-box{
     background:var(--panel);border:3px solid var(--primary);
-    width:min(1100px,96vw);height:min(640px,84vh);
+    width:min(1100px,96%);height:min(640px,84%);
     display:flex;flex-direction:column;
     box-shadow:inset -3px -3px 0 rgba(0,0,0,0.4),inset 3px 3px 0 rgba(255,255,255,0.12),0 0 0 3px var(--bg),0 0 40px rgba(96,200,255,0.65);
     overflow:hidden;
@@ -718,8 +718,8 @@
     grid-template-columns:repeat(3,1fr);
     grid-template-rows:repeat(2,1fr);
     gap:clamp(6px,1vh,14px);
-    width:min(760px,88vw,145vh);
-    height:min(70vh,420px);max-height:52vh;
+    width:min(760px,88%);
+    height:min(70%,420px);max-height:52%;
     margin-top:2px;flex-shrink:0;
   }
   .level-card{
@@ -848,7 +848,7 @@
   #bossBar{
     position:absolute;top:calc(70px + env(safe-area-inset-top));
     left:50%;transform:translateX(-50%);
-    width:min(620px,72vw);display:none;flex-direction:column;gap:4px;
+    width:min(620px,72%);display:none;flex-direction:column;gap:4px;
   }
   #bossBar.show{display:flex}
   #bossBar .bar-wrap{height:14px;border-color:var(--danger)}
@@ -909,13 +909,13 @@
 
   /* ===== 手机横屏适配 ===== */
   @media (max-height:550px),(max-width:900px){
-    .top-bar{width:92vw;gap:3px}
+    .top-bar{width:92%;gap:3px}
     .bar-wrap{height:16px}
     .bar-label{font-size:11px;line-height:16px;letter-spacing:1px}
     .stat-line{font-size:12px;padding:3px 8px;margin-top:2px}
     .skill{width:38px;height:38px;font-size:15px}
     .skill .lv{font-size:10px;right:2px}
-    .skills{gap:4px;max-width:64vw}
+    .skills{gap:4px;max-width:64%}
     #pauseBtn{width:34px;height:34px;font-size:15px}
 
     #joystickBase{width:140px;height:140px;left:calc(16px + env(safe-area-inset-left))}
@@ -962,7 +962,7 @@
     .help-box p,.help-box li{font-size:10.5px;line-height:1.7}
     .help-box .key{font-size:9.5px;padding:0 5px}
 
-    .gallery-box{width:98vw;height:88vh;border-width:2px}
+    .gallery-box{width:98%;height:88%;border-width:2px}
     .gallery-header{padding:8px 12px}
     .gallery-header h2{font-size:14px;letter-spacing:3px}
     .gallery-header .close-btn{width:28px;height:28px;font-size:15px}
@@ -990,7 +990,7 @@
 
     #levelSelectScreen h2{letter-spacing:4px}
     #forceRotateHint{font-size:10px;padding:6px 12px;letter-spacing:1px}
-    #bossBar{top:calc(62px + env(safe-area-inset-top));width:80vw}
+    #bossBar{top:calc(62px + env(safe-area-inset-top));width:80%}
     #bossBar .boss-label{font-size:11px;letter-spacing:3px}
   }
 
@@ -1239,17 +1239,17 @@ const ENV = (() => {
 })();
 
 /* ============================================================
-   ⭐⭐ 全局 Tap 事件系统（解决按钮穿透）
+   ⭐⭐ 全局 Tap 事件系统
    ============================================================ */
 let _globalLastTapTime = 0;
 
 document.addEventListener('click', (e) => {
-  if (Date.now() - _globalLastTapTime < 500) {
+  if (Date.now() - _globalLastTapTime < 120) {
     e.stopPropagation();
     e.preventDefault();
     return false;
   }
-}, true); // ⭐ 捕获阶段，最优先执行
+}, true);
 
 function bindTap(el, handler) {
   if (!el) return;
@@ -1278,7 +1278,7 @@ function bindTap(el, handler) {
   }, { passive: false });
 
   el.addEventListener('click', (e) => {
-    if (Date.now() - _globalLastTapTime < 500) {
+    if (Date.now() - _globalLastTapTime < 120) {
       e.stopPropagation();
       e.preventDefault();
       return;
@@ -1368,6 +1368,35 @@ let joystickSteer = 0, joystickActive = false, joystickTouchId = null;
 let joystickOriginX = 0, joystickOriginY = 0;
 const JOYSTICK_MAX_OFFSET = 70;
 let touchThrottle = false, touchBrake = false;
+
+/* ============================================================
+   ⭐ 渲染尺寸工具（去掉 padding，取得内容区尺寸）
+   ============================================================ */
+function getRenderSize() {
+  const wrapper = document.getElementById('gameWrapper');
+  const cw = wrapper.clientWidth || window.innerWidth;
+  const ch = wrapper.clientHeight || window.innerHeight;
+  const cs = getComputedStyle(wrapper);
+  const pl = parseFloat(cs.paddingLeft) || 0;
+  const pr = parseFloat(cs.paddingRight) || 0;
+  const pt = parseFloat(cs.paddingTop) || 0;
+  const pb = parseFloat(cs.paddingBottom) || 0;
+  return { w: Math.max(1, cw - pl - pr), h: Math.max(1, ch - pt - pb) };
+}
+
+/* ============================================================
+   ⭐ 屏幕坐标 → 容器内坐标（强制横屏时使用）
+   ------------------------------------------------------------
+   CSS: rotate(90deg) 顺时针
+   差值形式：dx_c = dy_s, dy_c = -dx_s
+   仅用于圆点视觉位置；转向信号使用屏幕 rawDx。
+   ============================================================ */
+function screenDeltaToWrapper(dxScreen, dyScreen) {
+  if (state.forceRotate) {
+    return { dx: dyScreen, dy: -dxScreen };
+  }
+  return { dx: dxScreen, dy: dyScreen };
+}
 
 /* ============================================================
    🔊 音频系统
@@ -1572,13 +1601,12 @@ function requestFullscreenSafe() {
   return false;
 }
 function tryLockLandscape() { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => {}); }
-
-/* ⭐ 识别到内置浏览器（读不到横屏信息）→ 直接强制横屏全屏 */
 function enableForceRotate() {
   state.forceRotate = true;
   document.getElementById('gameWrapper').classList.add('force-rotate');
-  setTimeout(onResize, 60);
-  setTimeout(onResize, 260);
+  setTimeout(onResize, 30);
+  setTimeout(onResize, 120);
+  setTimeout(onResize, 300);
 }
 
 /* ============================================================
@@ -1591,11 +1619,12 @@ function initMenuBg() {
   menuBgStarted = true;
   menuRenderer = new THREE.WebGLRenderer({ canvas: menuBgCanvas, antialias: true });
   menuRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-  menuRenderer.setSize(window.innerWidth, window.innerHeight, false);
+  const { w, h } = getRenderSize();
+  menuRenderer.setSize(w, h, false);
   menuScene = new THREE.Scene();
   menuCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
   menuUniforms = {
-    uTime: { value: 0 }, uAspect: { value: window.innerWidth / window.innerHeight },
+    uTime: { value: 0 }, uAspect: { value: w / h },
     colour1: { value: new THREE.Color(0x1a1430) }, colour2: { value: new THREE.Color(0xff6030) },
     colour3: { value: new THREE.Color(0x0a0e1a) }, colour4: { value: new THREE.Color(0xffd040) },
     uGradual: { value: 2.0 }, uWidth1: { value: 0.04 }, uWidth2: { value: 0.1 },
@@ -2496,8 +2525,9 @@ const dmgPool = [];
 function spawnDmg(worldPos, value, color = '#FFFFFF', big = false) {
   const v = worldPos.clone(); v.y += 2; v.project(camera);
   if (v.z < -1 || v.z > 1) return;
-  const sx = (v.x * 0.5 + 0.5) * window.innerWidth;
-  const sy = (-v.y * 0.5 + 0.5) * window.innerHeight;
+  const { w: W, h: H } = getRenderSize();
+  const sx = (v.x * 0.5 + 0.5) * W;
+  const sy = (-v.y * 0.5 + 0.5) * H;
   let el = dmgPool.find(d => !d._active);
   if (!el) { el = document.createElement('div'); el.className = 'dmg'; dmgLayer.appendChild(el); dmgPool.push(el); }
   el._active = true; el.style.color = color;
@@ -3251,16 +3281,33 @@ function gameOver() {
   stopBGM(); sfxGameOver(); state.screenShake = 20;
 }
 
+/* ============================================================
+   ⭐ 摇杆（含强制横屏坐标转换）
+   ------------------------------------------------------------
+   位置：屏幕→容器转换，圆点跟随手指
+   转向信号：直接使用屏幕 rawDx（用户直觉：向右划 → 右转）
+   ============================================================ */
 const joystickBase = document.getElementById('joystickBase');
 const joystickKnob = document.getElementById('joystickKnob');
 function updateJoystickKnobVisual(dx, dy) { joystickKnob.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`; }
 function resetJoystick() { joystickActive = false; joystickTouchId = null; joystickSteer = 0; updateJoystickKnobVisual(0, 0); joystickBase.classList.remove('active'); }
 function onJoystickMove(cx, cy) {
-  let dx = cx - joystickOriginX, dy = cy - joystickOriginY;
+  const rawDx = cx - joystickOriginX;   // 屏幕 x 增量（用户手指方向）
+  const rawDy = cy - joystickOriginY;   // 屏幕 y 增量
+
+  // 圆点视觉位置：用「屏幕→容器」转换，保证圆点跟随手指
+  const { dx: cdx, dy: cdy } = screenDeltaToWrapper(rawDx, rawDy);
+  let dx = cdx, dy = cdy;
   const dist = Math.hypot(dx, dy);
-  if (dist > JOYSTICK_MAX_OFFSET) { dx = dx / dist * JOYSTICK_MAX_OFFSET; dy = dy / dist * JOYSTICK_MAX_OFFSET; }
+  if (dist > JOYSTICK_MAX_OFFSET) {
+    dx = dx / dist * JOYSTICK_MAX_OFFSET;
+    dy = dy / dist * JOYSTICK_MAX_OFFSET;
+  }
   updateJoystickKnobVisual(dx, dy);
-  joystickSteer = -Math.max(-1, Math.min(1, dx / JOYSTICK_MAX_OFFSET));
+
+  // 转向信号：直接基于屏幕 x 轴（用户直觉）
+  // 屏幕上向右划 → 右转（joystickSteer < 0）
+  joystickSteer = -Math.max(-1, Math.min(1, rawDx / JOYSTICK_MAX_OFFSET));
 }
 joystickBase.addEventListener('touchstart', (e) => {
   e.preventDefault(); e.stopPropagation(); initAudio();
@@ -3774,9 +3821,9 @@ bootScreen.addEventListener('click', handleBootTap);
    🔁 onResize
    ============================================================ */
 function onResize() {
-  const wrapper = document.getElementById('gameWrapper');
-  const w = wrapper.clientWidth || window.innerWidth;
-  const h = wrapper.clientHeight || window.innerHeight;
+  // ⭐ 用内容区尺寸（clientWidth - padding），保证 canvas 位图与显示区域 1:1
+  const { w, h } = getRenderSize();
+
   camera.aspect = w / h;
   camera.updateProjectionMatrix();
   renderer.setSize(w, h, false);
@@ -3786,6 +3833,7 @@ function onResize() {
   renderer.domElement.style.position = 'absolute';
   renderer.domElement.style.top = '0';
   renderer.domElement.style.left = '0';
+
   if (menuRenderer) {
     menuRenderer.setSize(w, h, false);
     if (menuUniforms) menuUniforms.uAspect.value = w / h;
@@ -3813,9 +3861,11 @@ function animate() {
     if (!menuBgStarted2) { initMenuBg(); menuBgStarted2 = true; }
     if (menuRenderer) {
       menuUniforms.uTime.value = performance.now() * 0.001;
-      menuUniforms.uAspect.value = menuBgCanvas.clientWidth / Math.max(menuBgCanvas.clientHeight, 1);
-      const rect = menuBgCanvas.getBoundingClientRect();
-      if (menuBgCanvas.width !== rect.width || menuBgCanvas.height !== rect.height) menuRenderer.setSize(rect.width, rect.height, false);
+      // ⭐ 用布局尺寸 clientWidth/clientHeight，不随 transform 改变
+      const cw = menuBgCanvas.clientWidth || 1;
+      const ch = menuBgCanvas.clientHeight || 1;
+      menuUniforms.uAspect.value = cw / ch;
+      menuRenderer.setSize(cw, ch, false);
       menuRenderer.render(menuScene, menuCamera);
     }
     if (document.getElementById('galleryScreen').classList.contains('show')) renderViewer(rawDt);
