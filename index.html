@@ -845,6 +845,25 @@
     background:radial-gradient(ellipse at center,transparent 35%,rgba(255,20,50,0.75) 100%);
     opacity:0;transition:opacity 0.12s ease-out;
   }
+
+  /* ⭐⭐⭐ 新增：高速速度线层 + 高速边缘拉伸光晕 ⭐⭐⭐ */
+  #speedLines{
+    position:fixed;inset:0;pointer-events:none;z-index:9;
+    width:100%;height:100%;display:block;
+  }
+  #speedVignette{
+    position:fixed;inset:0;pointer-events:none;z-index:9;
+    background:
+      radial-gradient(ellipse at center,
+        rgba(150,215,255,0) 34%,
+        rgba(140,205,255,0.16) 62%,
+        rgba(110,185,255,0.38) 84%,
+        rgba(80,150,255,0.62) 100%);
+    opacity:0;
+    will-change:opacity;
+  }
+  /* ⭐⭐⭐ 新增结束 ⭐⭐⭐ */
+
   #bossBar{
     position:absolute;top:calc(70px + env(safe-area-inset-top));
     left:50%;transform:translateX(-50%);
@@ -1156,6 +1175,7 @@
         <li><b>残血警示</b> —— HP 低于 30% 时屏幕边缘红光闪烁</li>
         <li><b>公园地形</b> —— 中央花坛喷泉不可破坏，四条马路延伸向四方</li>
         <li><b>撞碎场景</b> —— 树和路灯被撞会碎成碎片飞散</li>
+        <li><b>超速特效</b> —— 车速超过 70% 极速时，屏幕边缘出现速度线，车尾喷出尾焰</li>
       </ul>
       <div class="close-wrap"><button class="big-btn" id="helpCloseBtn">关 闭</button></div>
     </div>
@@ -1198,6 +1218,10 @@
   <div id="dmgLayer"></div>
   <div id="whiteFlash"></div>
   <div id="dangerVignette"></div>
+
+  <!-- ⭐⭐⭐ 新增：高速速度线 & 边缘拉伸光晕 ⭐⭐⭐ -->
+  <canvas id="speedLines"></canvas>
+  <div id="speedVignette"></div>
 
 </div>
 
@@ -1340,7 +1364,19 @@ const Tuning = {
   AI: { flankRatio: 0.35, rearRatio: 0.20, separationWeight: 1.5, prediction: 0.5, flankAngle: 2.2, rearAngle: 0.4, orbitSpeed: 0.5 },
   Physics: { gravity: 60, airDrag: 0.4 },
   Particles: { count: 18, bossCount: 60, speed: 14, gravity: 70, life: 0.85 },
-  Terrain: { treeCount: 36, lampSpacing: 25, destructDestroySpeed: 4 },
+  Terrain: { treeCount: 80, lampSpacing: 25, destructDestroySpeed: 4 },
+  /* ⭐ 新增：超速特效参数 */
+  SpeedFx: {
+    threshold: 0.70,   // 触发阈值：70% 极速
+    fullAt: 0.95,      // 到达该比例时特效满强度
+    riseRate: 9.0,     // 触发时的响应速度（越大越"窜"）
+    fallRate: 10.0,     // 消退速度
+    fovBoost: 7.0,     // 额外 FOV 拉伸量
+    lineCount: 56,     // 速度线最大条数
+    emitRate: 150,     // 尾焰基础发射速率（个/秒）
+    emitRateGain: 430, // 强度附加发射速率
+    maxFlames: 600,
+  },
 };
 
 const state = {
@@ -2375,6 +2411,285 @@ function clearParticles() {
   particleGeo.attributes.size.needsUpdate = true;
 }
 
+/* ============================================================
+   🔥🔥🔥 新增：超速尾焰粒子系统
+   ------------------------------------------------------------
+   独立于普通粒子（无重力、快速衰减、带车体速度继承），
+   仅在车速超过 70% 极速时从双排气管喷射。
+   ============================================================ */
+const FLAME_MAX = Tuning.SpeedFx.maxFlames;
+const flameGeo = new THREE.BufferGeometry();
+const flamePos = new Float32Array(FLAME_MAX * 3);
+const flameCol = new Float32Array(FLAME_MAX * 3);
+const flameSize = new Float32Array(FLAME_MAX);
+for (let i = 0; i < FLAME_MAX; i++) flamePos[i * 3 + 1] = -1000;
+flameGeo.setAttribute('position', new THREE.BufferAttribute(flamePos, 3));
+flameGeo.setAttribute('color', new THREE.BufferAttribute(flameCol, 3));
+flameGeo.setAttribute('size', new THREE.BufferAttribute(flameSize, 1));
+const flameMat = new THREE.ShaderMaterial({
+  vertexShader: `attribute float size; varying vec3 vColor; void main(){ vColor = color; vec4 mv = modelViewMatrix * vec4(position,1.0); gl_PointSize = size * (350.0 / -mv.z); gl_Position = projectionMatrix * mv; }`,
+  fragmentShader: `varying vec3 vColor; void main(){ vec2 c = gl_PointCoord - vec2(0.5); float d = length(c); if (d > 0.5) discard; float core = smoothstep(0.5, 0.0, d); float glow = smoothstep(0.5, 0.10, d); float a = core * 0.95 + glow * 0.62; gl_FragColor = vec4(vColor * (1.0 + core * 1.8), a); }`,
+  transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, vertexColors: true,
+});
+const flamePoints = new THREE.Points(flameGeo, flameMat);
+flamePoints.frustumCulled = false;
+scene.add(flamePoints);
+
+const flameParticles = [];
+for (let i = 0; i < FLAME_MAX; i++) {
+  flameParticles.push({
+    active: false, pos: new THREE.Vector3(), vel: new THREE.Vector3(),
+    life: 0, maxLife: 0, size: 1, drag: 3, r: 1, g: 1, b: 1,
+  });
+}
+let _flameCursor = 0;
+function _getFreeFlame() {
+  for (let i = 0; i < FLAME_MAX; i++) {
+    const idx = (_flameCursor + i) % FLAME_MAX;
+    if (!flameParticles[idx].active) { _flameCursor = (idx + 1) % FLAME_MAX; return flameParticles[idx]; }
+  }
+  return null;
+}
+
+/* 超速特效全局状态 */
+const SPEED_FX = {
+  intensity: 0,        // 0~1 平滑强度
+  emitAccum: 0,
+  threshold: Tuning.SpeedFx.threshold,
+};
+
+/**
+ * 每帧更新超速强度（仅在游戏中、且车速超过阈值时生效）
+ */
+function updateSpeedFx(rawDt) {
+  let target = 0;
+  if (state.phase === 'playing') {
+    const ratio = Math.abs(player.speed) / Tuning.Car.maxSpeed;
+    if (ratio > Tuning.SpeedFx.threshold) {
+      target = Math.min(1, (ratio - Tuning.SpeedFx.threshold) / (Tuning.SpeedFx.fullAt - Tuning.SpeedFx.threshold));
+    }
+  }
+  const rate = target > SPEED_FX.intensity ? Tuning.SpeedFx.riseRate : Tuning.SpeedFx.fallRate;
+  SPEED_FX.intensity += (target - SPEED_FX.intensity) * (1 - Math.exp(-rate * rawDt));
+  if (SPEED_FX.intensity < 0.002) SPEED_FX.intensity = 0;
+}
+
+/**
+ * 从车尾双排气管喷射火焰粒子
+ * @param {number} dt     游戏时间步（受 timeScale 影响）
+ * @param {number} intensity 0~1 超速强度
+ */
+function emitExhaustFlames(dt, intensity) {
+  if (intensity <= 0.002) return;
+
+  const yaw = player.yaw;
+  const cosY = Math.cos(yaw), sinY = Math.sin(yaw);
+  const fwdX = sinY, fwdZ = cosY;
+  const carY = carMesh.position.y;
+
+  // 车体自身速度（粒子继承）
+  const carVelX = fwdX * player.speed;
+  const carVelZ = fwdZ * player.speed;
+
+  // 发射速率
+  const rate = Tuning.SpeedFx.emitRate + intensity * Tuning.SpeedFx.emitRateGain;
+  SPEED_FX.emitAccum += rate * dt;
+  let n = Math.floor(SPEED_FX.emitAccum);
+  if (n > 70) n = 70;
+  SPEED_FX.emitAccum -= n;
+  if (n <= 0) return;
+
+  // 喷射相对速度（越高强度喷得越猛）
+  const jetSpeed = 22 + intensity * 48;
+  const spread = 3.0 + intensity * 5.0;
+
+  for (let i = 0; i < n; i++) {
+    const p = _getFreeFlame();
+    if (!p) break;
+
+    // —— 排气管局部位置（左右各一） ——
+    const side = Math.random() < 0.5 ? -0.55 : 0.55;
+    const lx = side + (Math.random() - 0.5) * 0.18;
+    const ly = 0.40 + (Math.random() - 0.5) * 0.16;
+    const lz = -2.20 + (Math.random() - 0.5) * 0.16;
+
+    // 局部 → 世界（绕 Y 轴旋转 yaw）
+    p.pos.set(
+      lx * cosY + lz * sinY + player.pos.x,
+      ly + carY,
+      -lx * sinY + lz * cosY + player.pos.z
+    );
+
+    // 速度：车体速度 + 向后喷射 + 扩散
+    p.vel.set(
+      carVelX - fwdX * jetSpeed + (Math.random() - 0.5) * spread,
+      0.6 + Math.random() * 2.2 + intensity * 1.6,
+      carVelZ - fwdZ * jetSpeed + (Math.random() - 0.5) * spread
+    );
+
+    p.maxLife = 0.14 + Math.random() * 0.26;
+    p.life = p.maxLife;
+    p.drag = 2.6 + Math.random() * 2.0;
+    p.size = (1.5 + Math.random() * 2.2) * (0.7 + intensity * 0.9);
+
+    // —— 配色：强度越高，蓝白核心越多 ——
+    const roll = Math.random();
+    if (roll < 0.16 + intensity * 0.38) {
+      // 超高温蓝白核心
+      p.r = 0.70 + Math.random() * 0.22;
+      p.g = 0.88 + Math.random() * 0.12;
+      p.b = 1.0;
+    } else if (roll < 0.62) {
+      // 亮黄
+      p.r = 1.0;
+      p.g = 0.80 + Math.random() * 0.20;
+      p.b = 0.32 + Math.random() * 0.30;
+    } else {
+      // 橙红
+      p.r = 1.0;
+      p.g = 0.40 + Math.random() * 0.26;
+      p.b = 0.05 + Math.random() * 0.14;
+    }
+
+    p.active = true;
+  }
+}
+
+/**
+ * 更新尾焰粒子（无重力、快速阻力衰减、先亮后暗）
+ */
+function updateExhaustFlames(dt) {
+  for (const p of flameParticles) {
+    if (!p.active) continue;
+    p.life -= dt;
+    if (p.life <= 0) { p.active = false; continue; }
+
+    const d = Math.exp(-p.drag * dt);
+    p.vel.x *= d; p.vel.z *= d; p.vel.y *= d;
+    p.vel.y += 1.6 * dt;   // 轻微上浮
+
+    p.pos.x += p.vel.x * dt;
+    p.pos.y += p.vel.y * dt;
+    p.pos.z += p.vel.z * dt;
+
+    if (p.pos.y < 0.12) { p.pos.y = 0.12; p.vel.y = Math.abs(p.vel.y) * 0.18; }
+  }
+
+  let idx = 0;
+  for (const p of flameParticles) {
+    if (!p.active) continue;
+    if (idx >= FLAME_MAX) break;
+    const t = p.life / p.maxLife;
+    // 亮度：前半段保持高亮，尾部迅速衰减
+    const fade = t < 0.5 ? 1.0 : (1 - t) * 2.0;
+    flamePos[idx * 3] = p.pos.x;
+    flamePos[idx * 3 + 1] = p.pos.y;
+    flamePos[idx * 3 + 2] = p.pos.z;
+    flameCol[idx * 3] = p.r * fade;
+    flameCol[idx * 3 + 1] = p.g * fade;
+    flameCol[idx * 3 + 2] = p.b * fade;
+    flameSize[idx] = p.size * (0.30 + t * 0.70);
+    idx++;
+  }
+  for (let i = idx; i < FLAME_MAX; i++) { flamePos[i * 3 + 1] = -1000; flameSize[i] = 0; }
+  flameGeo.attributes.position.needsUpdate = true;
+  flameGeo.attributes.color.needsUpdate = true;
+  flameGeo.attributes.size.needsUpdate = true;
+}
+
+function clearFlames() {
+  for (const p of flameParticles) p.active = false;
+  for (let i = 0; i < FLAME_MAX; i++) { flamePos[i * 3 + 1] = -1000; flameSize[i] = 0; }
+  flameGeo.attributes.position.needsUpdate = true;
+  flameGeo.attributes.size.needsUpdate = true;
+  SPEED_FX.intensity = 0;
+  SPEED_FX.emitAccum = 0;
+  if (speedLinesCanvas) {
+    const ctx = speedLinesCtx;
+    ctx.clearRect(0, 0, speedLinesCanvas.width, speedLinesCanvas.height);
+    _slDirty = false;
+  }
+  if (speedVignetteEl) speedVignetteEl.style.opacity = '0';
+}
+
+/* ============================================================
+   💨💨💨 新增：屏幕速度线 + 边缘拉伸光晕
+   ============================================================ */
+const speedLinesCanvas = document.getElementById('speedLines');
+const speedLinesCtx = speedLinesCanvas ? speedLinesCanvas.getContext('2d') : null;
+const speedVignetteEl = document.getElementById('speedVignette');
+let _slW = 0, _slH = 0, _slDirty = false;
+
+function resizeSpeedLineCanvas() {
+  if (!speedLinesCanvas) return;
+  const w = speedLinesCanvas.clientWidth || window.innerWidth;
+  const h = speedLinesCanvas.clientHeight || window.innerHeight;
+  if (w <= 0 || h <= 0) return;
+  _slW = w; _slH = h;
+  // 半分辨率绘制（性能友好，同时线条自带柔焦感，更像高速拖影）
+  const s = 0.55;
+  speedLinesCanvas.width = Math.max(1, Math.round(w * s));
+  speedLinesCanvas.height = Math.max(1, Math.round(h * s));
+}
+
+/**
+ * 绘制径向速度线 + 更新边缘光晕
+ * @param {number} intensity 0~1
+ */
+function drawSpeedOverlay(intensity) {
+  if (!speedLinesCanvas || !speedLinesCtx) return;
+
+  // 尺寸跟随
+  if (speedLinesCanvas.clientWidth !== _slW || speedLinesCanvas.clientHeight !== _slH) {
+    resizeSpeedLineCanvas();
+  }
+
+  const ctx = speedLinesCtx;
+  const W = speedLinesCanvas.width, H = speedLinesCanvas.height;
+  if (W <= 0 || H <= 0) return;
+
+  if (intensity <= 0.004) {
+    if (_slDirty) { ctx.clearRect(0, 0, W, H); _slDirty = false; }
+    if (speedVignetteEl) speedVignetteEl.style.opacity = '0';
+    return;
+  }
+  _slDirty = true;
+
+  ctx.clearRect(0, 0, W, H);
+
+  const cx = W * 0.5, cy = H * 0.5;
+  const R = Math.hypot(W, H) * 0.5;
+
+  const count = Math.max(6, Math.round(Tuning.SpeedFx.lineCount * intensity));
+  ctx.globalCompositeOperation = 'lighter';
+  ctx.lineCap = 'round';
+
+  for (let i = 0; i < count; i++) {
+    const ang = Math.random() * Math.PI * 2;
+    const ca = Math.cos(ang), sa = Math.sin(ang);
+    // 起点落在屏幕中外部环带，形成"边缘被拉伸"的观感
+    const r0 = R * (0.26 + Math.random() * 0.40);
+    const len = R * (0.08 + Math.random() * 0.42) * intensity;
+    const alpha = (0.07 + Math.random() * 0.30) * intensity;
+
+    ctx.strokeStyle = `rgba(195,232,255,${alpha.toFixed(3)})`;
+    ctx.lineWidth = 0.6 + Math.random() * 2.4 * intensity;
+    ctx.beginPath();
+    ctx.moveTo(cx + ca * r0, cy + sa * r0);
+    ctx.lineTo(cx + ca * (r0 + len), cy + sa * (r0 + len));
+    ctx.stroke();
+  }
+
+  ctx.globalCompositeOperation = 'source-over';
+
+  if (speedVignetteEl) {
+    speedVignetteEl.style.opacity = (intensity * 0.88).toFixed(3);
+  }
+}
+
+/* ============================================================
+   ⚡ 辅助特效（原有）
+   ============================================================ */
 function generateLightning(s, e, iter = 5, off = 3.0) {
   let pts = [s.clone(), e.clone()];
   for (let it = 0; it < iter; it++) {
@@ -3065,7 +3380,9 @@ function updatePlayer(dt) {
   camera.lookAt(lookAt);
   const baseFov = 60 + (Math.abs(player.speed) / Tuning.Car.maxSpeed) * 15;
   const dodgeProgress = player.dodgeTimer > 0 ? 1 - Math.abs((1 - player.dodgeTimer / Tuning.Dodge.dashDuration) * 2 - 1) : 0;
-  const targetFov = baseFov + dodgeProgress * 12 + state.fovKick;
+  // ⭐ 新增：超速时额外 FOV 拉伸
+  const speedFov = SPEED_FX.intensity * Tuning.SpeedFx.fovBoost;
+  const targetFov = baseFov + dodgeProgress * 12 + state.fovKick + speedFov;
   camera.fov += (targetFov - camera.fov) * Math.min(8 * dt, 1);
   camera.updateProjectionMatrix();
 }
@@ -3241,6 +3558,7 @@ function triggerVictory() {
   document.getElementById('cards').classList.remove('show');
   document.getElementById('pauseMenu').classList.remove('show');
   document.getElementById('dangerVignette').style.opacity = '0';
+  clearFlames();
   stopBGM(); sfxVictory();
   const lv = state.currentLevel; const level = LEVELS[lv - 1]; const time = state.elapsed;
   let stars = 1;
@@ -3271,6 +3589,7 @@ function gameOver() {
   document.getElementById('cards').classList.remove('show');
   document.getElementById('pauseMenu').classList.remove('show');
   document.getElementById('dangerVignette').style.opacity = '0';
+  clearFlames();
   document.getElementById('ovWave').textContent = state.wave;
   document.getElementById('ovKills').textContent = state.kills;
   const m = Math.floor(state.elapsed / 60), s = Math.floor(state.elapsed % 60);
@@ -3483,6 +3802,7 @@ function backToLevelSelect() {
   document.getElementById('cards').classList.remove('show');
   state.phase = 'menu';
   document.getElementById('dangerVignette').style.opacity = '0';
+  clearFlames();
   startBGM('levelSelect');
   renderLevelSelect();
 }
@@ -3563,6 +3883,7 @@ function resetGame() {
   fxList.length = 0;
   for (const el of dmgPool) { el._active = false; el.style.opacity = '0'; }
   clearParticles();
+  clearFlames();      // ⭐ 清理尾焰与超速特效
   buildTerrain();
   startWave();
   updateHUD();
@@ -3846,6 +4167,10 @@ function onResize() {
     menuBgCanvas.style.width = '100%';
     menuBgCanvas.style.height = '100%';
   }
+
+  // ⭐ 速度线画布同步尺寸
+  resizeSpeedLineCanvas();
+
   checkOrientation();
 }
 window.addEventListener('resize', onResize);
@@ -3853,6 +4178,7 @@ window.addEventListener('orientationchange', () => setTimeout(onResize, 120));
 document.addEventListener('fullscreenchange', () => setTimeout(onResize, 120));
 setTimeout(onResize, 100);
 setTimeout(onResize, 400);
+resizeSpeedLineCanvas();
 
 /* ============================================================
    主循环
@@ -3879,6 +4205,10 @@ function animate() {
   }
   if (document.getElementById('galleryScreen').classList.contains('show')) renderViewer(rawDt);
   if (state.fovKick > 0) { state.fovKick *= Math.exp(-14 * rawDt); if (state.fovKick < 0.05) state.fovKick = 0; }
+
+  // ⭐⭐⭐ 超速强度更新（用真实时间，不受子弹时间影响）
+  updateSpeedFx(rawDt);
+
   let ts = state.timeScale;
   if (state.bulletTime > 0) { state.bulletTime -= rawDt; ts = 0.15; }
   else if (state.phase === 'card') { ts = 0.15; }
@@ -3896,6 +4226,13 @@ function animate() {
     checkPointOverflow();
     if (player.hp <= 0) gameOver();
   }
+
+  // ⭐⭐⭐ 尾焰：仅在游戏进行中喷射，粒子在所有状态下继续衰减
+  if (state.phase === 'playing') {
+    emitExhaustFlames(dt, SPEED_FX.intensity);
+  }
+  updateExhaustFlames(dt);
+
   updateLightning(rawDt);
   updateFx(rawDt);
   updateParticles(rawDt);
@@ -3916,6 +4253,10 @@ function animate() {
     renderer.domElement.style.transform = `translate(${(Math.random() - 0.5) * s}px, ${(Math.random() - 0.5) * s}px)`;
   } else renderer.domElement.style.transform = '';
   updateHUD();
+
+  // ⭐⭐⭐ 屏幕速度线 + 边缘拉伸光晕（在 3D 渲染之前绘制到独立 2D 图层）
+  drawSpeedOverlay(SPEED_FX.intensity);
+
   renderer.render(scene, camera);
 }
 resetEnemies();
