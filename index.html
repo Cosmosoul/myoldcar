@@ -291,45 +291,121 @@
     box-shadow:0 0 0 3px #080A0F,0 0 20px rgba(167,139,250,.75);
   }
 
-  /* ===== 抽卡 ===== */
+  /* ============================================================
+     抽卡（塔罗牌风格重制）
+     ============================================================ */
   #cards{
     position:fixed;inset:0;z-index:30;display:none;
     align-items:center;justify-content:center;
-    background:radial-gradient(ellipse at center,rgba(16,22,34,.86),rgba(6,8,12,.94));
+    background:radial-gradient(ellipse at center,rgba(16,22,34,.88),rgba(6,8,12,.95));
     pointer-events:auto;padding:10px;
   }
   #cards.show{display:flex}
-  .card-row{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;align-items:center}
+  .card-row{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;align-items:center}
+
   .card{
-    width:190px;min-height:250px;
-    background:linear-gradient(170deg,#1E2636,#12161F 70%);
-    box-shadow:inset 0 0 0 2px rgba(79,221,192,.4),0 12px 30px rgba(0,0,0,.6);
-    clip-path:polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px);
-    display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
-    gap:8px;padding:18px 14px;cursor:pointer;
-    transition:transform .12s, box-shadow .12s, background .12s;
-    animation:cardIn .3s cubic-bezier(.22,1,.36,1);
-    text-align:center;
     position:relative;
+    width:190px;min-height:292px;
+    padding:20px 14px 16px;
+    border-radius:12px;
+    background:
+      radial-gradient(ellipse at 50% 6%,rgba(255,179,71,.20),transparent 62%),
+      radial-gradient(ellipse at 50% 106%,rgba(79,221,192,.16),transparent 60%),
+      linear-gradient(168deg,#222B3E 0%,#161C29 52%,#0C1017 100%);
+    box-shadow:
+      inset 0 0 0 1.5px rgba(255,179,71,.55),
+      inset 0 0 28px rgba(255,179,71,.10),
+      0 14px 34px rgba(0,0,0,.72);
+    display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+    gap:6px;cursor:pointer;overflow:hidden;isolation:isolate;
+    animation:cardIn .32s cubic-bezier(.22,1,.36,1);
+    transition:transform .14s,box-shadow .14s;
+    text-align:center;
   }
   .card::before{
-    content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
-    background:linear-gradient(180deg,var(--hot),transparent);
+    content:'';position:absolute;inset:6px;border-radius:7px;
+    box-shadow:inset 0 0 0 1px rgba(255,179,71,.26);
+    pointer-events:none;z-index:0;
+  }
+  .card::after{
+    content:'';position:absolute;top:-70%;left:0;width:52%;height:240%;
+    background:linear-gradient(100deg,transparent 0%,rgba(255,255,255,.15) 50%,transparent 100%);
+    transform:translateX(-260%) rotate(16deg);
+    animation:cardShine 4.8s ease-in-out infinite;
+    pointer-events:none;z-index:0;
+  }
+  .card > *{position:relative;z-index:2}
+  @keyframes cardShine{
+    0%{transform:translateX(-260%) rotate(16deg)}
+    55%{transform:translateX(320%) rotate(16deg)}
+    100%{transform:translateX(320%) rotate(16deg)}
   }
   @keyframes cardIn{from{opacity:0;transform:translateY(20px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}
+
   .card:hover{
-    transform:translateY(-6px) scale(1.04);
-    background:linear-gradient(170deg,#28334A,#181E2B 70%);
-    box-shadow:inset 0 0 0 2px rgba(255,179,71,.85),0 16px 40px rgba(0,0,0,.7),0 0 34px rgba(255,179,71,.28);
+    transform:translateY(-7px) scale(1.035);
+    box-shadow:
+      inset 0 0 0 2px rgba(255,179,71,.95),
+      inset 0 0 36px rgba(255,179,71,.22),
+      0 20px 46px rgba(0,0,0,.78),
+      0 0 44px rgba(255,179,71,.36);
   }
-  .card-icon{font-size:36px;filter:drop-shadow(0 3px 0 rgba(0,0,0,.6))}
-  .card-name{font-size:14px;font-weight:900;color:var(--text);letter-spacing:2px}
-  .card-lv{font-size:11px;color:var(--hot);font-weight:900;letter-spacing:1px}
+
+  .card-numeral{
+    font-size:10px;font-weight:900;letter-spacing:5px;
+    color:rgba(255,179,71,.8);
+    text-shadow:0 0 10px rgba(255,179,71,.65);
+    line-height:1;
+  }
+  .card-sigil{
+    position:relative;
+    width:76px;height:76px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(circle at 50% 42%,rgba(79,221,192,.30),rgba(9,13,19,.92) 72%);
+    box-shadow:
+      inset 0 0 0 1.5px rgba(79,221,192,.6),
+      0 0 22px rgba(79,221,192,.28);
+    margin:3px 0 4px;
+  }
+  .card-sigil::before{
+    content:'';position:absolute;inset:-6px;border-radius:50%;
+    border:1px dashed rgba(255,179,71,.45);
+    animation:sigilSpin 16s linear infinite;
+    pointer-events:none;
+  }
+  .card-sigil::after{
+    content:'';position:absolute;inset:-12px;border-radius:50%;
+    box-shadow:inset 0 0 18px rgba(255,179,71,.28);
+    pointer-events:none;
+  }
+  @keyframes sigilSpin{to{transform:rotate(360deg)}}
+  .card-icon{font-size:33px;line-height:1;filter:drop-shadow(0 3px 0 rgba(0,0,0,.55))}
+
+  .card-name{
+    font-size:14px;font-weight:900;color:var(--text);
+    letter-spacing:3px;
+    text-shadow:0 0 14px rgba(255,179,71,.35);
+  }
+  .card-divider{
+    width:70%;height:1px;
+    background:linear-gradient(90deg,transparent,rgba(255,179,71,.8),transparent);
+    margin:1px 0 3px;
+  }
+  .card-lv{
+    font-size:10.5px;color:var(--hot);font-weight:900;letter-spacing:2px;
+    background:rgba(255,179,71,.10);
+    padding:2px 10px;border-radius:20px;
+    box-shadow:inset 0 0 0 1px rgba(255,179,71,.42);
+  }
   .card-effect{font-size:11px;color:var(--text-2);line-height:1.55}
   .card-effect .arrow{color:var(--cool);font-weight:900;margin:0 3px}
   .card-effect .cur{color:var(--text-3)}
   .card-effect .next{color:var(--cool);font-weight:900}
-  .card-desc{font-size:10px;color:var(--text-3);line-height:1.45;font-style:italic}
+  .card-desc{
+    font-size:10px;color:var(--text-3);line-height:1.45;font-style:italic;
+    margin-top:auto;padding-top:6px;
+    border-top:1px solid rgba(255,179,71,.16);width:88%;
+  }
 
   /* ===== 暂停 ===== */
   #pauseMenu{
@@ -507,6 +583,7 @@
   .help-box ul{list-style:none;padding-left:0}
   .help-box li{padding-left:16px;position:relative}
   .help-box li::before{content:"▸";position:absolute;left:0;color:var(--cool);font-size:10px;top:3px}
+  .help-box b{color:var(--text)}
   .help-box .key{
     display:inline-block;
     background:#0C1017;
@@ -953,12 +1030,18 @@
     #touchDodge{width:54px;height:54px;font-size:11px;right:calc(102px + env(safe-area-inset-right));bottom:calc(18px + env(safe-area-inset-bottom))}
 
     .card-row{gap:10px}
-    .card{width:132px;min-height:178px;padding:10px 8px;gap:5px}
-    .card-icon{font-size:25px}
-    .card-name{font-size:12px}
-    .card-lv{font-size:10px}
+    .card{width:136px;min-height:200px;padding:12px 8px 10px;gap:4px;border-radius:9px}
+    .card::before{inset:4px;border-radius:5px}
+    .card-numeral{font-size:8px;letter-spacing:2px}
+    .card-sigil{width:52px;height:52px;margin:1px 0 2px}
+    .card-sigil::before{inset:-4px}
+    .card-sigil::after{inset:-7px}
+    .card-icon{font-size:22px}
+    .card-name{font-size:12px;letter-spacing:1px}
+    .card-divider{width:66%}
+    .card-lv{font-size:9px;padding:1px 7px;letter-spacing:1px}
     .card-effect{font-size:9.5px;line-height:1.4}
-    .card-desc{font-size:8.5px;line-height:1.3}
+    .card-desc{font-size:8.5px;line-height:1.3;padding-top:4px}
 
     #startScreen h1{font-size:29px;letter-spacing:4px}
     #startScreen .sub{font-size:10px;letter-spacing:3px;margin-bottom:0}
@@ -1166,37 +1249,64 @@
 
   <div id="helpScreen" class="modal">
     <div class="help-box">
-      <h2>游 戏 说 明</h2>
-      <h3>操作（电脑）</h3>
+      <h2>新 手 指 南</h2>
+
+      <h3>① 三十秒上手</h3>
       <ul>
-        <li><span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span> 或方向键 —— 驾驶</li>
-        <li><span class="key">K</span> —— 闪冲瞬移</li>
-        <li><span class="key">空格</span> —— 跳跃</li>
+        <li><b>踩油门，撞僵尸。</b>车速越快撞得越疼，这是你最猛的一招。</li>
+        <li><b>弹幕全自动。</b>不用按攻击键，技能会自己打出去。</li>
+        <li><b>积分条满了就选卡。</b>三选一，越选越强，选完继续冲。</li>
+        <li><b>血扣光就结束。</b>躲开红色火球和靠近的僵尸，别硬吃伤害。</li>
+      </ul>
+
+      <h3>② 操作 · 电脑</h3>
+      <ul>
+        <li><span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span> 或方向键 —— 前进 / 后退 / 左右打方向</li>
+        <li><span class="key">空格</span> —— 跳跃（落地砸一圈，过程中短暂无敌）</li>
+        <li><span class="key">K</span> —— 闪冲瞬移（无敌位移，可以从怪堆里穿过去）</li>
         <li><span class="key">Esc</span> —— 暂停</li>
       </ul>
-      <h3>操作（手机横屏）</h3>
+
+      <h3>③ 操作 · 手机横屏</h3>
       <ul>
-        <li><b>左侧万象滑块</b> —— 拖动转向</li>
-        <li><b>右下大按钮</b> —— 油门 / 刹车</li>
-        <li><b>右侧小按钮</b> —— 跳跃 / 闪冲</li>
+        <li><b>左侧圆盘</b> —— 按住拖动来转向，松手自动回正</li>
+        <li><b>右下大按钮</b> —— 绿色是油门，红色是刹车</li>
+        <li><b>右侧小按钮</b> —— 黄色跳跃，紫色闪冲</li>
       </ul>
-      <h3>车库</h3>
+
+      <h3>④ 四种僵尸，四种处理方式</h3>
       <ul>
-        <li>主菜单进入 <b>车库</b> 更换座驾，不同车辆手感与定位完全不同</li>
-        <li>通关第 <b>5</b> 关解锁 <b>摩托车</b>；第 <b>8</b> 关解锁 <b>大卡车</b></li>
-        <li>通关第 <b>15</b> 关解锁 <b>火车</b>；无限模式通过第 <b>15</b> 波解锁 <b>悬浮导弹车</b></li>
+        <li><b>普通僵尸</b> —— 直接撞飞，不用减速。</li>
+        <li><b>自爆僵尸</b> —— 身上带红圈，贴近就会炸，提前撞掉或绕开。</li>
+        <li><b>远程僵尸</b> —— 躲在远处扔红色火球，优先冲过去撞掉它。</li>
+        <li><b>盾兵僵尸</b> —— 正面很硬，绕到背后再撞，伤害翻好几倍。</li>
+        <li><b>精英 / BOSS</b> —— 血厚伤害高，撞完就拉远，别贴脸硬刚。</li>
       </ul>
-      <h3>核心机制</h3>
+
+      <h3>⑤ 选卡怎么选</h3>
       <ul>
-        <li><b>撞击是核心输出</b> —— 车速越快伤害越高</li>
-        <li><b>弹幕全自动</b> —— 平A / 群攻 / 天雷 / 连锁自动触发</li>
-        <li><b>积分满 → 子弹时间三选一</b> —— 选择技能升级</li>
-        <li><b>波次机制</b> —— 关卡模式清光小怪刷下一波，无限模式 50s 上限</li>
-        <li><b>残血警示</b> —— HP 低于 30% 时屏幕边缘红光闪烁</li>
-        <li><b>公园地形</b> —— 中央花坛喷泉不可破坏，四条马路延伸向四方</li>
-        <li><b>撞碎场景</b> —— 树和路灯被撞会碎成碎片飞散</li>
-        <li><b>超速特效</b> —— 车速超过 70% 极速时，屏幕边缘出现速度线，车尾喷出尾焰</li>
+        <li>每次三选一，<b>没见过的卡优先拿</b>，先把技能栏铺开。</li>
+        <li><b>群攻 / 天雷 / 连锁</b> —— 清场最快，僵尸多的时候首选。</li>
+        <li><b>蓄能</b> —— 让你更快抽到下一张卡，越早拿越赚。</li>
+        <li><b>回复</b> —— 残血时别犹豫，直接拿。</li>
       </ul>
+
+      <h3>⑥ 关卡与解锁</h3>
+      <ul>
+        <li>打光本关要求的波次就算通关，用时越短星星越多。</li>
+        <li>通关第 <b>5</b> 关解锁 <b>摩托车</b>；第 <b>8</b> 关解锁 <b>大卡车</b>。</li>
+        <li>通关第 <b>15</b> 关解锁 <b>火车头</b>；无限模式打到第 <b>15</b> 波解锁 <b>悬浮导弹车</b>。</li>
+        <li>换车入口：主菜单 → <b>车库</b>，每辆车的手感完全不同。</li>
+      </ul>
+
+      <h3>⑦ 几个小技巧</h3>
+      <ul>
+        <li>高速撞击会给你一小段无敌，撞完顺势穿过去，别踩刹车。</li>
+        <li>树和路灯可以直接撞碎，不掉血，撞起来很爽。</li>
+        <li>车速超过七成会出现速度线和尾焰，这时候撞谁谁飞。</li>
+        <li>血量低于 30% 屏幕边缘会闪红光，赶紧找机会回血。</li>
+      </ul>
+
       <div class="close-wrap"><button class="big-btn" id="helpCloseBtn">关 闭</button></div>
     </div>
   </div>
@@ -1515,7 +1625,7 @@ const Tuning = {
   AI: { flankRatio: 0.35, rearRatio: 0.20, separationWeight: 1.5, prediction: 0.5, flankAngle: 2.2, rearAngle: 0.4, orbitSpeed: 0.5 },
   Physics: { gravity: 60, airDrag: 0.4 },
   Particles: { count: 18, bossCount: 60, speed: 14, gravity: 70, life: 0.85 },
-  Terrain: { treeCount: 80, lampSpacing: 25, destructDestroySpeed: 4 },
+  Terrain: { treeCount: 80, lampSpacing: 25, destructDestroySpeed: 4, grassCount: 2400 },
   SpeedFx: {
     threshold: 0.70,
     fullAt: 0.95,
@@ -1909,11 +2019,54 @@ for (let c = 0; c < 14; c++) {
 }
 scene.add(cloudGroup);
 
+/* ——— 草地贴图（程序生成，无额外运行开销） ——— */
+function makeGrassTexture() {
+  const size = 256;
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#6FA84F';
+  ctx.fillRect(0, 0, size, size);
+  for (let i = 0; i < 220; i++) {
+    const x = Math.random() * size, y = Math.random() * size, r = 8 + Math.random() * 30;
+    const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+    if (Math.random() < 0.5) { g.addColorStop(0, 'rgba(74,122,52,0.50)'); g.addColorStop(1, 'rgba(74,122,52,0)'); }
+    else { g.addColorStop(0, 'rgba(158,200,110,0.45)'); g.addColorStop(1, 'rgba(158,200,110,0)'); }
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+  }
+  ctx.lineCap = 'round';
+  for (let i = 0; i < 3200; i++) {
+    const x = Math.random() * size, y = Math.random() * size;
+    const len = 2 + Math.random() * 4.5;
+    const ang = -Math.PI / 2 + (Math.random() - 0.5) * 1.6;
+    const rr = 62 + Math.random() * 74;
+    const gg = 128 + Math.random() * 86;
+    const bb = 46 + Math.random() * 62;
+    ctx.strokeStyle = `rgba(${rr | 0},${gg | 0},${bb | 0},${(0.26 + Math.random() * 0.40).toFixed(2)})`;
+    ctx.lineWidth = 0.7 + Math.random() * 1.0;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + Math.cos(ang) * len, y + Math.sin(ang) * len);
+    ctx.stroke();
+  }
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+  tex.repeat.set(50, 50);
+  tex.anisotropy = 4;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  return tex;
+}
+const groundTex = makeGrassTexture();
+
 const LAWN_COLOR = 0x74B054;
-const ground = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), new THREE.MeshStandardMaterial({ color: LAWN_COLOR, roughness: 0.95, metalness: 0.05 }));
+const ground = new THREE.Mesh(
+  new THREE.PlaneGeometry(400, 400),
+  new THREE.MeshStandardMaterial({ map: groundTex, color: 0xFFFFFF, roughness: 0.96, metalness: 0.02 })
+);
 ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
 const grid = new THREE.GridHelper(400, 100, 0xA8E088, 0x88C068);
-grid.material.transparent = true; grid.material.opacity = 0.12; grid.position.y = 0.015; scene.add(grid);
+grid.material.transparent = true; grid.material.opacity = 0.09; grid.position.y = 0.015; scene.add(grid);
 
 function makeBrickTexture() {
   const canvas = document.createElement('canvas');
@@ -2024,6 +2177,93 @@ function spawnLamp(x, z) {
   terrain.destructibles.push({ group: g, type: 'lamp', x, z, radius: 1.0, broken: false, fade: 1.0, materials: null });
   terrain.meshes.push(g);
 }
+
+/* ——— 大铁栅门（东南西北四条路的尽头） ——— */
+function buildGate(angle) {
+  const R = 198.4;
+  const g = new THREE.Group();
+  g.position.set(Math.sin(angle) * R, 0, Math.cos(angle) * R);
+  g.rotation.y = angle + Math.PI;
+
+  const ironMat = new THREE.MeshStandardMaterial({ color: 0x353B46, roughness: 0.46, metalness: 0.94 });
+  const darkIronMat = new THREE.MeshStandardMaterial({ color: 0x1A1E24, roughness: 0.62, metalness: 0.88 });
+  const brassMat = new THREE.MeshStandardMaterial({ color: 0x8E7038, roughness: 0.30, metalness: 0.98 });
+
+  const W = 17, H = 9;
+
+  // 竖栅条
+  const barGeo = new THREE.CylinderGeometry(0.15, 0.15, H, 6);
+  const tipGeo = new THREE.ConeGeometry(0.28, 0.72, 4);
+  const barCount = 11;
+  for (let i = 0; i < barCount; i++) {
+    const x = -W / 2 + (i + 0.5) * (W / barCount);
+    const bar = new THREE.Mesh(barGeo, ironMat);
+    bar.position.set(x, H / 2, 0);
+    g.add(bar);
+    const tip = new THREE.Mesh(tipGeo, ironMat);
+    tip.position.set(x, H + 0.36, 0);
+    tip.rotation.y = Math.PI / 4;
+    g.add(tip);
+  }
+  // 横梁
+  for (const y of [1.0, 4.5, H - 0.9]) {
+    const rail = new THREE.Mesh(new THREE.BoxGeometry(W + 0.9, 0.34, 0.36), darkIronMat);
+    rail.position.set(0, y, 0);
+    g.add(rail);
+  }
+  // 两侧立柱
+  for (const sx of [-1, 1]) {
+    const pillar = new THREE.Mesh(new THREE.BoxGeometry(1.2, H + 1.4, 1.2), ironMat);
+    pillar.position.set(sx * (W / 2 + 0.5), (H + 1.4) / 2, 0);
+    g.add(pillar);
+    const cap = new THREE.Mesh(new THREE.ConeGeometry(0.95, 1.05, 4), ironMat);
+    cap.position.set(sx * (W / 2 + 0.5), H + 1.92, 0);
+    cap.rotation.y = Math.PI / 4;
+    g.add(cap);
+  }
+  // 中缝
+  const seamL = new THREE.Mesh(new THREE.BoxGeometry(0.5, H, 0.62), darkIronMat);
+  seamL.position.set(-0.52, H / 2, 0.05); g.add(seamL);
+  const seamR = new THREE.Mesh(new THREE.BoxGeometry(0.5, H, 0.62), darkIronMat);
+  seamR.position.set(0.52, H / 2, 0.05); g.add(seamR);
+
+  // 锁板
+  const plateRim = new THREE.Mesh(new THREE.BoxGeometry(3.9, 3.5, 0.34), brassMat);
+  plateRim.position.set(0, 4.6, 0.36); g.add(plateRim);
+  const plate = new THREE.Mesh(new THREE.BoxGeometry(3.4, 3.0, 0.55), darkIronMat);
+  plate.position.set(0, 4.6, 0.52); g.add(plate);
+  const keyRing = new THREE.Mesh(new THREE.TorusGeometry(0.62, 0.14, 8, 22), brassMat);
+  keyRing.position.set(0, 3.92, 0.88); g.add(keyRing);
+  const keyHole = new THREE.Mesh(new THREE.CylinderGeometry(0.20, 0.20, 0.42, 8), brassMat);
+  keyHole.rotation.x = Math.PI / 2;
+  keyHole.position.set(0, 5.05, 0.88); g.add(keyHole);
+  const keySlot = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.58, 0.42), brassMat);
+  keySlot.position.set(0, 4.70, 0.88); g.add(keySlot);
+
+  // 铆钉
+  const rivetGeo = new THREE.SphereGeometry(0.13, 6, 5);
+  for (const y of [1.0, 4.5, H - 0.9]) {
+    for (let i = 0; i < 8; i++) {
+      const x = -W / 2 + 1.2 + i * (W - 2.4) / 7;
+      const rv = new THREE.Mesh(rivetGeo, brassMat);
+      rv.position.set(x, y, 0.22);
+      g.add(rv);
+    }
+  }
+  // 底部防撞条
+  const kick = new THREE.Mesh(new THREE.BoxGeometry(W + 1.2, 0.5, 0.95), darkIronMat);
+  kick.position.set(0, 0.25, 0.1); g.add(kick);
+
+  return g;
+}
+function buildGates() {
+  for (let i = 0; i < 4; i++) {
+    const gate = buildGate((i / 4) * Math.PI * 2);
+    scene.add(gate);
+    terrain.meshes.push(gate);
+  }
+}
+
 function buildTrees() {
   const minRoadDist = 11, minFountainDist = 16, targetCount = Tuning.Terrain.treeCount;
   let placed = 0;
@@ -2051,6 +2291,79 @@ function spawnTree(x, z) {
   terrain.destructibles.push({ group: g, type: 'tree', x, z, radius: 1.6, broken: false, fade: 1.0, materials: null });
   terrain.meshes.push(g);
 }
+
+/* ——— 草地草丛（InstancedMesh，单个 draw call，零碰撞，零阴影） ——— */
+let _grassGeo = null;
+let grassMesh = null;
+function makeGrassBladeGeometry() {
+  const pos = [], nor = [], idx = [];
+  let v = 0;
+  const blades = 3;
+  for (let b = 0; b < blades; b++) {
+    const ang = (b / blades) * Math.PI * 2 + Math.random() * 0.9;
+    const dx = Math.cos(ang) * 0.13;
+    const dz = Math.sin(ang) * 0.13;
+    const h = 0.62 + Math.random() * 0.42;
+    const tipX = dx * 2.6, tipZ = dz * 2.6;
+    const px = -Math.sin(ang) * 0.07;
+    const pz = Math.cos(ang) * 0.07;
+    const bx1 = dx - px, bz1 = dz - pz;
+    const bx2 = dx + px, bz2 = dz + pz;
+    pos.push(bx1, 0, bz1, bx2, 0, bz2, tipX, h, tipZ);
+    for (let k = 0; k < 3; k++) nor.push(0, 1, 0);
+    idx.push(v, v + 1, v + 2);
+    v += 3;
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  geo.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));
+  geo.setIndex(idx);
+  return geo;
+}
+function buildGrass() {
+  clearGrass();
+  if (!_grassGeo) _grassGeo = makeGrassBladeGeometry();
+  const COUNT = Tuning.Terrain.grassCount;
+  const mat = new THREE.MeshLambertMaterial({ color: 0xFFFFFF, side: THREE.DoubleSide });
+  grassMesh = new THREE.InstancedMesh(_grassGeo, mat, COUNT);
+  grassMesh.instanceMatrix.setUsage(THREE.StaticDrawUsage);
+  const dummy = new THREE.Object3D();
+  const col = new THREE.Color();
+  let placed = 0;
+  for (let attempt = 0; attempt < COUNT * 10 && placed < COUNT; attempt++) {
+    const x = (Math.random() - 0.5) * 372;
+    const z = (Math.random() - 0.5) * 372;
+    const r = Math.hypot(x, z);
+    if (r > 188 || r < 15) continue;
+    if (Math.abs(x) < 7.6 || Math.abs(z) < 7.6) continue;
+    dummy.position.set(x, 0, z);
+    dummy.rotation.set(0, Math.random() * Math.PI * 2, 0);
+    const s = 0.85 + Math.random() * 1.10;
+    dummy.scale.set(s, s * (0.70 + Math.random() * 0.75), s);
+    dummy.updateMatrix();
+    grassMesh.setMatrixAt(placed, dummy.matrix);
+    const tint = 0.72 + Math.random() * 0.55;
+    col.setRGB(0.30 * tint, 0.62 * tint, 0.22 * tint);
+    grassMesh.setColorAt(placed, col);
+    placed++;
+  }
+  grassMesh.count = placed;
+  grassMesh.instanceMatrix.needsUpdate = true;
+  if (grassMesh.instanceColor) grassMesh.instanceColor.needsUpdate = true;
+  grassMesh.frustumCulled = false;
+  grassMesh.castShadow = false;
+  grassMesh.receiveShadow = false;
+  scene.add(grassMesh);
+}
+function clearGrass() {
+  if (grassMesh) {
+    scene.remove(grassMesh);
+    if (grassMesh.material) grassMesh.material.dispose();
+    grassMesh.dispose();
+    grassMesh = null;
+  }
+}
+
 const DEBRIS_BASE_GEO = new THREE.BoxGeometry(1, 1, 1);
 const debrisList = []; const MAX_DEBRIS = 400;
 function spawnDebris(center, color, count, baseSpeed, baseVel) {
@@ -2139,7 +2452,7 @@ function checkDestructibles(dt) {
     if (dx * dx + dz * dz < (R + d.radius) * (R + d.radius)) breakDestructible(d, fwd);
   }
 }
-function buildTerrain() { clearTerrain(); buildFountain(); buildRoadsAndLamps(); buildTrees(); }
+function buildTerrain() { clearTerrain(); buildFountain(); buildRoadsAndLamps(); buildGates(); buildTrees(); buildGrass(); }
 function clearTerrain() {
   for (const m of terrain.meshes) {
     scene.remove(m);
@@ -2153,6 +2466,7 @@ function clearTerrain() {
   }
   terrain.meshes.length = 0; terrain.destructibles.length = 0; terrain.fountainRadius = 0;
   clearDebris();
+  clearGrass();
 }
 
 /* ============================================================
@@ -2498,7 +2812,6 @@ function makeCanvasTexture(size, drawFn) {
 /* 皮肤：灰白底 + 腐烂斑块 + 暗裂 + 血斑 */
 const skinTexture = makeCanvasTexture(192, (ctx, s) => {
   ctx.fillStyle = '#E4E4E4'; ctx.fillRect(0, 0, s, s);
-  // 大块腐烂
   for (let i = 0; i < 70; i++) {
     const r = 6 + Math.random() * 26;
     const x = Math.random() * s, y = Math.random() * s;
@@ -2514,7 +2827,6 @@ const skinTexture = makeCanvasTexture(192, (ctx, s) => {
     ctx.fillStyle = g;
     ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
   }
-  // 血管/裂纹
   ctx.lineCap = 'round';
   for (let i = 0; i < 30; i++) {
     ctx.strokeStyle = `rgba(50,20,20,${0.24 + Math.random() * 0.34})`;
@@ -2524,7 +2836,6 @@ const skinTexture = makeCanvasTexture(192, (ctx, s) => {
     for (let j = 0; j < 5; j++) { x += (Math.random() - 0.5) * 40; y += (Math.random() - 0.5) * 40; ctx.lineTo(x, y); }
     ctx.stroke();
   }
-  // 伤口 / 溃烂洞
   for (let i = 0; i < 16; i++) {
     const x = Math.random() * s, y = Math.random() * s;
     const r = 2.5 + Math.random() * 7;
@@ -2540,7 +2851,6 @@ const skinTexture = makeCanvasTexture(192, (ctx, s) => {
     ctx.fillStyle = `rgba(120,10,16,${0.45 + Math.random() * 0.35})`;
     ctx.beginPath(); ctx.arc(x, y, r * 0.55, 0, Math.PI * 2); ctx.fill();
   }
-  // 污渍噪点
   for (let i = 0; i < 400; i++) {
     ctx.fillStyle = `rgba(${20 + Math.random() * 60},${20 + Math.random() * 50},${20 + Math.random() * 40},${0.05 + Math.random() * 0.14})`;
     ctx.fillRect(Math.random() * s, Math.random() * s, 1 + Math.random() * 4, 1 + Math.random() * 4);
@@ -2557,7 +2867,6 @@ const faceTexture = makeCanvasTexture(192, (ctx, s) => {
     g.addColorStop(1, 'rgba(56,58,50,0)');
     ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
   }
-  // 眼窝（深陷）
   for (const ex of [0.30, 0.70]) {
     const cx = s * ex, cy = s * 0.40;
     const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, s * 0.20);
@@ -2566,12 +2875,10 @@ const faceTexture = makeCanvasTexture(192, (ctx, s) => {
     g.addColorStop(1, 'rgba(20,20,18,0)');
     ctx.fillStyle = g;
     ctx.beginPath(); ctx.ellipse(cx, cy, s * 0.19, s * 0.145, 0, 0, Math.PI * 2); ctx.fill();
-    // 浑浊眼球
     ctx.fillStyle = 'rgba(190,180,120,0.75)';
     ctx.beginPath(); ctx.arc(cx, cy + s * 0.012, s * 0.058, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = '#0A0202';
     ctx.beginPath(); ctx.arc(cx + s * 0.008, cy + s * 0.014, s * 0.026, 0, Math.PI * 2); ctx.fill();
-    // 血丝
     ctx.strokeStyle = 'rgba(130,20,20,0.7)'; ctx.lineWidth = 1.2;
     for (let k = 0; k < 4; k++) {
       const a = Math.random() * Math.PI * 2;
@@ -2580,18 +2887,15 @@ const faceTexture = makeCanvasTexture(192, (ctx, s) => {
       ctx.lineTo(cx + Math.cos(a) * s * 0.07, cy + Math.sin(a) * s * 0.07);
       ctx.stroke();
     }
-    // 眼下血痕
     ctx.fillStyle = 'rgba(96,8,12,0.55)';
     ctx.beginPath();
     ctx.ellipse(cx, cy + s * 0.075, s * 0.045, s * 0.05, 0, 0, Math.PI * 2);
     ctx.fill();
   }
-  // 撕裂的嘴
   ctx.fillStyle = '#120304';
   ctx.beginPath(); ctx.ellipse(s * 0.5, s * 0.76, s * 0.24, s * 0.14, 0, 0, Math.PI * 2); ctx.fill();
   ctx.fillStyle = '#2A0508';
   ctx.beginPath(); ctx.ellipse(s * 0.5, s * 0.76, s * 0.18, s * 0.10, 0, 0, Math.PI * 2); ctx.fill();
-  // 牙齿（参差不齐）
   for (let i = 0; i < 7; i++) {
     const w = s * 0.036 + Math.random() * s * 0.016;
     const h = s * 0.05 + Math.random() * s * 0.05;
@@ -2600,7 +2904,6 @@ const faceTexture = makeCanvasTexture(192, (ctx, s) => {
     ctx.fillStyle = `rgba(${200 + Math.random() * 30},${190 + Math.random() * 30},${160 + Math.random() * 30},1)`;
     ctx.fillRect(s * (0.31 + i * 0.062), s * 0.815, w, h * 0.8);
   }
-  // 嘴角撕裂
   ctx.strokeStyle = 'rgba(80,6,10,0.85)'; ctx.lineWidth = 2.4;
   ctx.beginPath();
   ctx.moveTo(s * 0.26, s * 0.76);
@@ -2608,11 +2911,9 @@ const faceTexture = makeCanvasTexture(192, (ctx, s) => {
   ctx.moveTo(s * 0.74, s * 0.76);
   ctx.lineTo(s * 0.81, s * 0.84);
   ctx.stroke();
-  // 额头血
   ctx.fillStyle = 'rgba(110,10,14,0.7)';
   ctx.fillRect(s * 0.40, s * 0.08, s * 0.045, s * 0.20);
   ctx.fillRect(s * 0.56, s * 0.06, s * 0.038, s * 0.16);
-  // 整体噪点
   for (let i = 0; i < 300; i++) {
     ctx.fillStyle = `rgba(${30 + Math.random() * 60},${30 + Math.random() * 50},${28 + Math.random() * 40},${0.05 + Math.random() * 0.13})`;
     ctx.fillRect(Math.random() * s, Math.random() * s, 1 + Math.random() * 3.5, 1 + Math.random() * 3.5);
@@ -2622,11 +2923,9 @@ const faceTexture = makeCanvasTexture(192, (ctx, s) => {
 /* 衣服：破布 + 污渍 + 血 */
 const clothTexture = makeCanvasTexture(192, (ctx, s) => {
   ctx.fillStyle = '#DEDEDE'; ctx.fillRect(0, 0, s, s);
-  // 织纹
   ctx.strokeStyle = 'rgba(70,70,70,0.25)'; ctx.lineWidth = 1;
   for (let i = -s; i < s * 2; i += 5) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i + s, s); ctx.stroke(); }
   for (let i = 0; i < s * 2; i += 7) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i - s, s); ctx.stroke(); }
-  // 破损洞
   for (let i = 0; i < 14; i++) {
     const x = Math.random() * s, y = Math.random() * s, r = 3 + Math.random() * 10;
     ctx.fillStyle = 'rgba(20,18,20,0.85)';
@@ -2639,7 +2938,6 @@ const clothTexture = makeCanvasTexture(192, (ctx, s) => {
     }
     ctx.closePath(); ctx.fill();
   }
-  // 血渍
   for (let i = 0; i < 12; i++) {
     const x = Math.random() * s, y = Math.random() * s, r = 4 + Math.random() * 16;
     const g = ctx.createRadialGradient(x, y, 0, x, y, r);
@@ -2647,7 +2945,6 @@ const clothTexture = makeCanvasTexture(192, (ctx, s) => {
     g.addColorStop(1, 'rgba(112,10,14,0)');
     ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
   }
-  // 污渍
   for (let i = 0; i < 26; i++) {
     const x = Math.random() * s, y = Math.random() * s, r = 5 + Math.random() * 22;
     const g = ctx.createRadialGradient(x, y, 0, x, y, r);
@@ -2822,7 +3119,6 @@ function spawnEnemy(type, x, z) {
     walkPhase: Math.random() * Math.PI * 2,
     attackPhase: 0, attackCD: 0, groanCD: Math.random() * 5,
   };
-  // 配色：衣服 / 皮肤 分开，并加入个体差异
   e.clothColor = new THREE.Color(def.cloth).offsetHSL((Math.random() - 0.5) * 0.035, (Math.random() - 0.5) * 0.14, (Math.random() - 0.5) * 0.10);
   e.skinColor  = new THREE.Color(def.skin).offsetHSL((Math.random() - 0.5) * 0.04, (Math.random() - 0.5) * 0.16, (Math.random() - 0.5) * 0.12);
   e.legColor   = e.clothColor.clone().multiplyScalar(0.72);
@@ -3063,7 +3359,6 @@ function emitExhaustFlames(dt, intensity) {
   const jetSpeed = 22 + intensity * 48;
   const spread = 3.0 + intensity * 5.0;
 
-  // 排气管方向 → 世界方向
   const dx = exDir[0] * cosY + exDir[2] * sinY;
   const dz = -exDir[0] * sinY + exDir[2] * cosY;
   const dy = exDir[1];
@@ -3514,18 +3809,18 @@ function flashWhite(intensity = 0.3) {
    🎴 抽卡
    ============================================================ */
 const CARD_POOL_DEFS = [
-  { key: 'basic',   name: '平A',   icon: '⚔️',  desc: '自动向前方扇形敌人发射能量针' },
-  { key: 'aoe',     name: '群攻',   icon: '💥',  desc: '向锁定目标发射火球，爆炸成环形冲击波' },
-  { key: 'shock',   name: '冲击波', icon: '🌊',  desc: '撞击时对周围敌人溅射伤害' },
-  { key: 'heal',    name: '治疗',   icon: '💚',  desc: '主动攻击命中时概率回血' },
-  { key: 'crit',    name: '暴击',   icon: '⚡',  desc: '每次伤害概率暴击' },
-  { key: 'execute', name: '瞬杀',   icon: '💀',  desc: '概率秒杀非Boss（精英减半）' },
-  { key: 'luck',    name: '运气',   icon: '🍀',  desc: '所有概率被动 +%' },
-  { key: 'thunder', name: '天雷',   icon: '⛈',  desc: '主动命中时概率触发全屏闪电' },
-  { key: 'chain',   name: '连锁',   icon: '🔗',  desc: '命中后对周围敌人溅射 50% 伤害' },
-  { key: 'freeze',  name: '冻结',   icon: '❄️',  desc: '被攻击的敌人减速' },
-  { key: 'energy',  name: '蓄能',   icon: '🔋',  desc: '击杀积分加成（抽卡更快）' },
-  { key: 'healcard',name: '回复',   icon: '💖',  desc: '立即回复 30% 最大 HP', isHeal: true },
+  { key: 'basic',   name: '平A',   icon: '⚔️',  numeral: 'I',      desc: '自动向前方扇形敌人发射能量针' },
+  { key: 'aoe',     name: '群攻',   icon: '💥',  numeral: 'II',     desc: '向锁定目标发射火球，爆炸成环形冲击波' },
+  { key: 'shock',   name: '冲击波', icon: '🌊',  numeral: 'III',    desc: '撞击时对周围敌人溅射伤害' },
+  { key: 'heal',    name: '治疗',   icon: '💚',  numeral: 'IV',     desc: '主动攻击命中时概率回血' },
+  { key: 'crit',    name: '暴击',   icon: '⚡',  numeral: 'V',      desc: '每次伤害概率暴击' },
+  { key: 'execute', name: '瞬杀',   icon: '💀',  numeral: 'VI',     desc: '概率秒杀非Boss（精英减半）' },
+  { key: 'luck',    name: '运气',   icon: '🍀',  numeral: 'VII',    desc: '所有概率被动 +%' },
+  { key: 'thunder', name: '天雷',   icon: '⛈',  numeral: 'VIII',   desc: '主动命中时概率触发全屏闪电' },
+  { key: 'chain',   name: '连锁',   icon: '🔗',  numeral: 'IX',     desc: '命中后对周围敌人溅射 50% 伤害' },
+  { key: 'freeze',  name: '冻结',   icon: '❄️',  numeral: 'X',      desc: '被攻击的敌人减速' },
+  { key: 'energy',  name: '蓄能',   icon: '🔋',  numeral: 'XI',     desc: '击杀积分加成（抽卡更快）' },
+  { key: 'healcard',name: '回复',   icon: '💖',  numeral: 'XII',    desc: '立即回复 30% 最大 HP', isHeal: true },
 ];
 let missedPicks = 0, lastPickHadNew = false;
 function buildCardPool() {
@@ -3589,7 +3884,14 @@ function triggerCardSelect() {
         effectHTML = `<div class="card-effect"><span class="cur">Lv.${p.currentLv}: ${cd}</span></div><div class="card-effect"><span class="arrow">▼</span></div><div class="card-effect"><span class="next">Lv.${p.nextLv}: ${nd}</span></div>`;
       }
     }
-    el.innerHTML = `<div class="card-icon">${p.icon}</div><div class="card-name">${p.name}</div><div class="card-lv">${p.type === 'heal' ? '立即回复' : `Lv.${p.currentLv} → ${p.nextLv}`}</div>${effectHTML}<div class="card-desc">${p.desc}</div>`;
+    el.innerHTML =
+      `<div class="card-numeral">${p.numeral || ''}</div>` +
+      `<div class="card-sigil"><span class="card-icon">${p.icon}</span></div>` +
+      `<div class="card-name">${p.name}</div>` +
+      `<div class="card-divider"></div>` +
+      `<div class="card-lv">${p.type === 'heal' ? '立即回复' : `Lv.${p.currentLv} → ${p.nextLv}`}</div>` +
+      effectHTML +
+      `<div class="card-desc">${p.desc}</div>`;
     bindTap(el, () => { initAudio(); pickCard(p); });
     row.appendChild(el);
   });
@@ -3832,19 +4134,64 @@ function updateEnemies(dt) {
   for (let i = enemies.length - 1; i >= 0; i--) if (!enemies[i].active) enemies.splice(i, 1);
 }
 
+/* ============================================================
+   🔥 敌方火球（红色，与玩家青色弹幕明显区分）
+   ============================================================ */
 const enemyBullets = [];
-function spawnEnemyBullet(from, dir, dmg) { enemyBullets.push({ pos: from.clone(), vel: dir.clone().multiplyScalar(32), life: 2, dmg }); }
-const enemyBulletGeo = new THREE.BufferGeometry();
+function spawnEnemyBullet(from, dir, dmg) {
+  enemyBullets.push({
+    pos: from.clone(),
+    vel: dir.clone().multiplyScalar(32),
+    life: 2,
+    dmg,
+    phase: Math.random() * 6.283,
+  });
+}
 const EB_MAX = 300;
+const ebGeo = new THREE.BufferGeometry();
 const ebPos = new Float32Array(EB_MAX * 3);
-const ebCol = new Float32Array(EB_MAX * 3);
-for (let i = 0; i < EB_MAX; i++) ebPos[i * 3 + 1] = -1000;
-enemyBulletGeo.setAttribute('position', new THREE.BufferAttribute(ebPos, 3));
-enemyBulletGeo.setAttribute('color', new THREE.BufferAttribute(ebCol, 3));
-const ebMat = new THREE.PointsMaterial({ size: 1.4, sizeAttenuation: true, vertexColors: true, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false });
-const enemyBulletPoints = new THREE.Points(enemyBulletGeo, ebMat);
+const ebSize = new Float32Array(EB_MAX);
+const ebPhase = new Float32Array(EB_MAX);
+for (let i = 0; i < EB_MAX; i++) { ebPos[i * 3 + 1] = -1000; ebSize[i] = 0; }
+ebGeo.setAttribute('position', new THREE.BufferAttribute(ebPos, 3));
+ebGeo.setAttribute('size', new THREE.BufferAttribute(ebSize, 1));
+ebGeo.setAttribute('phase', new THREE.BufferAttribute(ebPhase, 1));
+
+const ebMat = new THREE.ShaderMaterial({
+  uniforms: { uTime: { value: 0 } },
+  vertexShader: `
+    attribute float size;
+    attribute float phase;
+    uniform float uTime;
+    varying float vFlicker;
+    void main(){
+      vFlicker = 0.78 + 0.22 * sin(uTime * 24.0 + phase);
+      vec4 mv = modelViewMatrix * vec4(position, 1.0);
+      gl_PointSize = size * vFlicker * (350.0 / -mv.z);
+      gl_Position = projectionMatrix * mv;
+    }`,
+  fragmentShader: `
+    varying float vFlicker;
+    void main(){
+      vec2 c = gl_PointCoord - vec2(0.5);
+      float d = length(c);
+      if (d > 0.5) discard;
+      float core = smoothstep(0.20, 0.0, d);
+      float mid  = smoothstep(0.44, 0.14, d);
+      float halo = smoothstep(0.50, 0.32, d);
+      vec3 col = vec3(1.00, 0.96, 0.80) * core
+               + vec3(1.00, 0.40, 0.05) * mid  * 0.92
+               + vec3(0.80, 0.04, 0.10) * halo * 0.85;
+      float a = (core + mid * 0.85 + halo * 0.55) * vFlicker;
+      gl_FragColor = vec4(col * vFlicker, a);
+    }`,
+  transparent: true, blending: THREE.AdditiveBlending, depthWrite: false,
+});
+const enemyBulletPoints = new THREE.Points(ebGeo, ebMat);
 enemyBulletPoints.frustumCulled = false; scene.add(enemyBulletPoints);
+
 function updateEnemyBullets(dt) {
+  ebMat.uniforms.uTime.value += dt;
   for (let i = enemyBullets.length - 1; i >= 0; i--) {
     const b = enemyBullets[i];
     b.life -= dt;
@@ -3854,6 +4201,7 @@ function updateEnemyBullets(dt) {
     if (dx * dx + dz * dz < 4 && player.iframe <= 0 && !player.isJumping) {
       player.hp -= b.dmg; player.iframe = 0.5;
       sfxHurt(); state.screenShake = Math.max(state.screenShake, 6);
+      spawnRing(b.pos.clone().setY(0.3), 0xFF5020, 3, 0.28);
       enemyBullets.splice(i, 1);
     }
   }
@@ -3861,12 +4209,14 @@ function updateEnemyBullets(dt) {
   for (const b of enemyBullets) {
     if (idx >= EB_MAX) break;
     ebPos[idx * 3] = b.pos.x; ebPos[idx * 3 + 1] = b.pos.y; ebPos[idx * 3 + 2] = b.pos.z;
-    ebCol[idx * 3] = 1; ebCol[idx * 3 + 1] = 0.75; ebCol[idx * 3 + 2] = 0.25;
+    ebSize[idx] = 2.8;
+    ebPhase[idx] = b.phase;
     idx++;
   }
-  for (let i = idx; i < EB_MAX; i++) ebPos[i * 3 + 1] = -1000;
-  enemyBulletGeo.attributes.position.needsUpdate = true;
-  enemyBulletGeo.attributes.color.needsUpdate = true;
+  for (let i = idx; i < EB_MAX; i++) { ebPos[i * 3 + 1] = -1000; ebSize[i] = 0; }
+  ebGeo.attributes.position.needsUpdate = true;
+  ebGeo.attributes.size.needsUpdate = true;
+  ebGeo.attributes.phase.needsUpdate = true;
 }
 
 /* ============================================================
@@ -4139,7 +4489,6 @@ function triggerVictory() {
   if (level.times) { if (time <= level.times[0]) stars = 3; else if (time <= level.times[1]) stars = 2; }
   saveLevelResult(lv, stars, time);
 
-  // ⭐ 检查新车解锁
   const newCars = getNewlyUnlockedCars();
   const unlockEl = document.getElementById('victoryUnlock');
   if (newCars.length > 0) {
@@ -4459,7 +4808,7 @@ function resetGame() {
   for (const el of dmgPool) { el._active = false; el.style.opacity = '0'; }
   clearParticles();
   clearFlames();
-  rebuildCarMesh();          // ⭐ 应用当前选中车辆
+  rebuildCarMesh();
   buildTerrain();
   startWave();
   updateHUD();
@@ -4772,7 +5121,6 @@ function initGarageViewer() {
   const rim2 = new THREE.DirectionalLight(0xFFB347, 0.55); rim2.position.set(6, 3, -9); garageViewer.scene.add(rim2);
   garageViewer.scene.add(new THREE.AmbientLight(0x8098B0, 0.42));
 
-  // shader 背景地面
   const bgMat = buildGarageBgShader();
   garageViewer.bgMat = bgMat;
   const bgPlane = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), bgMat);
