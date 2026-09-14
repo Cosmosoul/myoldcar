@@ -303,7 +303,7 @@
     flex-wrap:nowrap;
     align-items:center;
     justify-content:center;
-    gap:4px;
+    gap:5px;
     max-width:calc(100% - 20px);
     overflow:hidden;
     pointer-events:none;
@@ -311,18 +311,18 @@
   }
   .skill{
     position:relative;
-    width:24px;
-    height:24px;
+    width:31px;
+    height:31px;
     display:flex;
     align-items:center;
     justify-content:center;
-    font-size:12px;
+    font-size:15px;
     line-height:1;
     background:linear-gradient(180deg,#1A2230,#0C1017);
-    clip-path:polygon(5px 0,100% 0,100% calc(100% - 5px),calc(100% - 5px) 100%,0 100%,0 5px);
-    box-shadow:inset 0 0 0 1.2px rgba(79,221,192,.30);
+    clip-path:polygon(6px 0,100% 0,100% calc(100% - 6px),calc(100% - 6px) 100%,0 100%,0 6px);
+    box-shadow:inset 0 0 0 1.4px rgba(79,221,192,.34);
     color:var(--text-2);
-    opacity:.32;
+    opacity:.46;
     transition:opacity .16s, box-shadow .16s;
     flex-shrink:0;
     pointer-events:none;
@@ -331,23 +331,23 @@
     opacity:1;
     color:var(--text);
     box-shadow:
-      inset 0 0 0 1.2px rgba(255,179,71,.72),
-      0 0 9px rgba(255,179,71,.24);
+      inset 0 0 0 1.4px rgba(255,179,71,.78),
+      0 0 12px rgba(255,179,71,.30);
   }
   .skill .lv{
     position:absolute;
     right:-2px;
     bottom:-3px;
-    min-width:11px;
+    min-width:13px;
     padding:0 2px;
-    font-size:8px;
+    font-size:10px;
     font-weight:900;
     line-height:1.25;
     text-align:center;
     color:var(--hot);
     background:#04060A;
     border-radius:2px;
-    box-shadow:inset 0 0 0 1px rgba(255,179,71,.45);
+    box-shadow:inset 0 0 0 1px rgba(255,179,71,.5);
     pointer-events:none;
   }
 
@@ -408,75 +408,124 @@
 
   /* ============================================================
      触屏按键 — 重制版
+     油门 / 刹车：正圆 + 玻璃面反光
      ============================================================ */
   .touch-btn{
     position:fixed;display:none;align-items:center;justify-content:center;
     font-weight:900;font-family:var(--font-ui);
     z-index:20;pointer-events:auto;cursor:pointer;
     user-select:none;-webkit-user-select:none;letter-spacing:1.5px;
-    clip-path:polygon(24% 0,76% 0,100% 24%,100% 76%,76% 100%,24% 100%,0 76%,0 24%);
+    clip-path:none;
+    border:none;overflow:hidden;isolation:isolate;
     transition:transform .06s, filter .08s, box-shadow .08s;
     will-change:transform;
-    border:none;
   }
   .touch-btn.pressed{
     transform:scale(.9);
     filter:brightness(1.25) saturate(1.1);
   }
-  .touch-btn::after{
+
+  /* —— 圆形玻璃按键：镜面高光 + 顶部反光带 + 外圈玻璃环 —— */
+  .touch-btn.round{
+    border-radius:50%;
+    /* 玻璃球体：顶部高光 → 中部实色 → 底部暗边 */
+    background:
+      radial-gradient(circle at 50% 118%, rgba(0,0,0,.55) 0%, rgba(0,0,0,0) 58%),
+      radial-gradient(circle at 50% -18%, rgba(255,255,255,.55) 0%, rgba(255,255,255,0) 46%),
+      linear-gradient(180deg, var(--gb-top) 0%, var(--gb-mid) 52%, var(--gb-bot) 100%);
+  }
+  /* 玻璃反光：上半部弧形镜面 + 斜向高光条纹 */
+  .touch-btn.round::before{
+    content:'';position:absolute;inset:0;border-radius:50%;
+    pointer-events:none;z-index:1;
+    background:
+      radial-gradient(ellipse 74% 46% at 50% 9%, rgba(255,255,255,.62) 0%, rgba(255,255,255,.20) 42%, rgba(255,255,255,0) 72%),
+      linear-gradient(122deg, rgba(255,255,255,0) 30%, rgba(255,255,255,.42) 48%, rgba(255,255,255,0) 62%);
+    mix-blend-mode:screen;
+    opacity:.85;
+    transition:opacity .08s, transform .08s;
+  }
+  /* 底部内反光 + 玻璃厚度 */
+  .touch-btn.round::after{
+    content:'';position:absolute;inset:0;border-radius:50%;
+    pointer-events:none;z-index:2;
+    background:
+      radial-gradient(ellipse 62% 30% at 50% 94%, rgba(255,255,255,.30) 0%, rgba(255,255,255,0) 70%),
+      radial-gradient(circle at 50% 50%, rgba(255,255,255,0) 58%, rgba(255,255,255,.14) 74%, rgba(255,255,255,0) 86%);
+    box-shadow:
+      inset 0 0 0 2px rgba(255,255,255,.30),
+      inset 0 0 22px rgba(255,255,255,.14);
+  }
+  .touch-btn.round.pressed::before{opacity:1;transform:scale(1.06)}
+  .touch-btn.round > .tb-txt{
+    position:relative;z-index:3;
+    text-shadow:0 1px 2px rgba(0,0,0,.5);
+  }
+
+  /* —— 跳跃 / 闪冲：保留原八边形 + 玻璃薄反光 —— */
+  .touch-btn.oct{
+    clip-path:polygon(24% 0,76% 0,100% 24%,100% 76%,76% 100%,24% 100%,0 76%,0 24%);
+    overflow:visible;
+  }
+  .touch-btn.oct::after{
     content:'';position:absolute;inset:6px;
     clip-path:polygon(24% 0,76% 0,100% 24%,100% 76%,76% 100%,24% 100%,0 76%,0 24%);
     pointer-events:none;
-    background:linear-gradient(180deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,0) 44%);
-    opacity:.75;
+    background:linear-gradient(180deg, rgba(255,255,255,.20) 0%, rgba(255,255,255,0) 46%);
+    opacity:.8;
   }
+  .touch-btn.oct > .tb-txt{position:relative;z-index:3}
 
   /* 油门 —— 青绿核心 */
   #touchThrottle{
+    --gb-top:#B8FFEC; --gb-mid:#25BE9D; --gb-bot:#075445;
     right:calc(18px + env(safe-area-inset-right));
     bottom:calc(146px + env(safe-area-inset-bottom));
     width:112px;height:112px;font-size:15px;
     color:#04231A;
-    background:linear-gradient(180deg,#8CF6DC 0%,#20B394 55%,#0A6A54 100%);
     box-shadow:
-      inset 0 0 0 2.5px rgba(4,14,11,.95),
-      inset 0 0 0 5px rgba(180,255,235,.55),
-      inset 0 -9px 16px rgba(0,0,0,.35),
-      inset 0 9px 14px rgba(255,255,255,.32),
-      0 0 28px rgba(79,221,192,.5);
-    text-shadow:0 1px 0 rgba(200,255,240,.65);
+      inset 0 0 0 2.5px rgba(4,14,11,.92),
+      inset 0 0 0 5.5px rgba(190,255,240,.62),
+      inset 0 -10px 18px rgba(0,0,0,.34),
+      inset 0 10px 16px rgba(255,255,255,.34),
+      0 6px 20px rgba(0,0,0,.45),
+      0 0 30px rgba(79,221,192,.52);
+    text-shadow:0 1px 0 rgba(200,255,240,.7);
   }
   #touchThrottle.pressed{
     box-shadow:
-      inset 0 0 0 2.5px rgba(4,14,11,.95),
-      inset 0 0 0 5px rgba(180,255,235,.8),
-      inset 0 -9px 16px rgba(0,0,0,.35),
-      inset 0 9px 14px rgba(255,255,255,.4),
-      0 0 42px rgba(79,221,192,.95);
+      inset 0 0 0 2.5px rgba(4,14,11,.92),
+      inset 0 0 0 5.5px rgba(190,255,240,.88),
+      inset 0 -10px 18px rgba(0,0,0,.34),
+      inset 0 10px 16px rgba(255,255,255,.42),
+      0 4px 12px rgba(0,0,0,.4),
+      0 0 46px rgba(79,221,192,.98);
   }
 
   /* 刹车 —— 赤红核心 */
   #touchBrake{
+    --gb-top:#FFC4CE; --gb-mid:#E03A5C; --gb-bot:#67091C;
     right:calc(18px + env(safe-area-inset-right));
     bottom:calc(18px + env(safe-area-inset-bottom));
     width:112px;height:112px;font-size:15px;
     color:#FFF;
-    background:linear-gradient(180deg,#FF9BAE 0%,#E03A5C 55%,#8A0F25 100%);
     box-shadow:
-      inset 0 0 0 2.5px rgba(14,2,4,.95),
-      inset 0 0 0 5px rgba(255,175,200,.5),
-      inset 0 -9px 16px rgba(0,0,0,.4),
-      inset 0 9px 14px rgba(255,255,255,.28),
-      0 0 28px rgba(255,77,109,.5);
-    text-shadow:0 1px 2px rgba(0,0,0,.85);
+      inset 0 0 0 2.5px rgba(14,2,4,.92),
+      inset 0 0 0 5.5px rgba(255,190,208,.56),
+      inset 0 -10px 18px rgba(0,0,0,.4),
+      inset 0 10px 16px rgba(255,255,255,.28),
+      0 6px 20px rgba(0,0,0,.45),
+      0 0 30px rgba(255,77,109,.52);
+    text-shadow:0 1px 2px rgba(0,0,0,.8);
   }
   #touchBrake.pressed{
     box-shadow:
-      inset 0 0 0 2.5px rgba(14,2,4,.95),
-      inset 0 0 0 5px rgba(255,175,200,.8),
-      inset 0 -9px 16px rgba(0,0,0,.4),
-      inset 0 9px 14px rgba(255,255,255,.38),
-      0 0 42px rgba(255,77,109,.9);
+      inset 0 0 0 2.5px rgba(14,2,4,.92),
+      inset 0 0 0 5.5px rgba(255,190,208,.88),
+      inset 0 -10px 18px rgba(0,0,0,.4),
+      inset 0 10px 16px rgba(255,255,255,.4),
+      0 4px 12px rgba(0,0,0,.4),
+      0 0 46px rgba(255,77,109,.95);
   }
 
   /* 跳跃 —— 琥珀 */
@@ -636,7 +685,7 @@
     padding:16px;
     padding-top:calc(84px + env(safe-area-inset-top, 0px));
     padding-bottom:calc(16px + env(safe-area-inset-bottom, 0px));
-    overflow-y:auto;
+    overflow:hidden;
     box-sizing:border-box;
   }
   #pauseMenu.show{display:flex}
@@ -647,8 +696,9 @@
     padding:24px 26px;
     display:flex;flex-direction:column;gap:10px;
     min-width:250px;max-width:92%;
-    max-height:calc(100vh - 130px);
-    overflow-y:auto;
+    max-height:100%;
+    overflow-y:auto;overflow-x:hidden;
+    -webkit-overflow-scrolling:touch;overscroll-behavior:contain;
     margin:0 auto;
   }
   .pause-box h2{
@@ -905,11 +955,71 @@
   /* ===== Modal ===== */
   .modal{
     position:fixed;inset:0;z-index:60;display:none;
-    align-items:center;justify-content:center;
+    align-items:flex-start;justify-content:center;
     background:radial-gradient(ellipse at center,rgba(16,22,34,.85),rgba(6,8,12,.95));
-    pointer-events:auto;padding:16px;
+    pointer-events:auto;
+    /* 上下留出安全区；滚动交给内部面板，滚动条才会贴在弹窗内壁而不是屏幕边缘 */
+    padding:calc(16px + env(safe-area-inset-top, 0px)) 16px calc(16px + env(safe-area-inset-bottom, 0px)) 16px;
+    overflow:hidden;
+    overscroll-behavior:contain;
   }
   .modal.show{display:flex}
+  /* 自定义滚动条（与赛博 UI 统一）——只作用于真正滚动的内层面板，
+     滚动条因此贴在面板内壁，而不是浏览器窗口边缘 */
+  .settings-box::-webkit-scrollbar,
+  .help-box::-webkit-scrollbar,
+  .pause-box::-webkit-scrollbar,
+  .over-box::-webkit-scrollbar,
+  .victory-box::-webkit-scrollbar,
+  .goal-box::-webkit-scrollbar,
+  .gallery-list::-webkit-scrollbar,
+  .viewer-info::-webkit-scrollbar,
+  .garage-info::-webkit-scrollbar,
+  .bgm-list::-webkit-scrollbar,
+  .bgm-stage::-webkit-scrollbar,
+  .bgm-side::-webkit-scrollbar{width:7px;height:7px}
+  .settings-box::-webkit-scrollbar-track,
+  .help-box::-webkit-scrollbar-track,
+  .pause-box::-webkit-scrollbar-track,
+  .over-box::-webkit-scrollbar-track,
+  .victory-box::-webkit-scrollbar-track,
+  .goal-box::-webkit-scrollbar-track,
+  .gallery-list::-webkit-scrollbar-track,
+  .viewer-info::-webkit-scrollbar-track,
+  .garage-info::-webkit-scrollbar-track,
+  .bgm-list::-webkit-scrollbar-track,
+  .bgm-stage::-webkit-scrollbar-track,
+  .bgm-side::-webkit-scrollbar-track{background:#0A0D14;border-radius:4px}
+  .settings-box::-webkit-scrollbar-thumb,
+  .help-box::-webkit-scrollbar-thumb,
+  .pause-box::-webkit-scrollbar-thumb,
+  .over-box::-webkit-scrollbar-thumb,
+  .victory-box::-webkit-scrollbar-thumb,
+  .goal-box::-webkit-scrollbar-thumb,
+  .gallery-list::-webkit-scrollbar-thumb,
+  .viewer-info::-webkit-scrollbar-thumb,
+  .garage-info::-webkit-scrollbar-thumb,
+  .bgm-list::-webkit-scrollbar-thumb,
+  .bgm-stage::-webkit-scrollbar-thumb,
+  .bgm-side::-webkit-scrollbar-thumb{
+    background:linear-gradient(180deg,var(--cool),#1E7A66);
+    box-shadow:inset 0 0 0 1px rgba(79,221,192,.5);
+    border-radius:4px;
+  }
+  .settings-box,.help-box,.pause-box,.over-box,.victory-box,.goal-box,
+  .gallery-list,.viewer-info,.garage-info,.bgm-list,.bgm-stage,.bgm-side{
+    scrollbar-width:thin;scrollbar-color:#4FDDC0 #0A0D14;
+  }
+  /* 给内层面板右侧留出滚动条槽位，避免内容因滚动条出现而横向跳动 */
+  .settings-box,.help-box,.pause-box{scrollbar-gutter:stable}
+
+  /* body 上锁了 touch-action:none，滚动容器需显式放行纵向拖动 */
+  .settings-box,.help-box,.pause-box,.over-box,.victory-box,.goal-box,
+  .gallery-list,.viewer-info,.garage-info,.bgm-list,.bgm-stage,.bgm-side{
+    touch-action:pan-y;
+    overscroll-behavior:contain;
+  }
+
   .settings-box{
     background:linear-gradient(170deg,#1B2333,#10141D 70%);
     box-shadow:inset 0 0 0 2px rgba(79,221,192,.35),0 16px 40px rgba(0,0,0,.7);
@@ -917,8 +1027,16 @@
     padding:26px 28px;
     display:flex;flex-direction:column;gap:12px;
     min-width:280px;max-width:92%;
-    max-height:92vh;overflow-y:auto;
+    /* margin:auto 在 flex 容器中保证垂直居中；内容过高时由面板自身滚动 */
+    margin:auto;
+    max-height:100%;
+    overflow-y:auto;overflow-x:hidden;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior:contain;
   }
+  /* 底部按钮永远保留可点区域，避免贴边被切角裁到 */
+  .settings-box > .big-btn:last-child,
+  .settings-box > #settingsCloseBtn{flex-shrink:0}
   .settings-box h2{
     color:var(--text);font-size:18px;letter-spacing:8px;
     text-align:center;margin-bottom:10px;font-weight:900;
@@ -929,7 +1047,11 @@
     box-shadow:inset 0 0 0 2px rgba(79,221,192,.35),0 16px 40px rgba(0,0,0,.7);
     clip-path:polygon(18px 0,100% 0,100% calc(100% - 18px),calc(100% - 18px) 100%,0 100%,0 18px);
     padding:26px 26px;
-    max-width:640px;width:100%;max-height:92%;overflow-y:auto;
+    max-width:640px;width:100%;
+    margin:auto;max-height:100%;
+    overflow-y:auto;overflow-x:hidden;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior:contain;
   }
   .help-box h2{
     color:var(--text);font-size:19px;letter-spacing:6px;
@@ -1044,6 +1166,226 @@
     clip-path:polygon(5px 0,100% 0,100% calc(100% - 5px),calc(100% - 5px) 100%,0 100%,0 5px);
   }
 
+  /* ============================================================
+     鉴赏 —— 页签栏
+     ============================================================ */
+  .gallery-tabbar{
+    display:flex;flex-shrink:0;
+    background:linear-gradient(180deg,#141A26,#0D1119);
+    box-shadow:inset 0 -2px 0 rgba(79,221,192,.28);
+    padding:0 14px;
+  }
+  .gtab{
+    appearance:none;border:none;background:transparent;cursor:pointer;
+    color:var(--text-3);font-family:var(--font-ui);
+    font-size:11.5px;font-weight:900;letter-spacing:3px;
+    padding:10px 20px 9px;position:relative;
+    transition:color .16s;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .gtab::after{
+    content:'';position:absolute;left:14px;right:14px;bottom:0;height:2px;
+    background:linear-gradient(90deg,var(--hot),var(--cool));
+    transform:scaleX(0);transform-origin:center;
+    transition:transform .22s cubic-bezier(.22,1,.36,1);
+    box-shadow:0 0 12px rgba(255,179,71,.7);
+  }
+  .gtab:hover{color:var(--text-2)}
+  .gtab.active{color:var(--hot);text-shadow:0 0 12px rgba(255,179,71,.55)}
+  .gtab.active::after{transform:scaleX(1)}
+  .gallery-body{flex:1;display:flex;min-height:0;min-width:0;overflow:hidden}
+  .gallery-pane{display:none;flex:1;min-height:0;min-width:0;flex-direction:column}
+  .gallery-pane.active{display:flex}
+
+  /* ============================================================
+     🎧 BGM 鉴赏 —— 赛博音乐播放器
+     ============================================================ */
+  #galleryPaneBgm{
+    flex-direction:row;
+    background:
+      radial-gradient(ellipse at 20% -10%,rgba(255,179,71,.08),transparent 56%),
+      radial-gradient(ellipse at 92% 108%,rgba(79,221,192,.10),transparent 58%),
+      #080B11;
+  }
+  .bgm-side{
+    width:224px;flex-shrink:0;min-height:0;display:flex;flex-direction:column;
+    background:#0B0F16;box-shadow:inset -2px 0 0 rgba(79,221,192,.22);
+  }
+  .bgm-side-hd{
+    flex-shrink:0;padding:9px 12px 7px;
+    display:flex;align-items:baseline;justify-content:space-between;gap:6px;
+    box-shadow:inset 0 -1px 0 rgba(79,221,192,.18);
+  }
+  .bgm-side-hd .t{color:var(--cool);font-size:10px;font-weight:900;letter-spacing:3px}
+  .bgm-side-hd .n{color:var(--text-3);font-size:9px;font-weight:900;letter-spacing:1px;white-space:nowrap}
+  .bgm-list{flex:1;min-height:0;overflow-y:auto;padding:8px;display:flex;flex-direction:column;gap:5px}
+  .bgm-row{
+    display:flex;align-items:center;gap:8px;padding:8px 9px;
+    background:linear-gradient(180deg,#161D2A,#10151E);
+    box-shadow:inset 0 0 0 1.4px rgba(51,65,92,.85);
+    cursor:pointer;transition:all .13s;
+    clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);
+  }
+  .bgm-row:hover{background:linear-gradient(180deg,#1F2A3E,#141A26);transform:translateX(3px)}
+  .bgm-row.sel{
+    background:linear-gradient(180deg,rgba(255,179,71,.15),rgba(255,179,71,.04));
+    box-shadow:inset 0 0 0 1.4px rgba(255,179,71,.8),0 0 14px rgba(255,179,71,.24);
+  }
+  .bgm-row .bg-idx{width:20px;flex-shrink:0;text-align:center;color:var(--text-3);font-size:9.5px;font-weight:900}
+  .bgm-row.sel .bg-idx{color:var(--hot)}
+  .bgm-row .bg-meta{flex:1;min-width:0}
+  .bgm-row .bg-nm{
+    display:block;color:var(--text-2);font-size:11.5px;font-weight:900;letter-spacing:.8px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .bgm-row.sel .bg-nm{color:var(--hot);text-shadow:0 0 10px rgba(255,179,71,.5)}
+  .bgm-row .bg-gn{
+    display:block;margin-top:2px;color:var(--text-3);font-size:8.5px;font-weight:900;letter-spacing:1.6px;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .bgm-row .bg-eq{width:16px;height:14px;flex-shrink:0;display:flex;align-items:flex-end;gap:2px;opacity:0;transition:opacity .2s}
+  .bgm-row.playing .bg-eq{opacity:1}
+  .bgm-row .bg-eq i{
+    flex:1;height:30%;border-radius:1px;
+    background:linear-gradient(180deg,var(--hot),var(--cool));
+    animation:eqBar .68s ease-in-out infinite alternate;
+  }
+  .bgm-row .bg-eq i:nth-child(2){animation-delay:.2s}
+  .bgm-row .bg-eq i:nth-child(3){animation-delay:.4s}
+  @keyframes eqBar{from{height:18%}to{height:100%}}
+
+  .bgm-stage{
+    flex:1;min-width:0;min-height:0;position:relative;
+    display:flex;flex-direction:column;padding:14px 16px 12px;gap:10px;
+    /* 极矮窗口下可滚动，保证所有控件永远可达 */
+    overflow-y:auto;overflow-x:hidden;
+    -webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+    touch-action:pan-y;
+  }
+  .bgm-stage::before{
+    content:'';position:absolute;inset:0;z-index:0;pointer-events:none;
+    background:repeating-linear-gradient(0deg,rgba(79,221,192,.04) 0 1px,transparent 1px 3px);
+  }
+  .bgm-deck{display:flex;align-items:center;gap:16px;position:relative;z-index:2;flex-shrink:0;min-width:0}
+  .bgm-deck > *{position:relative;z-index:2}
+  .bgm-disc{
+    width:104px;height:104px;flex-shrink:0;border-radius:50%;position:relative;
+    background:
+      radial-gradient(circle at 50% 50%, #0B0F16 0 16%, rgba(0,0,0,0) 17%),
+      repeating-radial-gradient(circle at 50% 50%, rgba(255,255,255,.06) 0 1px, rgba(0,0,0,0) 1px 4px),
+      conic-gradient(from 0deg,#E03A5C,#FFB347,#4FDDC0,#8555E0,#E03A5C);
+    box-shadow:
+      inset 0 0 0 1.5px rgba(0,0,0,.85),
+      0 0 26px rgba(255,179,71,.26),
+      0 8px 22px rgba(0,0,0,.6);
+    animation:discSpin 4.2s linear infinite;
+    animation-play-state:paused;
+  }
+  .bgm-disc.spin{animation-play-state:running}
+  @keyframes discSpin{to{transform:rotate(360deg)}}
+  .bgm-disc::before{
+    content:'';position:absolute;inset:0;border-radius:50%;
+    background:conic-gradient(from 210deg,transparent 0 60%,rgba(255,255,255,.30) 72%,transparent 80%);
+    mix-blend-mode:screen;
+  }
+  .bgm-disc::after{
+    content:'';position:absolute;inset:39%;border-radius:50%;
+    background:radial-gradient(circle at 42% 36%,#2A3448,#0A0E15 76%);
+    box-shadow:inset 0 0 0 1px rgba(79,221,192,.55),0 0 12px rgba(79,221,192,.35);
+  }
+  .bgm-now{flex:1;min-width:0}
+  .bgm-now .np-lbl{
+    display:flex;align-items:center;gap:7px;margin-bottom:5px;
+    color:var(--cool);font-size:9px;font-weight:900;letter-spacing:4px;
+  }
+  .bgm-now .np-lbl::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(79,221,192,.6),transparent)}
+  .bgm-now .np-title{
+    color:var(--text);font-size:clamp(17px,2.6vh,26px);font-weight:900;
+    letter-spacing:1.2px;line-height:1.15;
+    text-shadow:0 0 20px rgba(255,179,71,.45);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  .bgm-now .np-sub{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+  .bgm-now .np-tag{
+    color:var(--hot);font-size:9px;font-weight:900;letter-spacing:1.6px;
+    background:#241A0A;padding:3px 9px;
+    box-shadow:inset 0 0 0 1px rgba(255,179,71,.5);
+    clip-path:polygon(5px 0,100% 0,100% calc(100% - 5px),calc(100% - 5px) 100%,0 100%,0 5px);
+  }
+  .bgm-now .np-tag.cool{color:var(--cool);background:#0A2420;box-shadow:inset 0 0 0 1px rgba(79,221,192,.5)}
+
+  .bgm-viz-wrap{
+    position:relative;z-index:2;flex-shrink:0;height:64px;
+    background:rgba(4,7,12,.6);overflow:hidden;
+    box-shadow:inset 0 0 0 1.4px rgba(51,65,92,.7);
+  }
+  #bgmViz{display:block;width:100%;height:100%}
+  .bgm-viz-wrap::after{
+    content:'';position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(180deg,rgba(79,221,192,.07),transparent 42%,rgba(255,179,71,.06));
+  }
+  .bgm-progress{position:relative;z-index:2;flex-shrink:0}
+  .bgm-progress .pg-track{
+    height:7px;background:#0A0D14;position:relative;overflow:hidden;
+    box-shadow:inset 0 0 0 1px rgba(79,221,192,.25);
+  }
+  .bgm-progress .pg-fill{
+    position:absolute;left:0;top:0;bottom:0;width:0;
+    background:linear-gradient(90deg,var(--cool),var(--hot));
+    box-shadow:0 0 12px rgba(255,179,71,.6);
+  }
+  .bgm-progress .pg-meta{
+    display:flex;justify-content:space-between;margin-top:5px;
+    color:var(--text-3);font-size:9px;font-weight:900;letter-spacing:1.5px;
+  }
+  .bgm-transport{
+    position:relative;z-index:2;flex-shrink:0;
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .bgm-tbtn{
+    appearance:none;border:none;cursor:pointer;flex-shrink:0;
+    width:42px;height:42px;display:flex;align-items:center;justify-content:center;
+    background:linear-gradient(180deg,#1C2534,#11151E);
+    color:var(--text-2);font-size:15px;font-family:var(--font-ui);
+    box-shadow:inset 0 0 0 1.5px rgba(79,221,192,.35);
+    clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);
+    transition:all .13s;-webkit-tap-highlight-color:transparent;
+  }
+  .bgm-tbtn:hover{color:var(--text);box-shadow:inset 0 0 0 1.5px rgba(79,221,192,.75),0 0 16px rgba(79,221,192,.25)}
+  .bgm-tbtn:active{transform:translate(2px,2px)}
+  .bgm-tbtn.main{
+    width:54px;height:54px;font-size:18px;
+    background:linear-gradient(180deg,var(--hot),var(--hot-2));
+    color:#1A0F02;
+    box-shadow:0 0 22px rgba(255,179,71,.5),inset 0 0 0 1.5px rgba(255,225,160,.6);
+  }
+  .bgm-tbtn.main:hover{box-shadow:0 0 30px rgba(255,179,71,.8),inset 0 0 0 1.5px rgba(255,235,190,.85)}
+  .bgm-vol{margin-left:auto;display:flex;align-items:center;gap:8px;min-width:0}
+  .bgm-vol .vl{color:var(--text-3);font-size:9px;font-weight:900;letter-spacing:2px;white-space:nowrap}
+  .bgm-vol input[type=range]{
+    -webkit-appearance:none;appearance:none;
+    width:96px;height:6px;background:#0A0D14;outline:none;
+    box-shadow:inset 0 0 0 1px rgba(79,221,192,.3);
+    border-radius:0;cursor:pointer;margin:0;
+  }
+  .bgm-vol input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;appearance:none;width:14px;height:14px;
+    background:linear-gradient(180deg,var(--hot),var(--hot-2));
+    box-shadow:0 0 10px rgba(255,179,71,.7);cursor:pointer;
+    clip-path:polygon(3px 0,100% 0,100% calc(100% - 3px),calc(100% - 3px) 100%,0 100%,0 3px);
+  }
+  .bgm-vol input[type=range]::-moz-range-thumb{
+    width:14px;height:14px;border:none;
+    background:linear-gradient(180deg,var(--hot),var(--hot-2));
+    box-shadow:0 0 10px rgba(255,179,71,.7);cursor:pointer;
+  }
+  .bgm-tip{
+    position:relative;z-index:2;flex-shrink:0;text-align:center;
+    color:var(--text-3);font-size:9.5px;font-weight:900;letter-spacing:3px;
+    transition:opacity .25s;
+  }
+  .bgm-tip.hide{opacity:0}
+
   /* ===== 车库 ===== */
   .garage-item.locked{
     filter:grayscale(1) brightness(.55);
@@ -1106,7 +1448,7 @@
     position:fixed;inset:0;z-index:56;display:none;
     align-items:center;justify-content:center;
     padding:12px;pointer-events:auto;
-    overflow-y:auto;overflow-x:hidden;
+    overflow:hidden;
     animation:fadeIn .35s;
   }
   #overScreen{background:radial-gradient(ellipse at center,rgba(70,10,28,.82),rgba(6,8,12,.96))}
@@ -1123,6 +1465,9 @@
     text-align:center;
     animation:victoryPop .4s cubic-bezier(.2,1.2,.5,1);
     margin:auto;
+    max-height:100%;
+    overflow-y:auto;overflow-x:hidden;
+    -webkit-overflow-scrolling:touch;overscroll-behavior:contain;
   }
   .over-box{box-shadow:inset 0 0 0 2px rgba(255,77,109,.5),0 18px 50px rgba(0,0,0,.7)}
   .victory-box{box-shadow:inset 0 0 0 2px rgba(124,227,139,.5),0 18px 50px rgba(0,0,0,.7)}
@@ -1423,7 +1768,7 @@
     align-items:center;justify-content:center;
     background:radial-gradient(ellipse at center,rgba(16,22,34,.9),rgba(6,8,12,.96));
     pointer-events:auto;padding:12px;
-    overflow-y:auto;
+    overflow:hidden;
   }
   #levelGoalModal.show{display:flex}
   .goal-box{
@@ -1435,6 +1780,9 @@
     text-align:center;
     animation:cardIn .3s cubic-bezier(.2,1.4,.5,1);
     margin:auto;
+    max-height:100%;
+    overflow-y:auto;overflow-x:hidden;
+    -webkit-overflow-scrolling:touch;overscroll-behavior:contain;
   }
   .goal-box .goal-lv{
     color:var(--cool);font-size:11px;font-weight:900;
@@ -1513,10 +1861,10 @@
     .hud-stat .hud-lbl{font-size:8.5px;letter-spacing:1px}
     .hud-bar .hud-icon{width:14px;font-size:11px}
 
-    /* 技能栏 —— 小屏进一步压缩 */
-    .skills{gap:3px;bottom:calc(4px + env(safe-area-inset-bottom, 0px));max-width:calc(100% - 16px)}
-    .skill{width:20px;height:20px;font-size:10px}
-    .skill .lv{font-size:7px;min-width:9px;padding:0 1px;right:-1px;bottom:-2px}
+    /* 技能栏 —— 小屏适度放大（保证老年玩家可辨识） */
+    .skills{gap:4px;bottom:calc(4px + env(safe-area-inset-bottom, 0px));max-width:calc(100% - 16px)}
+    .skill{width:26px;height:26px;font-size:13px}
+    .skill .lv{font-size:9px;min-width:11px;padding:0 1px;right:-1px;bottom:-2px}
 
     #pauseBtn{width:34px;height:34px;font-size:14px}
 
@@ -1567,11 +1915,16 @@
     .over-box .btn-group,.victory-box .btn-group{gap:6px}
     .over-box .btn-group .big-btn,.victory-box .btn-group .big-btn{font-size:12px;padding:9px 12px;letter-spacing:2px}
 
-    .settings-box,.help-box{padding:16px 20px}
-    .settings-box h2,.help-box h2{font-size:15px;letter-spacing:4px;margin-bottom:8px}
+    .settings-box,.help-box{padding:14px 18px;gap:9px}
+    .settings-box h2,.help-box h2{font-size:15px;letter-spacing:4px;margin-bottom:6px}
     .help-box h3{font-size:11px;letter-spacing:2px;margin:8px 0 3px 0}
     .help-box p,.help-box li{font-size:10.5px;line-height:1.7}
     .help-box .key{font-size:9.5px;padding:0 6px}
+    /* 小屏：设置项略紧凑，保证一屏尽量放下，放不下则滚动 */
+    .settings-box .slider-row{gap:8px}
+    .settings-box .settings-title{margin-top:2px}
+    .settings-box > #settingsCloseBtn{margin-top:8px !important;padding:9px 14px}
+    .modal{padding:calc(12px + env(safe-area-inset-top, 0px)) 12px calc(12px + env(safe-area-inset-bottom, 0px)) 12px}
 
     .gallery-box{width:98%;height:90%}
     .gallery-header{padding:8px 12px}
@@ -1591,6 +1944,37 @@
     .garage-bars{gap:4px 10px}
     .gbar{font-size:9px;letter-spacing:1px}
     .gbar .track{height:6px}
+
+    /* —— BGM 播放器（小屏 / 横屏手机） —— */
+    .gallery-tabbar{padding:0 8px}
+    .gtab{font-size:10px;letter-spacing:2px;padding:8px 12px 7px}
+    .gtab::after{left:8px;right:8px}
+    .bgm-side{width:150px}
+    .bgm-side-hd{padding:6px 9px 5px}
+    .bgm-side-hd .t{font-size:9px;letter-spacing:2px}
+    .bgm-side-hd .n{font-size:8px}
+    .bgm-list{padding:6px;gap:4px}
+    .bgm-row{padding:6px 7px;gap:6px}
+    .bgm-row .bg-idx{width:16px;font-size:8.5px}
+    .bgm-row .bg-nm{font-size:10px;letter-spacing:.4px}
+    .bgm-row .bg-gn{font-size:7.5px;letter-spacing:1px;margin-top:1px}
+    .bgm-row .bg-eq{width:12px;height:11px;gap:1.5px}
+    .bgm-stage{padding:9px 11px 8px;gap:7px}
+    .bgm-deck{gap:11px}
+    .bgm-disc{width:66px;height:66px}
+    .bgm-disc::after{inset:38%}
+    .bgm-now .np-lbl{font-size:8px;letter-spacing:3px;margin-bottom:3px}
+    .bgm-now .np-title{font-size:14px}
+    .bgm-now .np-tag{font-size:8px;padding:2px 7px;letter-spacing:1.2px}
+    .bgm-viz-wrap{height:42px}
+    .bgm-progress .pg-track{height:6px}
+    .bgm-transport{gap:7px}
+    .bgm-tbtn{width:34px;height:34px;font-size:13px}
+    .bgm-tbtn.main{width:44px;height:44px;font-size:15px}
+    .bgm-vol .vl{font-size:8px;letter-spacing:1px}
+    .bgm-vol input[type=range]{width:62px}
+    .bgm-progress .pg-meta{font-size:8px;margin-top:3px}
+    .bgm-tip{font-size:8.5px;letter-spacing:2px}
 
     .goal-box{padding:18px 20px}
     .goal-box .goal-lv{font-size:10px;letter-spacing:4px}
@@ -1630,12 +2014,44 @@
     #bootScreen .boot-loading{bottom:30px}
     .over-stats .stat-item .val,.victory-stats .stat-item .val{font-size:13px}
     .victory-stars{font-size:26px;gap:6px}
+    /* 极矮屏：技能栏略收，仍保持可辨识 */
+    .skills{gap:3px;max-width:calc(100% - 12px)}
+    .skill{width:23px;height:23px;font-size:12px}
+    .skill .lv{font-size:8px;min-width:10px}
   }
 
   /* 超窄屏进一步压缩暂停键，确保与顶栏不重叠 */
   @media (max-width:520px){
     #pauseBtn{width:32px;height:32px;font-size:13px}
     .top-bar{width:min(620px, calc(100% - 130px))}
+    /* 播放器：曲库进一步收窄，载具区保留空间 */
+    .bgm-side{width:126px}
+    .bgm-vol .vl{display:none}
+    .bgm-vol input[type=range]{width:52px}
+    .bgm-row .bg-gn{display:none}
+  }
+
+  /* 极窄 + 矮屏（小手机横屏）：隐藏装饰元素保住核心操作区 */
+  @media (max-width:760px) and (max-height:420px){
+    .bgm-side{width:112px}
+    .bgm-viz-wrap{height:34px}
+    .bgm-disc{width:54px;height:54px}
+    .bgm-now .np-title{font-size:12.5px}
+    .bgm-now .np-tag{display:none}
+    .bgm-tip{display:none}
+  }
+
+  /* 极矮屏（含桌面窗口被压得很扁）：进一步压缩播放器竖向占用 */
+  @media (max-height:330px){
+    .bgm-stage{padding:8px 10px 7px;gap:6px}
+    .bgm-disc{width:46px;height:46px}
+    .bgm-now .np-lbl{display:none}
+    .bgm-now .np-title{font-size:13px}
+    .bgm-viz-wrap{height:28px}
+    .bgm-transport{gap:6px}
+    .bgm-tbtn{width:32px;height:32px;font-size:12px}
+    .bgm-tbtn.main{width:40px;height:40px;font-size:14px}
+    .bgm-progress .pg-meta{margin-top:2px}
   }
 </style>
 </head>
@@ -1689,10 +2105,10 @@
   <button id="pauseBtn">❚❚</button>
 
   <div id="joystickBase"><div id="joystickKnob"></div><div id="joystickHint" data-i18n="joystickHint">拖动转向</div></div>
-  <div class="touch-btn" id="touchThrottle" data-i18n="btnThrottle">油门</div>
-  <div class="touch-btn" id="touchBrake" data-i18n="btnBrake">倒车</div>
-  <div class="touch-btn" id="touchJump" data-i18n="btnJump">跳跃</div>
-  <div class="touch-btn" id="touchDodge" data-i18n="btnDodge">闪冲</div>
+  <div class="touch-btn round" id="touchThrottle"><span class="tb-txt" data-i18n="btnThrottle">油门</span></div>
+  <div class="touch-btn round" id="touchBrake"><span class="tb-txt" data-i18n="btnBrake">倒车</span></div>
+  <div class="touch-btn oct" id="touchJump" data-i18n="btnJump">跳跃</div>
+  <div class="touch-btn oct" id="touchDodge" data-i18n="btnDodge">闪冲</div>
 
   <div id="cards"><div class="card-row" id="cardRow"></div></div>
 
@@ -1825,31 +2241,82 @@
   <div id="galleryScreen">
     <div class="gallery-box">
       <div class="gallery-header">
-        <h2 data-i18n="galleryTitle">角 色 鉴 赏</h2>
+        <h2 data-i18n="galleryTitle">鉴 赏</h2>
         <div style="display:flex;gap:8px;align-items:center">
           <button class="big-btn" id="replayStoryBtn" data-i18n="storyBtn" style="padding:7px 13px;font-size:11px;letter-spacing:2px">▶ 剧 情</button>
           <button class="close-btn" id="galleryCloseBtn">×</button>
         </div>
       </div>
-      <div class="gallery-content">
-        <div class="gallery-list" id="galleryList">
-          <div class="gallery-item active" data-type="car" data-i18n="listCar">🚗 座驾</div>
-          <div class="gallery-item" data-type="mob" data-i18n="listMob">🧟 暴徒僵尸</div>
-          <div class="gallery-item" data-type="bomber" data-i18n="listBomber">💥 自爆僵尸</div>
-          <div class="gallery-item" data-type="ranged" data-i18n="listRanged">🎯 远程僵尸</div>
-          <div class="gallery-item" data-type="shield" data-i18n="listShield">🛡️ 盾兵僵尸</div>
-          <div class="gallery-item" data-type="elite" data-i18n="listElite">💜 精英僵尸</div>
-          <div class="gallery-item" data-type="boss" data-i18n="listBoss">👑 僵尸之王</div>
-        </div>
-        <div class="gallery-viewer">
-          <canvas id="viewerCanvas"></canvas>
-          <div class="viewer-hint" data-i18n="dragRotate">拖 动 旋 转</div>
-          <div class="viewer-info">
-            <div class="viewer-name" id="viewerName">超级二手车</div>
-            <div class="viewer-desc" id="viewerDesc"></div>
-            <div class="viewer-stats" id="viewerStats"></div>
+      <div class="gallery-tabbar" id="galleryTabbar">
+        <button class="gtab active" data-gtab="model" data-i18n="tabModels">角 色 图 鉴</button>
+        <button class="gtab" data-gtab="bgm" data-i18n="tabBgm">BGM 鉴 赏</button>
+      </div>
+      <div class="gallery-body">
+
+        <!-- ===== 页签 1：单位图鉴 ===== -->
+        <div class="gallery-pane active" id="galleryPaneModel">
+          <div class="gallery-content">
+            <div class="gallery-list" id="galleryList">
+              <div class="gallery-item active" data-type="car" data-i18n="listCar">🚗 座驾</div>
+              <div class="gallery-item" data-type="mob" data-i18n="listMob">🧟 暴徒僵尸</div>
+              <div class="gallery-item" data-type="bomber" data-i18n="listBomber">💥 自爆僵尸</div>
+              <div class="gallery-item" data-type="ranged" data-i18n="listRanged">🎯 远程僵尸</div>
+              <div class="gallery-item" data-type="shield" data-i18n="listShield">🛡️ 盾兵僵尸</div>
+              <div class="gallery-item" data-type="elite" data-i18n="listElite">💜 精英僵尸</div>
+              <div class="gallery-item" data-type="boss" data-i18n="listBoss">👑 僵尸之王</div>
+            </div>
+            <div class="gallery-viewer">
+              <canvas id="viewerCanvas"></canvas>
+              <div class="viewer-hint" data-i18n="dragRotate">拖 动 旋 转</div>
+              <div class="viewer-info">
+                <div class="viewer-name" id="viewerName">超级二手车</div>
+                <div class="viewer-desc" id="viewerDesc"></div>
+                <div class="viewer-stats" id="viewerStats"></div>
+              </div>
+            </div>
           </div>
         </div>
+
+        <!-- ===== 页签 2：BGM 鉴赏（赛博音乐播放器） ===== -->
+        <div class="gallery-pane" id="galleryPaneBgm">
+          <div class="bgm-side">
+            <div class="bgm-side-hd">
+              <span class="t" data-i18n="bgmLib">曲 库</span>
+              <span class="n" id="bgmCount">0 / 0</span>
+            </div>
+            <div class="bgm-list" id="bgmList"></div>
+          </div>
+          <div class="bgm-stage">
+            <div class="bgm-deck">
+              <div class="bgm-disc" id="bgmDisc"></div>
+              <div class="bgm-now">
+                <div class="np-lbl"><span data-i18n="nowPlaying">N O W &nbsp;P L A Y I N G</span></div>
+                <div class="np-title" id="bgmTitle">—</div>
+                <div class="np-sub" id="bgmTags"></div>
+              </div>
+            </div>
+            <div class="bgm-viz-wrap"><canvas id="bgmViz"></canvas></div>
+            <div class="bgm-progress">
+              <div class="pg-track"><div class="pg-fill" id="bgmFill"></div></div>
+              <div class="pg-meta">
+                <span id="bgmTime">00:00</span>
+                <span id="bgmBpm">-- BPM</span>
+              </div>
+            </div>
+            <div class="bgm-transport">
+              <button class="bgm-tbtn" id="bgmPrev" title="prev">⏮</button>
+              <button class="bgm-tbtn main" id="bgmPlay" title="play">▶</button>
+              <button class="bgm-tbtn" id="bgmNext" title="next">⏭</button>
+              <button class="bgm-tbtn" id="bgmStop" title="stop">■</button>
+              <div class="bgm-vol">
+                <span class="vl" data-i18n="bgmVolume">音量</span>
+                <input type="range" class="vol-slider" data-type="music" min="0" max="100" value="100" aria-label="music volume">
+              </div>
+            </div>
+            <div class="bgm-tip" id="bgmTip" data-i18n="bgmTip">点 击 曲 目 试 听</div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -2030,6 +2497,15 @@ const I18N = {
     listElite: '💜 精英僵尸',
     listBoss: '👑 僵尸之王',
     dragRotate: '拖 动 旋 转',
+    tabModels: '单 位 图 鉴',
+    tabBgm: 'BGM 鉴 赏',
+    bgmLib: '曲 库',
+    nowPlaying: 'N O W  P L A Y I N G',
+    bgmVolume: '音量',
+    bgmTip: '点 击 曲 目 试 听',
+    bgmPlaying: '正 在 播 放',
+    bgmPaused: '已 暂 停',
+    bgmDemoNote: '试 听 模 式 · 游 戏 内 曲 目 随 机 轮 换',
 
     /* 车库 */
     garageTitle: '车 库',
@@ -2229,6 +2705,15 @@ const I18N = {
     listElite: '💜 Elite Zombie',
     listBoss: '👑 Zombie King',
     dragRotate: 'DRAG TO ROTATE',
+    tabModels: 'UNITS',
+    tabBgm: 'BGM GALLERY',
+    bgmLib: 'LIBRARY',
+    nowPlaying: 'N O W  P L A Y I N G',
+    bgmVolume: 'VOL',
+    bgmTip: 'TAP A TRACK TO PREVIEW',
+    bgmPlaying: 'NOW PLAYING',
+    bgmPaused: 'PAUSED',
+    bgmDemoNote: 'PREVIEW MODE · IN-GAME TRACKS ROTATE RANDOMLY',
 
     /* Garage */
     garageTitle: 'GARAGE',
@@ -3168,8 +3653,46 @@ const BGM_TRACKS = {
 };
 
 let musicRunning = false, musicTimerHandle = null, musicStep = 0, nextNoteTime = 0, activeTrack = null, bgmTransitionToken = 0;
+let bgmPausedState = false;
 let gameTrackRotation = ['game', 'jazzGroove', 'bluesyRide', 'rockNRoll', 'electronicPulse', 'soulfulLift', 'psychedelicDrift', 'funkyStep', 'synthwaveNeon', 'soulJazz', 'airyPulse'];
 let lastGameTrackIndex = -1;
+
+/* ============================================================
+   🎧 BGM 鉴赏元数据 —— 仅英文名（游戏内曲目统一英文命名）
+   ============================================================ */
+const BGM_META = {
+  menu:              { name: 'Neon Idle',        genre: 'SYNTHPOP',  scene: 'MENU' },
+  levelSelect:       { name: 'Route Select',     genre: 'ELECTRO',   scene: 'SELECT' },
+  game:              { name: 'Full Throttle',    genre: 'DRIVE',     scene: 'BATTLE' },
+  jazzGroove:        { name: 'Chrome Jazz',      genre: 'JAZZ',      scene: 'BATTLE' },
+  bluesyRide:        { name: 'Midnight Blues',   genre: 'BLUES',     scene: 'BATTLE' },
+  rockNRoll:         { name: 'Rust and Roll',    genre: 'ROCK',      scene: 'BATTLE' },
+  electronicPulse:   { name: 'Voltage Pulse',    genre: 'ELECTRONIC',scene: 'BATTLE' },
+  soulfulLift:       { name: 'Soul Circuit',     genre: 'SOUL',      scene: 'BATTLE' },
+  psychedelicDrift:  { name: 'Drift Haze',       genre: 'PSYCH',     scene: 'BATTLE' },
+  funkyStep:         { name: 'Funk Protocol',    genre: 'FUNK',      scene: 'BATTLE' },
+  synthwaveNeon:     { name: 'Neon Highway',     genre: 'SYNTHWAVE', scene: 'BATTLE' },
+  soulJazz:          { name: 'City Afterglow',   genre: 'SOUL JAZZ', scene: 'BATTLE' },
+  airyPulse:         { name: 'Aether Wave',      genre: 'AMBIENT',   scene: 'BATTLE' },
+  storyTheme:        { name: 'Last Light',       genre: 'CINEMATIC', scene: 'STORY' },
+};
+/* 鉴赏页签展示顺序（与游戏内实际使用顺序一致） */
+const BGM_GALLERY_ORDER = [
+  'menu', 'levelSelect', 'game',
+  'jazzGroove', 'bluesyRide', 'rockNRoll', 'electronicPulse', 'soulfulLift',
+  'psychedelicDrift', 'funkyStep', 'synthwaveNeon', 'soulJazz', 'airyPulse',
+  'storyTheme',
+];
+function bgmTitle(key) {
+  const m = BGM_META[key];
+  return m ? m.name : key;
+}
+/* 单次循环时长（64 个十六分音符） */
+function bgmLoopSeconds(key) {
+  const t = BGM_TRACKS[key];
+  if (!t) return 10;
+  return (60 / t.bpm / 4) * 64;
+}
 
 function startBGM(trackName) {
   if (!audioCtx || !musicGain || !bgmGain) return;
@@ -3192,24 +3715,68 @@ function startBGM(trackName) {
 }
 function beginTrack(trackName, token) {
   if (token !== bgmTransitionToken) return;
+  /* 防御：清理可能残留的调度器，避免双调度导致音符叠播 */
+  if (musicTimerHandle) { clearInterval(musicTimerHandle); musicTimerHandle = null; }
   activeTrack = trackName;
   musicStep = 0;
   nextNoteTime = audioCtx.currentTime + 0.08;
   musicRunning = true;
+  bgmPausedState = false;
   musicTimerHandle = setInterval(musicScheduler, 25);
   const t = audioCtx.currentTime;
   bgmGain.gain.cancelScheduledValues(t);
   bgmGain.gain.setValueAtTime(0, t);
   bgmGain.gain.linearRampToValueAtTime(1, t + 0.4);
 }
-function stopBGM() {
+function stopBGM(immediate) {
   bgmTransitionToken++;
-  if (!audioCtx || !bgmGain) return;
+  const myToken = bgmTransitionToken;
+  bgmPausedState = false;
+  /* 立即清除“逻辑播放态”。BGM 鉴赏的「停止」按钮走 immediate 分支，
+     这样按钮 / 唱片 / 列表无需等待 220ms 淡出计时器即可正确同步，
+     不依赖渲染循环兜底（切页签或后台标签时渲染循环可能暂停）。 */
+  const hardStop = () => {
+    musicRunning = false;
+    if (musicTimerHandle) { clearInterval(musicTimerHandle); musicTimerHandle = null; }
+    activeTrack = null;
+  };
+  if (immediate) hardStop();
+  if (!audioCtx || !bgmGain) { if (!immediate) hardStop(); return; }
   const now = audioCtx.currentTime;
   bgmGain.gain.cancelScheduledValues(now);
   bgmGain.gain.setValueAtTime(bgmGain.gain.value, now);
   bgmGain.gain.linearRampToValueAtTime(0, now + 0.2);
-  setTimeout(() => { musicRunning = false; if (musicTimerHandle) { clearInterval(musicTimerHandle); musicTimerHandle = null; } activeTrack = null; }, 220);
+  if (immediate) return;
+  setTimeout(() => {
+    /* 若期间已切换到新曲目，则放弃这次停止，交由新曲目接管 */
+    if (myToken !== bgmTransitionToken) return;
+    hardStop();
+  }, 220);
+}
+
+/* —— 暂停 / 续播（保留当前播放位置，供 BGM 鉴赏播放器使用） —— */
+function pauseBGM() {
+  if (!audioCtx || !bgmGain || !musicRunning) return;
+  bgmTransitionToken++;
+  const now = audioCtx.currentTime;
+  bgmGain.gain.cancelScheduledValues(now);
+  bgmGain.gain.setValueAtTime(bgmGain.gain.value, now);
+  bgmGain.gain.linearRampToValueAtTime(0, now + 0.14);
+  musicRunning = false;
+  if (musicTimerHandle) { clearInterval(musicTimerHandle); musicTimerHandle = null; }
+  bgmPausedState = true;
+}
+function resumeBGM() {
+  if (!audioCtx || !bgmGain || !activeTrack) { bgmPausedState = false; return; }
+  if (musicRunning) return;
+  bgmPausedState = false;
+  musicRunning = true;
+  nextNoteTime = audioCtx.currentTime + 0.06;
+  musicTimerHandle = setInterval(musicScheduler, 25);
+  const t = audioCtx.currentTime;
+  bgmGain.gain.cancelScheduledValues(t);
+  bgmGain.gain.setValueAtTime(0, t);
+  bgmGain.gain.linearRampToValueAtTime(1, t + 0.22);
 }
 
 /* 随机挑一首游戏内 BGM（与上一首不同） */
@@ -7559,6 +8126,31 @@ function startLevel(levelId) {
   }
 }
 
+/* ============================================================
+   🚗 出生点选择 —— 避开中央建筑（半径 10.7），落在主干道上
+   道路：沿 x=0 与 z=0 两条轴线，路宽 12，范围 11 ~ 197
+   取点规则：从中央向外 26 ~ 58 的随机距离（远离建筑与近端路口），
+   随机选择 4 条主方向之一，朝向沿道路向外。
+   ============================================================ */
+const SPAWN_MIN_DIST = 26;   // 必须明显大于 fountainRadius(10.7) + 车体尺寸
+const SPAWN_MAX_DIST = 58;   // 仍在场地内（边界 197），远离大门
+function pickSpawnPoint() {
+  /* 4 条主方向：+X / -X / +Z / -Z（均为轴向道路的走向） */
+  const dirs = [
+    { x: 1,  z: 0, yaw: Math.PI / 2 },
+    { x: -1, z: 0, yaw: -Math.PI / 2 },
+    { x: 0,  z: 1, yaw: 0 },
+    { x: 0,  z: -1, yaw: Math.PI },
+  ];
+  const d = dirs[Math.floor(Math.random() * dirs.length)];
+  const dist = SPAWN_MIN_DIST + Math.random() * (SPAWN_MAX_DIST - SPAWN_MIN_DIST);
+  /* 沿道路轴线微小平移，避免每局完全落在正中线上显得重复 */
+  const lateral = (Math.random() - 0.5) * 4.0;
+  const px = d.x !== 0 ? d.x * dist : lateral;
+  const pz = d.z !== 0 ? d.z * dist : lateral;
+  return { x: px, z: pz, yaw: d.yaw };
+}
+
 function resetGame() {
   initAudio();
   startEngineSound();
@@ -7571,8 +8163,12 @@ function resetGame() {
   state.bossActive = false; state.boss = null;
   state.screenShake = 0; state.hitStop = 0; state.fovKick = 0;
   state.spawnQueue = 0; state.spawnAccum = 0; state.wavesCleared = 0;
-  player.pos.set(0, 0, 0);
-  player.yaw = 0; player.speed = 0; player.steer = 0; player.groundY = 0;
+  /* ✅ 修复：出生点不再固定在 (0,0,0)（那是中央喷泉/雕塑所在，会卡住）。
+     改为在四条主干道上随机取一点，位于中央建筑半径（10.7）之外，
+     并朝向外侧沿道路出发，保证每局开局位置不同且不会卡进建筑。 */
+  const spawn = pickSpawnPoint();
+  player.pos.set(spawn.x, 0, spawn.z);
+  player.yaw = spawn.yaw; player.speed = 0; player.steer = 0; player.groundY = 0;
   player.hp = player.maxHp; player.iframe = 0;
   player.dodgeTimer = 0; player.dodgeCD = 0;
   player.jumpCD = 0; player.isJumping = false; player.jumpTimer = 0;
@@ -7616,18 +8212,44 @@ bindTap(document.getElementById('helpBtn'), () => { initAudio(); sfxUI(); docume
 bindTap(document.getElementById('helpCloseBtn'), () => { document.getElementById('helpScreen').classList.remove('show'); });
 bindTap(document.getElementById('settingsBtn'), () => { initAudio(); sfxUI(); document.getElementById('settingsScreen').classList.add('show'); updateFullscreenButtons(); });
 bindTap(document.getElementById('settingsCloseBtn'), () => { document.getElementById('settingsScreen').classList.remove('show'); });
-bindTap(document.getElementById('galleryBtn'), () => { initAudio(); sfxUI(); document.getElementById('galleryScreen').classList.add('show'); setTimeout(() => { initViewer(); setViewerModel('car'); }, 30); });
-bindTap(document.getElementById('galleryCloseBtn'), () => { document.getElementById('galleryScreen').classList.remove('show'); });
+bindTap(document.getElementById('galleryBtn'), () => {
+  initAudio(); sfxUI();
+  document.getElementById('galleryScreen').classList.add('show');
+  switchGalleryTab('model');
+});
+bindTap(document.getElementById('galleryCloseBtn'), () => {
+  document.getElementById('galleryScreen').classList.remove('show');
+  leaveBgmTab();
+  bgmPlayer.active = false;
+  /* 关闭鉴赏时：若之前在试听，恢复主菜单音乐 */
+  if (state.phase === 'menu') startBGM('menu');
+  else if (state.phase === 'playing' && !musicRunning) startBGM(pickRandomGameTrack());
+});
 bindTap(document.getElementById('replayStoryBtn'), () => {
   initAudio(); sfxUI();
+  leaveBgmTab();
+  bgmPlayer.active = false;
   document.getElementById('galleryScreen').classList.remove('show');
   state.phase = 'story';
   playStory(() => {
     state.phase = 'menu';
     document.getElementById('galleryScreen').classList.add('show');
+    switchGalleryTab('model');
+    /* ✅ 修复：剧情结束后回主菜单必须自动恢复主菜单 BGM */
+    setTimeout(() => { startBGM('menu'); }, 80);
     setTimeout(() => { initViewer(); setViewerModel('car'); }, 30);
   });
 });
+
+/* —— 鉴赏页签 & BGM 播放器绑定 —— */
+document.querySelectorAll('.gtab').forEach(tab => {
+  bindTap(tab, () => { initAudio(); sfxUI(); switchGalleryTab(tab.dataset.gtab); });
+});
+bindTap(document.getElementById('bgmPlay'), bgmTogglePlay);
+bindTap(document.getElementById('bgmPrev'), () => bgmStep(-1));
+bindTap(document.getElementById('bgmNext'), () => bgmStep(1));
+bindTap(document.getElementById('bgmStop'), bgmStop);
+
 document.querySelectorAll('.gallery-item').forEach(item => {
   bindTap(item, () => {
     document.querySelectorAll('.gallery-item').forEach(i => i.classList.remove('active'));
@@ -7684,6 +8306,12 @@ function applyLanguage() {
   if (garageOpen) { renderGarageList(); garagePreview(garageCurrentId); }
   if (document.getElementById('galleryScreen').classList.contains('show') && viewer.initialized) {
     setViewerModel(viewer.modelType || 'car');
+  }
+  /* BGM 鉴赏面板：刷新曲库与曲目信息（英文名不随语言变化，标签需重绘） */
+  if (bgmPlayer.active) {
+    renderBgmList();
+    updateBgmNowUI();
+    updateBgmPlayBtn();
   }
 }
 function setLang(l) {
@@ -7887,6 +8515,306 @@ function renderViewer(dt) {
     }
   }
   viewer.renderer.render(viewer.scene, viewer.camera);
+}
+
+/* ============================================================
+   🎧 BGM 鉴赏播放器
+   —— 赛博风格：曲库列表 / 唱片 / 频谱 / 进度 / 传输控制
+   ============================================================ */
+const bgmPlayer = {
+  current: null,          // 当前试听曲目 key
+  active: false,          // 播放器是否接管了音乐（进入鉴赏页签）
+  vizRaf: null,
+  vizCtx: null,
+  vizBars: 48,
+  vizEnergy: [],          // 频谱柱高度（平滑）
+  vizTick: 0,
+  lastActive: null,       // 进入鉴赏前正在播放的曲目（退出时恢复）
+};
+
+/* —— 曲库列表渲染 —— */
+function renderBgmList() {
+  const list = document.getElementById('bgmList');
+  if (!list) return;
+  list.innerHTML = '';
+  BGM_GALLERY_ORDER.forEach((key, i) => {
+    const meta = BGM_META[key] || {};
+    const track = BGM_TRACKS[key];
+    const row = document.createElement('div');
+    row.className = 'bgm-row' + (key === bgmPlayer.current ? ' sel' : '') + (key === bgmPlayer.current && isBgmPlaying() ? ' playing' : '');
+    row.dataset.key = key;
+    row.innerHTML =
+      `<span class="bg-idx">${(i + 1).toString().padStart(2, '0')}</span>` +
+      `<span class="bg-meta">` +
+        `<span class="bg-nm">${meta.name || key}</span>` +
+        `<span class="bg-gn">${(meta.genre || '')} · ${(track ? track.bpm : 0)}BPM</span>` +
+      `</span>` +
+      `<span class="bg-eq"><i></i><i></i><i></i></span>`;
+    bindTap(row, () => { selectBgmTrack(key, true); });
+    list.appendChild(row);
+  });
+  refreshBgmListState();
+}
+function refreshBgmListState() {
+  const list = document.getElementById('bgmList');
+  if (!list) return;
+  const playing = isBgmPlaying();
+  list.querySelectorAll('.bgm-row').forEach(row => {
+    const isCur = row.dataset.key === bgmPlayer.current;
+    row.classList.toggle('sel', isCur);
+    row.classList.toggle('playing', isCur && playing);
+  });
+  const idx = BGM_GALLERY_ORDER.indexOf(bgmPlayer.current);
+  const cnt = document.getElementById('bgmCount');
+  if (cnt) cnt.textContent = `${idx >= 0 ? idx + 1 : 0} / ${BGM_GALLERY_ORDER.length}`;
+}
+function isBgmPlaying() {
+  return !!(musicRunning && activeTrack && activeTrack === bgmPlayer.current && !bgmPausedState);
+}
+
+/* —— 选中 / 试听 —— */
+function selectBgmTrack(key, autoPlay) {
+  if (!BGM_TRACKS[key]) return;
+  bgmPlayer.current = key;
+  refreshBgmListState();
+  updateBgmNowUI();
+  if (autoPlay) {
+    initAudio();
+    sfxUI();
+    bgmPlayer.vizTick = 0;
+    startBGM(key);
+    /* 淡入切换需要约 220ms 才真正接轨，稍后同步播放态 */
+    setTimeout(syncBgmPlayState, 120);
+    setTimeout(syncBgmPlayState, 340);
+  }
+}
+/* 把真实播放状态同步到按钮 / 唱片 / 列表（幂等，可在渲染循环中高频调用） */
+function syncBgmPlayState() {
+  const playing = isBgmPlaying();
+  if (bgmPlayer._lastPlaying === playing) return;
+  bgmPlayer._lastPlaying = playing;
+  const btn = document.getElementById('bgmPlay');
+  if (btn) btn.textContent = playing ? '❚❚' : '▶';
+  const disc = document.getElementById('bgmDisc');
+  if (disc) disc.classList.toggle('spin', playing);
+  const tipEl = document.getElementById('bgmTip');
+  if (tipEl) tipEl.classList.toggle('hide', playing);
+  refreshBgmListState();
+}
+function updateBgmNowUI() {
+  const key = bgmPlayer.current;
+  const meta = BGM_META[key] || {};
+  const track = BGM_TRACKS[key];
+  const titleEl = document.getElementById('bgmTitle');
+  if (titleEl) titleEl.textContent = meta.name || key;
+  const tagsEl = document.getElementById('bgmTags');
+  if (tagsEl) {
+    tagsEl.innerHTML =
+      `<span class="np-tag">${meta.genre || ''}</span>` +
+      `<span class="np-tag cool">${(track ? track.bpm : 0)} BPM</span>` +
+      `<span class="np-tag cool">${(track && track.drums ? track.drums.toUpperCase() : '')}</span>`;
+  }
+  const bpmEl = document.getElementById('bgmBpm');
+  if (bpmEl) bpmEl.textContent = `${(track ? track.bpm : 0)} BPM`;
+  const tipEl = document.getElementById('bgmTip');
+  if (tipEl) {
+    tipEl.classList.toggle('hide', isBgmPlaying());
+  }
+}
+function updateBgmPlayBtn() { syncBgmPlayState(); }
+
+/* —— 传输控制 —— */
+function bgmTogglePlay() {
+  initAudio();
+  sfxUI();
+  const key = bgmPlayer.current || BGM_GALLERY_ORDER[0];
+  bgmPlayer.current = key;
+  if (isBgmPlaying()) {
+    pauseBGM();
+    syncBgmPlayState();
+  } else if (activeTrack === key && !musicRunning) {
+    resumeBGM();
+    syncBgmPlayState();
+  } else {
+    bgmPlayer.vizTick = 0;
+    startBGM(key);
+    setTimeout(syncBgmPlayState, 120);
+    setTimeout(syncBgmPlayState, 340);
+  }
+  updateBgmNowUI();
+}
+function bgmStep(dir) {
+  const i = BGM_GALLERY_ORDER.indexOf(bgmPlayer.current);
+  const n = BGM_GALLERY_ORDER.length;
+  const next = ((i < 0 ? 0 : i + dir) % n + n) % n;
+  selectBgmTrack(BGM_GALLERY_ORDER[next], true);
+}
+function bgmStop() {
+  initAudio();
+  sfxUI();
+  /* immediate 停止：逻辑态与 UI 同步都在本次调用内完成，
+     不依赖 220ms 淡出计时器或渲染循环，避免按钮 / 唱片残留“播放中” */
+  stopBGM(true);
+  syncBgmPlayState();
+  updateBgmNowUI();
+  updateBgmProgress();
+}
+
+/* —— 进入 / 离开 BGM 页签 —— */
+function enterBgmTab() {
+  initAudio();
+  /* 记录进入前的曲目，退出鉴赏时用于恢复 */
+  bgmPlayer.lastActive = activeTrack;
+  /* 若当前正在播放的曲目属于曲库，直接沿用为选中项；否则默认第一首 */
+  if (activeTrack && BGM_TRACKS[activeTrack]) bgmPlayer.current = activeTrack;
+  if (!bgmPlayer.current || !BGM_TRACKS[bgmPlayer.current]) bgmPlayer.current = BGM_GALLERY_ORDER[0];
+  renderBgmList();
+  updateBgmNowUI();
+  updateBgmPlayBtn();
+  updateBgmProgress();   /* 首帧前先同步进度条，避免刚进入页签时出现空条 */
+  startBgmViz();
+}
+function leaveBgmTab() {
+  stopBgmViz();
+}
+
+/* ============================================================
+   📊 频谱可视化（基于曲目节拍 + 伪随机包络，无需 AnalyserNode）
+   ============================================================ */
+function startBgmViz() {
+  const canvas = document.getElementById('bgmViz');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  bgmPlayer.vizCtx = ctx;
+  if (bgmPlayer.vizEnergy.length !== bgmPlayer.vizBars) {
+    bgmPlayer.vizEnergy = new Array(bgmPlayer.vizBars).fill(0);
+  }
+  if (bgmPlayer.vizRaf) return;
+  const loop = () => {
+    bgmPlayer.vizRaf = requestAnimationFrame(loop);
+    drawBgmViz();
+  };
+  bgmPlayer.vizRaf = requestAnimationFrame(loop);
+}
+function stopBgmViz() {
+  if (bgmPlayer.vizRaf) { cancelAnimationFrame(bgmPlayer.vizRaf); bgmPlayer.vizRaf = null; }
+}
+function drawBgmViz() {
+  const canvas = document.getElementById('bgmViz');
+  const ctx = bgmPlayer.vizCtx;
+  if (!canvas || !ctx) return;
+  const w = canvas.clientWidth, h = canvas.clientHeight;
+  if (w <= 0 || h <= 0) return;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  if (canvas.width !== Math.floor(w * dpr) || canvas.height !== Math.floor(h * dpr)) {
+    canvas.width = Math.floor(w * dpr);
+    canvas.height = Math.floor(h * dpr);
+  }
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, w, h);
+
+  const playing = isBgmPlaying();
+  const track = BGM_TRACKS[bgmPlayer.current] || BGM_TRACKS.menu;
+  const bpm = track ? track.bpm : 100;
+
+  /* 节拍相位：基于真实时间推进，与帧率无关；暂停时冻结 */
+  const now = performance.now() / 1000;
+  if (bgmPlayer._vizLast == null) bgmPlayer._vizLast = now;
+  const dt = Math.min(0.1, now - bgmPlayer._vizLast);
+  bgmPlayer._vizLast = now;
+  if (playing) bgmPlayer.vizTick += (bpm / 60) * 4 * dt;
+  const beat = bgmPlayer.vizTick;
+
+  const n = bgmPlayer.vizBars;
+  const gap = 2;
+  const bw = Math.max(2, (w - gap * (n - 1)) / n);
+  const mid = h;
+
+  /* 底网 */
+  ctx.strokeStyle = 'rgba(79,221,192,0.10)';
+  ctx.lineWidth = 1;
+  for (let g = 1; g < 4; g++) {
+    const y = Math.round((h / 4) * g) + 0.5;
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+  }
+
+  for (let i = 0; i < n; i++) {
+    /* 频段分布：左侧低频高、右侧高频低，叠加节拍脉冲与稳定伪随机 */
+    const p = i / n;
+    let target;
+    if (playing) {
+      const kickEnv = Math.pow(Math.max(0, Math.sin(beat * Math.PI)), 2);
+      const hatEnv  = Math.pow(Math.max(0, Math.sin(beat * Math.PI * 2 + 1.1)), 3.2);
+      const bassBand = Math.max(0, 1 - p * 1.5);
+      const highBand = Math.max(0, p * 1.4 - 0.35);
+      const wobble = 0.5 + 0.5 * Math.sin(beat * 1.7 + i * 0.55);
+      const hiss = 0.35 + 0.65 * Math.abs(Math.sin(i * 12.9898 + beat * 0.9));
+      target = 0.10
+        + kickEnv * bassBand * 0.88
+        + hatEnv  * highBand * 0.55
+        + wobble  * 0.22 * hiss;
+    } else {
+      /* 暂停：低频余波缓缓落下 */
+      target = 0.035 + 0.045 * Math.abs(Math.sin(i * 0.4));
+    }
+    target = Math.min(1, target);
+    const cur = bgmPlayer.vizEnergy[i];
+    bgmPlayer.vizEnergy[i] = playing
+      ? (target > cur ? cur + (target - cur) * 0.42 : cur + (target - cur) * 0.14)
+      : cur + (target - cur) * 0.06;
+
+    const bh = Math.max(2, bgmPlayer.vizEnergy[i] * (h - 6));
+    const x = i * (bw + gap);
+    const y = mid - bh;
+
+    const grad = ctx.createLinearGradient(0, mid, 0, y);
+    grad.addColorStop(0, 'rgba(79,221,192,0.20)');
+    grad.addColorStop(0.45, 'rgba(79,221,192,0.85)');
+    grad.addColorStop(1, playing ? 'rgba(255,179,71,0.98)' : 'rgba(120,140,160,0.45)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(x, y, bw, bh);
+
+    /* 顶部峰值亮线 */
+    if (playing && bh > 6) {
+      ctx.fillStyle = 'rgba(255,235,190,0.9)';
+      ctx.fillRect(x, y, bw, 1.6);
+    }
+  }
+}
+
+/* —— 进度条刷新（跟随 64 步循环，1 圈 ≈ 1 个 loop） —— */
+function updateBgmProgress() {
+  if (!bgmPlayer.active) return;
+  const fill = document.getElementById('bgmFill');
+  const timeEl = document.getElementById('bgmTime');
+  const key = bgmPlayer.current;
+  const loop = bgmLoopSeconds(key);
+  let sec = 0;
+  if (activeTrack === key) sec = (musicStep % 64) / 64 * loop;
+  if (fill) fill.style.width = (activeTrack === key ? ((musicStep % 64) / 64 * 100) : 0) + '%';
+  if (timeEl) {
+    const m = Math.floor(sec / 60), s = Math.floor(sec % 60);
+    timeEl.textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  }
+}
+
+/* —— 页签切换 —— */
+function switchGalleryTab(tab) {
+  const isBgm = tab === 'bgm';
+  bgmPlayer.active = isBgm;
+  document.querySelectorAll('.gtab').forEach(b => b.classList.toggle('active', b.dataset.gtab === tab));
+  document.getElementById('galleryPaneModel').classList.toggle('active', !isBgm);
+  document.getElementById('galleryPaneBgm').classList.toggle('active', isBgm);
+  if (isBgm) {
+    enterBgmTab();
+  } else {
+    leaveBgmTab();
+    if (viewer.initialized) {
+      setTimeout(() => { initViewer(); setViewerModel(viewer.modelType || 'car'); }, 30);
+    } else {
+      setTimeout(() => { initViewer(); setViewerModel('car'); }, 30);
+    }
+  }
 }
 
 /* ============================================================
@@ -8247,6 +9175,11 @@ function animate() {
     }
     if (document.getElementById('galleryScreen').classList.contains('show')) renderViewer(rawDt);
     if (garageOpen) renderGarage(rawDt);
+    if (bgmPlayer.active) {
+      updateBgmProgress();
+      syncBgmPlayState();          /* 幂等：仅在状态变化时更新 DOM */
+      if (!bgmPlayer.vizRaf) startBgmViz();
+    }
     return;
   }
 
@@ -8256,6 +9189,7 @@ function animate() {
 
   if (document.getElementById('galleryScreen').classList.contains('show')) renderViewer(rawDt);
   if (garageOpen) renderGarage(rawDt);
+  if (bgmPlayer.active) { updateBgmProgress(); if (!bgmPlayer.vizRaf) startBgmViz(); }
 
   if (state.fovKick > 0) { state.fovKick *= Math.exp(-14 * rawDt); if (state.fovKick < 0.05) state.fovKick = 0; }
 
