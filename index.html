@@ -1008,6 +1008,42 @@
   .goal-item .bullet{color:var(--cool);font-weight:900;font-size:10px;margin-top:2px}
   .goal-item .accent{color:var(--hot);font-weight:900}
 
+  /* ===== 剧情动画 ===== */
+  #storyScreen{
+    position:fixed;inset:0;z-index:90;display:none;
+    background:#05070B;pointer-events:auto;
+  }
+  #storyScreen.show{display:block}
+  #storyCanvas{width:100%;height:100%;display:block}
+  #storyScreen::before,#storyScreen::after{
+    content:'';position:absolute;left:0;right:0;height:9%;
+    background:#000;z-index:2;pointer-events:none;
+  }
+  #storyScreen::before{top:0}
+  #storyScreen::after{bottom:0}
+  #storyText{
+    position:absolute;left:50%;bottom:16%;
+    transform:translateX(-50%);
+    width:min(760px,84%);
+    text-align:center;
+    font-size:clamp(15px,3.2vh,26px);
+    font-weight:900;
+    letter-spacing:4px;
+    color:#F3EFE6;
+    text-shadow:0 0 26px rgba(255,107,53,.6),0 3px 0 rgba(0,0,0,.85);
+    opacity:0;
+    transition:opacity .3s;
+    line-height:1.8;
+    pointer-events:none;
+    z-index:3;
+  }
+  #storySkip{
+    position:absolute;right:22px;bottom:calc(10% + 18px);
+    color:#6E6C64;font-size:11px;letter-spacing:3px;font-weight:900;
+    animation:bootBlink 1.6s ease-in-out infinite;
+    pointer-events:none;z-index:3;
+  }
+
   /* ===== 手机横屏适配 ===== */
   @media (max-height:550px),(max-width:900px){
     .top-bar{width:92%;gap:3px}
@@ -1106,6 +1142,7 @@
     #bossBar{top:calc(60px + env(safe-area-inset-top));width:80%}
     #bossBar .boss-label{font-size:11px;letter-spacing:4px}
     .unlock-toast{font-size:10.5px;letter-spacing:1px}
+    #storyText{font-size:13px;letter-spacing:2px;bottom:18%}
   }
 
   @media (max-height:400px){
@@ -1193,7 +1230,7 @@
       <div class="goal-content">
         <div class="goal-item"><span class="bullet">▶</span><span>通关目标：<span class="accent" id="goalWaves">通过 2 波僵尸</span></span></div>
         <div class="goal-item"><span class="bullet">▶</span><span>怪物数量：<span class="accent" id="goalMult">正常</span></span></div>
-        <div class="goal-item"><span class="bullet">▶</span><span>完成奖励：解锁下一关</span></div>
+        <div class="goal-item"><span class="bullet">▶</span><span>完成奖励：<span class="accent" id="goalReward">解锁下一关</span></span></div>
         <div class="goal-item"><span class="bullet">▶</span><span>星级标准：<span class="accent" id="goalStars">45s内 ★★★ / 70s内 ★★ / 100s内 ★</span></span></div>
       </div>
       <button class="big-btn primary" id="goalConfirmBtn">开 始 挑 战</button>
@@ -1297,6 +1334,7 @@
         <li>通关第 <b>5</b> 关解锁 <b>摩托车</b>；第 <b>8</b> 关解锁 <b>大卡车</b>。</li>
         <li>通关第 <b>15</b> 关解锁 <b>火车头</b>；无限模式打到第 <b>15</b> 波解锁 <b>悬浮导弹车</b>。</li>
         <li>换车入口：主菜单 → <b>车库</b>，每辆车的手感完全不同。</li>
+        <li>无限模式从一开始就开放，随时可以挑战。</li>
       </ul>
 
       <h3>⑦ 几个小技巧</h3>
@@ -1315,7 +1353,10 @@
     <div class="gallery-box">
       <div class="gallery-header">
         <h2>角 色 鉴 赏</h2>
-        <button class="close-btn" id="galleryCloseBtn">×</button>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="big-btn" id="replayStoryBtn" style="padding:7px 13px;font-size:11px;letter-spacing:2px">▶ 剧 情</button>
+          <button class="close-btn" id="galleryCloseBtn">×</button>
+        </div>
       </div>
       <div class="gallery-content">
         <div class="gallery-list" id="galleryList">
@@ -1362,6 +1403,12 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <div id="storyScreen">
+    <canvas id="storyCanvas"></canvas>
+    <div id="storyText"></div>
+    <div id="storySkip">点 击 跳 过</div>
   </div>
 
   <div id="rotateHint">
@@ -1486,10 +1533,29 @@ const LEVELS = [
   { name: '无限模式', waves: Infinity, mult: 1.0, elite: false, times: null },
 ];
 
+/* —— 每关奖励文案 —— */
+function getLevelRewardText(id) {
+  const parts = [];
+  if (id === 16) {
+    parts.push('突破第 15 波解锁「悬浮导弹车」');
+  } else {
+    if (id < 15) parts.push('解锁下一关');
+    else if (id === 15) parts.push('解锁「无限模式」');
+    if (id === 5)  parts.push('解锁「摩托车」');
+    if (id === 8)  parts.push('解锁「大卡车」');
+    if (id === 15) parts.push('解锁「火车头」');
+  }
+  return parts.join('　+　');
+}
+
 let progress = {};
 try { progress = JSON.parse(localStorage.getItem('myCarProgress') || '{}'); } catch (e) { progress = {}; }
 function saveProgress() { try { localStorage.setItem('myCarProgress', JSON.stringify(progress)); } catch (e) {} }
-function isLevelUnlocked(id) { if (id === 1) return true; return progress[id] && progress[id].unlocked === true; }
+function isLevelUnlocked(id) {
+  if (id === 1) return true;
+  if (id === 16) return true;   /* 无限模式始终解锁 */
+  return progress[id] && progress[id].unlocked === true;
+}
 function getLevelStars(id) { return (progress[id] && progress[id].stars) || 0; }
 function saveLevelResult(id, stars, time) {
   if (!progress[id]) progress[id] = { unlocked: true, stars: 0, bestTime: Infinity };
@@ -1504,7 +1570,6 @@ function saveLevelResult(id, stars, time) {
   }
   saveProgress();
 }
-/* 通关判断（兼容旧存档：下一关已解锁 ⇒ 本关已通关） */
 function isLevelCleared(id) {
   if (progress.cleared && progress.cleared[id]) return true;
   if (progress[id] && progress[id].stars > 0) return true;
@@ -1593,7 +1658,6 @@ function isVehicleUnlocked(id) {
   if (!rule || !rule.check) return false;
   return rule.check();
 }
-/* 启动时做一次成就回填 */
 (function backfillCarUnlocks() {
   let changed = false;
   if (!progress.cars) progress.cars = {};
@@ -1685,7 +1749,7 @@ function screenDeltaToWrapper(dxScreen, dyScreen) {
 }
 
 /* ============================================================
-   🔊 音频系统（含音效限流：同一音效 0.3s 内最多 5 次）
+   🔊 音频系统
    ============================================================ */
 let audioCtx = null, sfxGain = null, musicGain = null, bgmGain = null;
 
@@ -1744,7 +1808,6 @@ function playSweep(f1, f2, d, t = 'square', v = 0.08) {
   o.connect(g); g.connect(sfxGain); o.start(); o.stop(audioCtx.currentTime + d);
 }
 
-/* ——— 每个音效统一走 sfxGate 限流 ——— */
 function sfxBasic()      { if (!sfxGate('basic')) return; playTone(1400, 0.03, 'square', 0.025); playTone(1800, 0.02, 'square', 0.018); }
 function sfxAoe()        { if (!sfxGate('aoe')) return; playSweep(300, 80, 0.2, 'square', 0.06); playNoise(0.22, 0.06, 900); }
 function sfxShock()      { if (!sfxGate('shock')) return; playTone(220, 0.1, 'square', 0.05); playTone(165, 0.16, 'square', 0.05); playTone(110, 0.22, 'triangle', 0.05); }
@@ -1979,13 +2042,13 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 document.getElementById('gameWrapper').appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
-const SKY_COLOR = new THREE.Color(0x7FB4DE);
-scene.background = SKY_COLOR;
-scene.fog = new THREE.Fog(SKY_COLOR, 120, 400);
+scene.background = new THREE.Color(0x7FB4DE);
+scene.fog = new THREE.Fog(0x7FB4DE, 120, 400);
 const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.5, 600);
 camera.position.set(0, 6, -12);
 
-scene.add(new THREE.HemisphereLight(0xC8E8FF, 0x5A6A72, 1.0));
+const hemi = new THREE.HemisphereLight(0xC8E8FF, 0x5A6A72, 1.0);
+scene.add(hemi);
 const sun = new THREE.DirectionalLight(0xFFF4E0, 1.3);
 sun.position.set(50, 80, 40); sun.castShadow = true;
 sun.shadow.mapSize.set(2048, 2048);
@@ -2019,37 +2082,121 @@ for (let c = 0; c < 14; c++) {
 }
 scene.add(cloudGroup);
 
-/* ——— 草地贴图（程序生成，无额外运行开销） ——— */
-function makeGrassTexture() {
+/* ============================================================
+   🌍 地图系统
+   ============================================================ */
+const MAP_POOL = ['park', 'volcano', 'desert', 'aquarium'];
+let currentMapType = 'park';
+const MAP_META = {
+  park:     { sky: 0x7FB4DE, hemiSky: 0xC8E8FF, hemiGround: 0x5A6A72, hemiInt: 1.0, sunCol: 0xFFF4E0, sunInt: 1.3, roofCol: 0x2D5A20, ridgeCol: 0x1A3A0A, grid1: 0xA8E088, grid2: 0x88C068, fogNear: 120, fogFar: 400 },
+  volcano:  { sky: 0x3A1E18, hemiSky: 0xA05040, hemiGround: 0x280808, hemiInt: 0.85, sunCol: 0xFF8040, sunInt: 1.15, roofCol: 0x3A1410, ridgeCol: 0x1A0808, grid1: 0xA04030, grid2: 0x602010, fogNear: 90,  fogFar: 320 },
+  desert:   { sky: 0xC8A870, hemiSky: 0xFFF0C0, hemiGround: 0x8A7040, hemiInt: 1.1,  sunCol: 0xFFF4D0, sunInt: 1.55, roofCol: 0x8A7A5A, ridgeCol: 0x5A4A30, grid1: 0xE0C888, grid2: 0xA89060, fogNear: 130, fogFar: 420 },
+  aquarium: { sky: 0x1C5478, hemiSky: 0x80D0F0, hemiGround: 0x103050, hemiInt: 1.05, sunCol: 0xA0E0FF, sunInt: 1.05, roofCol: 0x1A4A6A, ridgeCol: 0x0A2A44, grid1: 0x60C8E8, grid2: 0x307898, fogNear: 80,  fogFar: 300 },
+};
+
+/* ---------- 地面纹理 ---------- */
+function makeGroundTexture(type) {
   const size = 256;
   const canvas = document.createElement('canvas');
   canvas.width = canvas.height = size;
   const ctx = canvas.getContext('2d');
-  ctx.fillStyle = '#6FA84F';
-  ctx.fillRect(0, 0, size, size);
-  for (let i = 0; i < 220; i++) {
-    const x = Math.random() * size, y = Math.random() * size, r = 8 + Math.random() * 30;
-    const g = ctx.createRadialGradient(x, y, 0, x, y, r);
-    if (Math.random() < 0.5) { g.addColorStop(0, 'rgba(74,122,52,0.50)'); g.addColorStop(1, 'rgba(74,122,52,0)'); }
-    else { g.addColorStop(0, 'rgba(158,200,110,0.45)'); g.addColorStop(1, 'rgba(158,200,110,0)'); }
-    ctx.fillStyle = g;
-    ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+
+  if (type === 'sand') {
+    ctx.fillStyle = '#D9BE86'; ctx.fillRect(0, 0, size, size);
+    for (let i = 0; i < 240; i++) {
+      const x = Math.random() * size, y = Math.random() * size, r = 6 + Math.random() * 34;
+      const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+      if (Math.random() < 0.5) { g.addColorStop(0, 'rgba(196,164,102,0.5)'); g.addColorStop(1, 'rgba(196,164,102,0)'); }
+      else { g.addColorStop(0, 'rgba(238,214,164,0.45)'); g.addColorStop(1, 'rgba(238,214,164,0)'); }
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.strokeStyle = 'rgba(180,150,96,0.28)'; ctx.lineCap = 'round';
+    for (let i = 0; i < 90; i++) {
+      const y = Math.random() * size, x = Math.random() * size, w = 20 + Math.random() * 50;
+      ctx.lineWidth = 0.8 + Math.random() * 1.6;
+      ctx.beginPath(); ctx.moveTo(x, y);
+      ctx.quadraticCurveTo(x + w * 0.5, y + (Math.random() - 0.5) * 10, x + w, y);
+      ctx.stroke();
+    }
+    for (let i = 0; i < 500; i++) {
+      ctx.fillStyle = `rgba(${150 + Math.random() * 60 | 0},${120 + Math.random() * 60 | 0},${70 + Math.random() * 60 | 0},${0.1 + Math.random() * 0.3})`;
+      ctx.fillRect(Math.random() * size, Math.random() * size, 1 + Math.random() * 2.5, 1 + Math.random() * 2.5);
+    }
+  } else if (type === 'volcanic') {
+    ctx.fillStyle = '#241E1C'; ctx.fillRect(0, 0, size, size);
+    for (let i = 0; i < 260; i++) {
+      const x = Math.random() * size, y = Math.random() * size, r = 5 + Math.random() * 28;
+      const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+      if (Math.random() < 0.5) { g.addColorStop(0, 'rgba(72,60,54,0.55)'); g.addColorStop(1, 'rgba(72,60,54,0)'); }
+      else { g.addColorStop(0, 'rgba(12,8,6,0.6)'); g.addColorStop(1, 'rgba(12,8,6,0)'); }
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.lineCap = 'round';
+    for (let i = 0; i < 34; i++) {
+      ctx.strokeStyle = `rgba(${200 + Math.random() * 55 | 0},${50 + Math.random() * 60 | 0},${10 + Math.random() * 30 | 0},${0.35 + Math.random() * 0.5})`;
+      ctx.lineWidth = 0.7 + Math.random() * 2.2;
+      let x = Math.random() * size, y = Math.random() * size;
+      ctx.beginPath(); ctx.moveTo(x, y);
+      for (let j = 0; j < 5; j++) { x += (Math.random() - 0.5) * 36; y += (Math.random() - 0.5) * 36; ctx.lineTo(x, y); }
+      ctx.stroke();
+    }
+    for (let i = 0; i < 600; i++) {
+      const v = Math.random();
+      ctx.fillStyle = v < 0.7
+        ? `rgba(60,50,46,${0.1 + Math.random() * 0.3})`
+        : `rgba(180,70,20,${0.1 + Math.random() * 0.25})`;
+      ctx.fillRect(Math.random() * size, Math.random() * size, 1 + Math.random() * 3, 1 + Math.random() * 3);
+    }
+  } else if (type === 'marble') {
+    ctx.fillStyle = '#E6F2F8'; ctx.fillRect(0, 0, size, size);
+    for (let i = 0; i < 30; i++) {
+      const x = Math.random() * size, y = Math.random() * size, r = 20 + Math.random() * 60;
+      const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+      g.addColorStop(0, `rgba(140,190,225,${0.15 + Math.random() * 0.25})`);
+      g.addColorStop(1, 'rgba(140,190,225,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.lineCap = 'round';
+    for (let i = 0; i < 26; i++) {
+      ctx.strokeStyle = `rgba(${90 + Math.random() * 60 | 0},${140 + Math.random() * 60 | 0},${180 + Math.random() * 50 | 0},${0.18 + Math.random() * 0.3})`;
+      ctx.lineWidth = 0.8 + Math.random() * 2.6;
+      let x = Math.random() * size, y = Math.random() * size;
+      ctx.beginPath(); ctx.moveTo(x, y);
+      for (let j = 0; j < 6; j++) { x += (Math.random() - 0.5) * 50; y += (Math.random() - 0.5) * 50; ctx.lineTo(x, y); }
+      ctx.stroke();
+    }
+    for (let i = 0; i < 350; i++) {
+      ctx.fillStyle = `rgba(${180 + Math.random() * 60 | 0},${215 + Math.random() * 40 | 0},${235 + Math.random() * 20 | 0},${0.06 + Math.random() * 0.14})`;
+      ctx.fillRect(Math.random() * size, Math.random() * size, 1 + Math.random() * 3, 1 + Math.random() * 3);
+    }
+  } else {
+    /* 草地 */
+    ctx.fillStyle = '#6FA84F'; ctx.fillRect(0, 0, size, size);
+    for (let i = 0; i < 220; i++) {
+      const x = Math.random() * size, y = Math.random() * size, r = 8 + Math.random() * 30;
+      const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+      if (Math.random() < 0.5) { g.addColorStop(0, 'rgba(74,122,52,0.50)'); g.addColorStop(1, 'rgba(74,122,52,0)'); }
+      else { g.addColorStop(0, 'rgba(158,200,110,0.45)'); g.addColorStop(1, 'rgba(158,200,110,0)'); }
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.lineCap = 'round';
+    for (let i = 0; i < 3200; i++) {
+      const x = Math.random() * size, y = Math.random() * size;
+      const len = 2 + Math.random() * 4.5;
+      const ang = -Math.PI / 2 + (Math.random() - 0.5) * 1.6;
+      const rr = 62 + Math.random() * 74;
+      const gg = 128 + Math.random() * 86;
+      const bb = 46 + Math.random() * 62;
+      ctx.strokeStyle = `rgba(${rr | 0},${gg | 0},${bb | 0},${(0.26 + Math.random() * 0.40).toFixed(2)})`;
+      ctx.lineWidth = 0.7 + Math.random() * 1.0;
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + Math.cos(ang) * len, y + Math.sin(ang) * len);
+      ctx.stroke();
+    }
   }
-  ctx.lineCap = 'round';
-  for (let i = 0; i < 3200; i++) {
-    const x = Math.random() * size, y = Math.random() * size;
-    const len = 2 + Math.random() * 4.5;
-    const ang = -Math.PI / 2 + (Math.random() - 0.5) * 1.6;
-    const rr = 62 + Math.random() * 74;
-    const gg = 128 + Math.random() * 86;
-    const bb = 46 + Math.random() * 62;
-    ctx.strokeStyle = `rgba(${rr | 0},${gg | 0},${bb | 0},${(0.26 + Math.random() * 0.40).toFixed(2)})`;
-    ctx.lineWidth = 0.7 + Math.random() * 1.0;
-    ctx.beginPath();
-    ctx.moveTo(x, y);
-    ctx.lineTo(x + Math.cos(ang) * len, y + Math.sin(ang) * len);
-    ctx.stroke();
-  }
+
   const tex = new THREE.CanvasTexture(canvas);
   tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
   tex.repeat.set(50, 50);
@@ -2057,61 +2204,248 @@ function makeGrassTexture() {
   tex.colorSpace = THREE.SRGBColorSpace;
   return tex;
 }
-const groundTex = makeGrassTexture();
 
-const LAWN_COLOR = 0x74B054;
-const ground = new THREE.Mesh(
-  new THREE.PlaneGeometry(400, 400),
-  new THREE.MeshStandardMaterial({ map: groundTex, color: 0xFFFFFF, roughness: 0.96, metalness: 0.02 })
-);
-ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
-const grid = new THREE.GridHelper(400, 100, 0xA8E088, 0x88C068);
-grid.material.transparent = true; grid.material.opacity = 0.09; grid.position.y = 0.015; scene.add(grid);
-
-function makeBrickTexture() {
+/* ---------- 围墙纹理 ---------- */
+function makeWallTexture(type) {
   const canvas = document.createElement('canvas');
   canvas.width = 256; canvas.height = 256;
   const ctx = canvas.getContext('2d');
-  ctx.fillStyle = '#6E2C1E'; ctx.fillRect(0, 0, 256, 256);
-  const rowH = 24, brickW = 48;
-  ctx.fillStyle = '#301A12';
-  for (let row = 0; row <= 256 / rowH; row++) {
-    const y = row * rowH; ctx.fillRect(0, y, 256, 3);
-    const offset = (row % 2) * (brickW / 2);
-    for (let col = -1; col <= 256 / brickW; col++) ctx.fillRect(col * brickW + offset, y, 3, rowH);
-  }
-  for (let row = 0; row < 256 / rowH; row++) {
-    for (let col = 0; col < 256 / brickW + 1; col++) {
+
+  if (type === 'volcanic') {
+    ctx.fillStyle = '#2A1814'; ctx.fillRect(0, 0, 256, 256);
+    for (let i = 0; i < 90; i++) {
+      const x = Math.random() * 256, y = Math.random() * 256;
+      const w = 18 + Math.random() * 46, h = 12 + Math.random() * 32;
+      const v = 0.7 + Math.random() * 0.6;
+      ctx.fillStyle = `rgb(${Math.min(255, 62 * v) | 0},${Math.min(255, 36 * v) | 0},${Math.min(255, 30 * v) | 0})`;
+      ctx.fillRect(x, y, w, h);
+    }
+    ctx.lineCap = 'round';
+    for (let i = 0; i < 40; i++) {
+      ctx.strokeStyle = `rgba(${200 + Math.random() * 55 | 0},${60 + Math.random() * 70 | 0},${10 + Math.random() * 30 | 0},${0.30 + Math.random() * 0.5})`;
+      ctx.lineWidth = 0.8 + Math.random() * 2.6;
+      let x = Math.random() * 256, y = Math.random() * 256;
+      ctx.beginPath(); ctx.moveTo(x, y);
+      for (let j = 0; j < 4; j++) { x += (Math.random() - 0.5) * 60; y += (Math.random() - 0.5) * 60; ctx.lineTo(x, y); }
+      ctx.stroke();
+    }
+    for (let i = 0; i < 500; i++) {
+      ctx.fillStyle = `rgba(${20 + Math.random() * 60 | 0},${12 + Math.random() * 40 | 0},${10 + Math.random() * 30 | 0},${0.08 + Math.random() * 0.22})`;
+      ctx.fillRect(Math.random() * 256, Math.random() * 256, 1 + Math.random() * 4, 1 + Math.random() * 4);
+    }
+  } else if (type === 'stone') {
+    ctx.fillStyle = '#8A8A88'; ctx.fillRect(0, 0, 256, 256);
+    const rowH = 26, brickW = 52;
+    ctx.fillStyle = '#5A5A58';
+    for (let row = 0; row <= 256 / rowH; row++) {
+      const y = row * rowH; ctx.fillRect(0, y, 256, 3);
       const offset = (row % 2) * (brickW / 2);
-      const x = col * brickW + offset + 3; const y = row * rowH + 3;
-      const r = 100 + Math.random() * 45; const g = 38 + Math.random() * 25; const b = 28 + Math.random() * 20;
-      ctx.fillStyle = `rgb(${r}, ${g}, ${b})`; ctx.fillRect(x, y, brickW - 3, rowH - 3);
+      for (let col = -1; col <= 256 / brickW; col++) ctx.fillRect(col * brickW + offset, y, 3, rowH);
+    }
+    for (let row = 0; row < 256 / rowH; row++) {
+      for (let col = 0; col < 256 / brickW + 1; col++) {
+        const offset = (row % 2) * (brickW / 2);
+        const x = col * brickW + offset + 3, y = row * rowH + 3;
+        const v = 128 + Math.random() * 40;
+        ctx.fillStyle = `rgb(${v | 0},${(v * 0.99) | 0},${(v * 0.96) | 0})`;
+        ctx.fillRect(x, y, brickW - 3, rowH - 3);
+      }
+    }
+    for (let i = 0; i < 400; i++) {
+      ctx.fillStyle = `rgba(${60 + Math.random() * 60 | 0},${60 + Math.random() * 60 | 0},${60 + Math.random() * 60 | 0},${0.05 + Math.random() * 0.13})`;
+      ctx.fillRect(Math.random() * 256, Math.random() * 256, 1 + Math.random() * 4, 1 + Math.random() * 4);
+    }
+  } else if (type === 'aquarium') {
+    const grad = ctx.createLinearGradient(0, 0, 0, 256);
+    grad.addColorStop(0, '#1A5A88');
+    grad.addColorStop(0.5, '#0E3C60');
+    grad.addColorStop(1, '#082438');
+    ctx.fillStyle = grad; ctx.fillRect(0, 0, 256, 256);
+    /* 玻璃面板分格 */
+    ctx.strokeStyle = 'rgba(120,220,255,0.35)';
+    ctx.lineWidth = 3;
+    for (let i = 0; i <= 4; i++) {
+      const p = (i / 4) * 256;
+      ctx.beginPath(); ctx.moveTo(p, 0); ctx.lineTo(p, 256); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, p); ctx.lineTo(256, p); ctx.stroke();
+    }
+    ctx.strokeStyle = 'rgba(180,240,255,0.55)';
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= 4; i++) {
+      const p = (i / 4) * 256;
+      ctx.beginPath(); ctx.moveTo(p, 0); ctx.lineTo(p, 256); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, p); ctx.lineTo(256, p); ctx.stroke();
+    }
+    /* 水波光斑 */
+    for (let i = 0; i < 44; i++) {
+      const x = Math.random() * 256, y = Math.random() * 256, r = 6 + Math.random() * 34;
+      const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+      g.addColorStop(0, `rgba(160,240,255,${0.08 + Math.random() * 0.2})`);
+      g.addColorStop(1, 'rgba(160,240,255,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+    }
+    /* 气泡 */
+    for (let i = 0; i < 90; i++) {
+      const x = Math.random() * 256, y = Math.random() * 256, r = 1 + Math.random() * 4;
+      ctx.strokeStyle = `rgba(200,245,255,${0.18 + Math.random() * 0.32})`;
+      ctx.lineWidth = 0.8;
+      ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.stroke();
+    }
+    /* 鱼剪影 */
+    for (let i = 0; i < 12; i++) {
+      const x = Math.random() * 256, y = Math.random() * 256;
+      const s = 0.6 + Math.random() * 1.2;
+      ctx.fillStyle = `rgba(160,240,255,${0.08 + Math.random() * 0.14})`;
+      ctx.beginPath();
+      ctx.ellipse(x, y, 10 * s, 4.5 * s, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(x + 10 * s, y);
+      ctx.lineTo(x + 17 * s, y - 4 * s);
+      ctx.lineTo(x + 17 * s, y + 4 * s);
+      ctx.closePath(); ctx.fill();
+    }
+  } else {
+    /* 红砖 */
+    ctx.fillStyle = '#6E2C1E'; ctx.fillRect(0, 0, 256, 256);
+    const rowH = 24, brickW = 48;
+    ctx.fillStyle = '#301A12';
+    for (let row = 0; row <= 256 / rowH; row++) {
+      const y = row * rowH; ctx.fillRect(0, y, 256, 3);
+      const offset = (row % 2) * (brickW / 2);
+      for (let col = -1; col <= 256 / brickW; col++) ctx.fillRect(col * brickW + offset, y, 3, rowH);
+    }
+    for (let row = 0; row < 256 / rowH; row++) {
+      for (let col = 0; col < 256 / brickW + 1; col++) {
+        const offset = (row % 2) * (brickW / 2);
+        const x = col * brickW + offset + 3; const y = row * rowH + 3;
+        const r = 100 + Math.random() * 45; const g = 38 + Math.random() * 25; const b = 28 + Math.random() * 20;
+        ctx.fillStyle = `rgb(${r | 0}, ${g | 0}, ${b | 0})`; ctx.fillRect(x, y, brickW - 3, rowH - 3);
+      }
     }
   }
+
   const tex = new THREE.CanvasTexture(canvas);
   tex.wrapS = THREE.RepeatWrapping; tex.wrapT = THREE.RepeatWrapping;
   tex.repeat.set(80, 3); tex.magFilter = THREE.LinearFilter;
   tex.minFilter = THREE.LinearMipmapLinearFilter; tex.anisotropy = 4;
   return tex;
 }
-const brickTex = makeBrickTexture();
-const wallMat = new THREE.MeshStandardMaterial({ map: brickTex, side: THREE.BackSide, roughness: 0.92, metalness: 0.05 });
-const wall = new THREE.Mesh(new THREE.CylinderGeometry(200, 200, 10, 64, 1, true), wallMat);
-wall.position.y = 5; scene.add(wall);
-const roofMat = new THREE.MeshStandardMaterial({ color: 0x2D5A20, roughness: 0.55, metalness: 0.3, side: THREE.DoubleSide, emissive: 0x0A1A08, emissiveIntensity: 0.15 });
-const roof = new THREE.Mesh(new THREE.CylinderGeometry(201.5, 199.5, 1.2, 64, 1, true), roofMat);
-roof.position.y = 10.6; scene.add(roof);
-const ridgeMat = new THREE.MeshStandardMaterial({ color: 0x1A3A0A, roughness: 0.5, metalness: 0.4 });
-const ridge = new THREE.Mesh(new THREE.TorusGeometry(201.5, 0.35, 8, 128), ridgeMat);
-ridge.rotation.x = -Math.PI / 2; ridge.position.y = 11.3; scene.add(ridge);
 
+/* ============================================================
+   🌳 场景元素
+   ============================================================ */
 const terrain = { destructibles: [], meshes: [], fountainRadius: 0 };
+
+let groundMesh = null, gridMesh = null, wallMesh = null, roofMesh = null, ridgeMesh = null;
+
+const DEBRIS_DEFS = {
+  tree: [
+    { y: 1.5, color: 0x5A3A20, count: 7, speed: 16 },
+    { y: 4.5, color: 0x3A7028, count: 9, speed: 18 },
+    { y: 5.5, color: 0x2D5A1A, count: 6, speed: 16 },
+  ],
+  lamp: [
+    { y: 3, color: 0x3A3A40, count: 8, speed: 20 },
+    { y: 6, color: 0xFFEE80, count: 4, speed: 14 },
+  ],
+  rock: [
+    { y: 1.0, color: 0x4A3830, count: 10, speed: 18 },
+    { y: 2.2, color: 0x3A2A24, count: 6, speed: 16 },
+  ],
+  cactus: [
+    { y: 1.5, color: 0x3E7A3A, count: 8, speed: 16 },
+    { y: 3.0, color: 0x2A5A2A, count: 6, speed: 14 },
+  ],
+  crystal: [
+    { y: 1.5, color: 0x40C0FF, count: 10, speed: 18 },
+    { y: 3.0, color: 0x80E0FF, count: 6, speed: 16 },
+  ],
+};
+
 const SHARED_GEO = {
   lampBase: new THREE.CylinderGeometry(0.4, 0.5, 0.3, 8), lampPole: new THREE.CylinderGeometry(0.12, 0.15, 6, 8),
   lampArm: new THREE.CylinderGeometry(0.1, 0.1, 1.2, 8), lampHead: new THREE.BoxGeometry(0.8, 0.3, 0.5),
   lampBulb: new THREE.SphereGeometry(0.22, 8, 6), treeTrunk: new THREE.CylinderGeometry(0.35, 0.5, 3.5, 8),
   treeCrown1: new THREE.SphereGeometry(2.2, 8, 6), treeCrown2: new THREE.SphereGeometry(1.7, 8, 6), treeCrown3: new THREE.SphereGeometry(1.5, 8, 6),
 };
+
+/* ---------- 环境（地面 + 围墙） ---------- */
+function buildEnvironment(mapType) {
+  for (const m of [groundMesh, gridMesh, wallMesh, roofMesh, ridgeMesh]) {
+    if (m) {
+      scene.remove(m);
+      if (m.geometry) m.geometry.dispose();
+      if (m.material) {
+        if (m.material.map) m.material.map.dispose();
+        m.material.dispose();
+      }
+    }
+  }
+  groundMesh = gridMesh = wallMesh = roofMesh = ridgeMesh = null;
+
+  const meta = MAP_META[mapType] || MAP_META.park;
+
+  /* 天空与雾 */
+  scene.background.setHex(meta.sky);
+  scene.fog.color.setHex(meta.sky);
+  scene.fog.near = meta.fogNear;
+  scene.fog.far = meta.fogFar;
+
+  /* 光照 */
+  hemi.color.setHex(meta.hemiSky);
+  hemi.groundColor.setHex(meta.hemiGround);
+  hemi.intensity = meta.hemiInt;
+  sun.color.setHex(meta.sunCol);
+  sun.intensity = meta.sunInt;
+
+  /* 太阳与云 */
+  sunOrb.visible = (mapType === 'park' || mapType === 'desert');
+  sunGlow.visible = sunOrb.visible;
+  cloudGroup.visible = (mapType === 'park' || mapType === 'desert');
+
+  /* 地面 */
+  const gTex = makeGroundTexture(mapType === 'volcano' ? 'volcanic' : mapType === 'desert' ? 'sand' : mapType === 'aquarium' ? 'marble' : 'grass');
+  groundMesh = new THREE.Mesh(
+    new THREE.PlaneGeometry(400, 400),
+    new THREE.MeshStandardMaterial({ map: gTex, color: 0xFFFFFF, roughness: mapType === 'aquarium' ? 0.4 : 0.96, metalness: mapType === 'aquarium' ? 0.25 : 0.02 })
+  );
+  groundMesh.rotation.x = -Math.PI / 2;
+  groundMesh.receiveShadow = true;
+  scene.add(groundMesh);
+
+  /* 网格 */
+  gridMesh = new THREE.GridHelper(400, 100, meta.grid1, meta.grid2);
+  gridMesh.material.transparent = true; gridMesh.material.opacity = 0.09;
+  gridMesh.position.y = 0.015;
+  scene.add(gridMesh);
+
+  /* 围墙 */
+  const wTex = makeWallTexture(mapType === 'volcano' ? 'volcanic' : mapType === 'desert' ? 'stone' : mapType === 'aquarium' ? 'aquarium' : 'brick');
+  wallMesh = new THREE.Mesh(
+    new THREE.CylinderGeometry(200, 200, 10, 64, 1, true),
+    new THREE.MeshStandardMaterial({ map: wTex, side: THREE.BackSide, roughness: 0.92, metalness: 0.05, emissive: mapType === 'volcano' ? 0x300800 : mapType === 'aquarium' ? 0x062030 : 0x000000, emissiveIntensity: mapType === 'volcano' ? 0.35 : mapType === 'aquarium' ? 0.25 : 0 })
+  );
+  wallMesh.position.y = 5;
+  scene.add(wallMesh);
+
+  /* 顶檐 */
+  roofMesh = new THREE.Mesh(
+    new THREE.CylinderGeometry(201.5, 199.5, 1.2, 64, 1, true),
+    new THREE.MeshStandardMaterial({ color: meta.roofCol, roughness: 0.55, metalness: 0.3, side: THREE.DoubleSide, emissive: 0x000000, emissiveIntensity: 0.15 })
+  );
+  roofMesh.position.y = 10.6;
+  scene.add(roofMesh);
+
+  ridgeMesh = new THREE.Mesh(
+    new THREE.TorusGeometry(201.5, 0.35, 8, 128),
+    new THREE.MeshStandardMaterial({ color: meta.ridgeCol, roughness: 0.5, metalness: 0.4 })
+  );
+  ridgeMesh.rotation.x = -Math.PI / 2; ridgeMesh.position.y = 11.3;
+  scene.add(ridgeMesh);
+}
+
+/* ---------- 中心装置 ---------- */
 function buildFountain() {
   const stoneMat = new THREE.MeshStandardMaterial({ color: 0xE0D8C8, roughness: 0.7, metalness: 0.1 });
   const stoneDarkMat = new THREE.MeshStandardMaterial({ color: 0xA8A090, roughness: 0.75, metalness: 0.1 });
@@ -2144,41 +2478,189 @@ function buildFountain() {
   flowerRing.rotation.x = -Math.PI / 2; flowerRing.position.y = 0.4; flowerRing.receiveShadow = true; group.add(flowerRing);
   scene.add(group); terrain.meshes.push(group); terrain.fountainRadius = 10.7;
 }
-function buildRoadsAndLamps() {
+
+function buildLavaPool() {
+  const rockMat = new THREE.MeshStandardMaterial({ color: 0x2A1A14, roughness: 0.95, metalness: 0.05, flatShading: true });
+  const rockMat2 = new THREE.MeshStandardMaterial({ color: 0x3A2420, roughness: 0.92, metalness: 0.06, flatShading: true, emissive: 0x200800, emissiveIntensity: 0.5 });
+  const lavaMat = new THREE.MeshBasicMaterial({ color: 0xFF6A10 });
+  const lavaGlowMat = new THREE.MeshBasicMaterial({ color: 0xFFB040, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
+  const group = new THREE.Group();
+  const pool = new THREE.Mesh(new THREE.CircleGeometry(9, 48), lavaMat);
+  pool.rotation.x = -Math.PI / 2; pool.position.y = 0.35; group.add(pool);
+  const glow = new THREE.Mesh(new THREE.RingGeometry(8.6, 10.6, 48), lavaGlowMat);
+  glow.rotation.x = -Math.PI / 2; glow.position.y = 0.4; group.add(glow);
+  const rimCount = 22;
+  for (let i = 0; i < rimCount; i++) {
+    const a = (i / rimCount) * Math.PI * 2;
+    const rr = 9.6 + Math.random() * 0.9;
+    const s = 0.9 + Math.random() * 0.9;
+    const rock = new THREE.Mesh(new THREE.ConeGeometry(0.9 * s, 1.4 * s, 5), i % 2 ? rockMat : rockMat2);
+    rock.position.set(Math.cos(a) * rr, 0.3 + Math.random() * 0.3, Math.sin(a) * rr);
+    rock.rotation.y = Math.random() * Math.PI;
+    rock.rotation.z = (Math.random() - 0.5) * 0.4;
+    rock.castShadow = true;
+    group.add(rock);
+  }
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(10.3, 0.5, 8, 48), rockMat);
+  ring.rotation.x = -Math.PI / 2; ring.position.y = 0.15; ring.receiveShadow = true; group.add(ring);
+  scene.add(group); terrain.meshes.push(group); terrain.fountainRadius = 10.7;
+}
+
+function buildStatue() {
+  const stoneMat = new THREE.MeshStandardMaterial({ color: 0xC8BFA8, roughness: 0.85, metalness: 0.05 });
+  const stoneDarkMat = new THREE.MeshStandardMaterial({ color: 0x9A9080, roughness: 0.88, metalness: 0.05 });
+  const group = new THREE.Group();
+  const base = new THREE.Mesh(new THREE.CylinderGeometry(9, 9.5, 1.0, 48), stoneDarkMat);
+  base.position.y = 0.5; base.receiveShadow = true; base.castShadow = true; group.add(base);
+  const base2 = new THREE.Mesh(new THREE.CylinderGeometry(7.4, 8.2, 0.5, 48), stoneMat);
+  base2.position.y = 1.2; base2.receiveShadow = true; group.add(base2);
+  const pedestal = new THREE.Mesh(new THREE.CylinderGeometry(2.6, 3.4, 2.4, 20), stoneMat);
+  pedestal.position.y = 2.6; pedestal.castShadow = true; group.add(pedestal);
+  const legs = new THREE.Mesh(new THREE.BoxGeometry(1.6, 2.6, 1.0), stoneMat);
+  legs.position.y = 5.1; legs.castShadow = true; group.add(legs);
+  const torso = new THREE.Mesh(new THREE.BoxGeometry(2.1, 2.6, 1.2), stoneMat);
+  torso.position.y = 7.5; torso.castShadow = true; group.add(torso);
+  const shoulders = new THREE.Mesh(new THREE.BoxGeometry(3.0, 0.6, 1.2), stoneMat);
+  shoulders.position.y = 8.6; shoulders.castShadow = true; group.add(shoulders);
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.85, 12, 9), stoneMat);
+  head.position.y = 9.7; head.castShadow = true; group.add(head);
+  for (const sx of [-1, 1]) {
+    const arm = new THREE.Mesh(new THREE.BoxGeometry(0.62, 2.6, 0.7), stoneMat);
+    arm.position.set(sx * 1.55, 7.0, 0.05);
+    arm.rotation.z = sx * 0.14;
+    arm.castShadow = true; group.add(arm);
+  }
+  const flowerColors = [0xFF4080, 0xFFD040, 0x80C0FF, 0xFF8040, 0xFF60D0];
+  for (let i = 0; i < 32; i++) {
+    const angle = (i / 32) * Math.PI * 2;
+    const r = 9.9 + Math.random() * 0.2;
+    const fc = flowerColors[i % flowerColors.length];
+    const flower = new THREE.Mesh(new THREE.SphereGeometry(0.32 + Math.random() * 0.1, 6, 5), new THREE.MeshStandardMaterial({ color: fc, roughness: 0.9, emissive: fc, emissiveIntensity: 0.18 }));
+    flower.position.set(Math.cos(angle) * r, 0.55 + Math.random() * 0.15, Math.sin(angle) * r);
+    flower.castShadow = true; group.add(flower);
+  }
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(10.3, 0.4, 8, 64), stoneMat);
+  ring.rotation.x = -Math.PI / 2; ring.position.y = 0.4; ring.receiveShadow = true; group.add(ring);
+  scene.add(group); terrain.meshes.push(group); terrain.fountainRadius = 10.7;
+}
+
+function buildFishTank() {
+  const glassMat = new THREE.MeshStandardMaterial({ color: 0x9EE0F0, roughness: 0.05, metalness: 0.3, transparent: true, opacity: 0.28, side: THREE.DoubleSide, emissive: 0x104060, emissiveIntensity: 0.3 });
+  const waterMat = new THREE.MeshStandardMaterial({ color: 0x2070B0, roughness: 0.2, metalness: 0.2, transparent: true, opacity: 0.75, emissive: 0x104880, emissiveIntensity: 0.55 });
+  const baseMat = new THREE.MeshStandardMaterial({ color: 0x203040, roughness: 0.5, metalness: 0.6 });
+  const group = new THREE.Group();
+  const base = new THREE.Mesh(new THREE.CylinderGeometry(9, 9.5, 1.0, 48), baseMat);
+  base.position.y = 0.5; base.receiveShadow = true; base.castShadow = true; group.add(base);
+  const water = new THREE.Mesh(new THREE.CylinderGeometry(8.2, 8.2, 8.4, 36), waterMat);
+  water.position.y = 5.2; group.add(water);
+  const glass = new THREE.Mesh(new THREE.CylinderGeometry(8.7, 8.7, 9.4, 36, 1, true), glassMat);
+  glass.position.y = 5.7; group.add(glass);
+  const topRing = new THREE.Mesh(new THREE.TorusGeometry(8.7, 0.4, 8, 40), baseMat);
+  topRing.rotation.x = -Math.PI / 2; topRing.position.y = 10.4; group.add(topRing);
+  const botRing = new THREE.Mesh(new THREE.TorusGeometry(8.7, 0.4, 8, 40), baseMat);
+  botRing.rotation.x = -Math.PI / 2; botRing.position.y = 1.0; group.add(botRing);
+  for (let i = 0; i < 22; i++) {
+    const a = Math.random() * Math.PI * 2;
+    const rr = Math.random() * 7;
+    const bubble = new THREE.Mesh(
+      new THREE.SphereGeometry(0.1 + Math.random() * 0.22, 6, 5),
+      new THREE.MeshBasicMaterial({ color: 0xC8F0FF, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false })
+    );
+    bubble.position.set(Math.cos(a) * rr, 1.4 + Math.random() * 8.4, Math.sin(a) * rr);
+    group.add(bubble);
+  }
+  for (let i = 0; i < 14; i++) {
+    const a = Math.random() * Math.PI * 2;
+    const rr = Math.random() * 6.8;
+    const y = 1.8 + Math.random() * 7.6;
+    const fishColor = [0xFF8040, 0xFFD040, 0xFF4080, 0x60E0FF, 0x80FF80][i % 5];
+    const fishMat = new THREE.MeshStandardMaterial({ color: fishColor, roughness: 0.5, emissive: fishColor, emissiveIntensity: 0.35 });
+    const fish = new THREE.Mesh(new THREE.ConeGeometry(0.24, 0.75, 6), fishMat);
+    fish.rotation.z = Math.PI / 2;
+    fish.rotation.y = Math.random() * Math.PI * 2;
+    fish.position.set(Math.cos(a) * rr, y, Math.sin(a) * rr);
+    group.add(fish);
+  }
+  scene.add(group); terrain.meshes.push(group); terrain.fountainRadius = 10.7;
+}
+
+/* ---------- 道路与灯 ---------- */
+function buildRoadsAndLamps(mapType) {
   const roadWidth = 12; const roadStart = 11; const roadEnd = 197;
   const roadLen = roadEnd - roadStart; const roadCenter = (roadStart + roadEnd) / 2;
-  const roadMat = new THREE.MeshStandardMaterial({ color: 0x3A3A3A, roughness: 0.9, metalness: 0.05 });
+
+  let roadMat;
+  if (mapType === 'volcano') {
+    roadMat = new THREE.MeshStandardMaterial({ color: 0xFF6A1A, roughness: 0.4, metalness: 0.05, emissive: 0xFF3C00, emissiveIntensity: 0.9 });
+  } else if (mapType === 'aquarium') {
+    roadMat = new THREE.MeshStandardMaterial({ color: 0x9ED8E8, roughness: 0.08, metalness: 0.4, transparent: true, opacity: 0.68, emissive: 0x2070A0, emissiveIntensity: 0.4, side: THREE.DoubleSide });
+  } else {
+    roadMat = new THREE.MeshStandardMaterial({ color: 0x3A3A3A, roughness: 0.9, metalness: 0.05 });
+  }
+
   for (const sign of [-1, 1]) {
     const roadZ = new THREE.Mesh(new THREE.PlaneGeometry(roadWidth, roadLen), roadMat);
-    roadZ.rotation.x = -Math.PI / 2; roadZ.position.set(0, 0.02, sign * roadCenter); roadZ.receiveShadow = true;
+    roadZ.rotation.x = -Math.PI / 2;
+    roadZ.position.set(0, 0.02, sign * roadCenter);
+    roadZ.receiveShadow = true;
     scene.add(roadZ); terrain.meshes.push(roadZ);
+
     const roadX = new THREE.Mesh(new THREE.PlaneGeometry(roadWidth, roadLen), roadMat);
-    roadX.rotation.x = -Math.PI / 2; roadX.rotation.z = Math.PI / 2; roadX.position.set(sign * roadCenter, 0.02, 0); roadX.receiveShadow = true;
+    roadX.rotation.x = -Math.PI / 2;
+    roadX.rotation.z = Math.PI / 2;
+    roadX.position.set(sign * roadCenter, 0.02, 0);
+    roadX.receiveShadow = true;
     scene.add(roadX); terrain.meshes.push(roadX);
   }
+
   const lampOffset = roadWidth / 2 + 2;
+  const lampStyle = mapType === 'aquarium' ? 'blue' : mapType === 'volcano' ? 'lava' : 'normal';
   for (const sign of [-1, 1]) {
     for (let d = roadStart + 15; d < roadEnd - 5; d += Tuning.Terrain.lampSpacing) {
-      spawnLamp(lampOffset, sign * d); spawnLamp(-lampOffset, sign * d);
-      spawnLamp(sign * d, lampOffset); spawnLamp(sign * d, -lampOffset);
+      spawnLamp(lampOffset, sign * d, lampStyle);
+      spawnLamp(-lampOffset, sign * d, lampStyle);
+      spawnLamp(sign * d, lampOffset, lampStyle);
+      spawnLamp(sign * d, -lampOffset, lampStyle);
     }
   }
 }
-function spawnLamp(x, z) {
-  const g = new THREE.Group(); g.position.set(x, 0, z);
-  const poleMat = new THREE.MeshStandardMaterial({ color: 0x3A3A40, roughness: 0.5, metalness: 0.85 });
-  const lightMat = new THREE.MeshBasicMaterial({ color: 0xFFEE80 });
-  const base = new THREE.Mesh(SHARED_GEO.lampBase, poleMat); base.position.y = 0.15; base.castShadow = true; g.add(base);
-  const pole = new THREE.Mesh(SHARED_GEO.lampPole, poleMat); pole.position.y = 3.3; pole.castShadow = true; g.add(pole);
-  const arm = new THREE.Mesh(SHARED_GEO.lampArm, poleMat); arm.rotation.z = Math.PI / 2; arm.position.set(0.6, 6.2, 0); arm.castShadow = true; g.add(arm);
-  const lampHead = new THREE.Mesh(SHARED_GEO.lampHead, poleMat); lampHead.position.set(1.15, 6.1, 0); lampHead.castShadow = true; g.add(lampHead);
-  const bulb = new THREE.Mesh(SHARED_GEO.lampBulb, lightMat); bulb.position.set(1.15, 5.9, 0); g.add(bulb);
+
+function spawnLamp(x, z, style) {
+  const g = new THREE.Group();
+  g.position.set(x, 0, z);
+
+  if (style === 'blue') {
+    /* 小型圆柱形蓝色灯柱 */
+    const poleMat = new THREE.MeshStandardMaterial({ color: 0x204060, roughness: 0.35, metalness: 0.8 });
+    const glassMat = new THREE.MeshStandardMaterial({ color: 0x60C8FF, roughness: 0.1, metalness: 0.3, transparent: true, opacity: 0.85, emissive: 0x2080D0, emissiveIntensity: 1.2 });
+    const base = new THREE.Mesh(SHARED_GEO.lampBase, poleMat);
+    base.position.y = 0.15; base.castShadow = true; g.add(base);
+    const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.2, 4.2, 10), poleMat);
+    pole.position.y = 2.3; pole.castShadow = true; g.add(pole);
+    const glow = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 1.6, 12), glassMat);
+    glow.position.y = 5.0; g.add(glow);
+    const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.16, 12), poleMat);
+    cap.position.y = 5.9; g.add(cap);
+    const top = new THREE.Mesh(new THREE.SphereGeometry(0.34, 10, 8), glassMat);
+    top.position.y = 6.15; g.add(top);
+  } else {
+    const poleMat = style === 'lava'
+      ? new THREE.MeshStandardMaterial({ color: 0x2A1A14, roughness: 0.55, metalness: 0.7, emissive: 0x300800, emissiveIntensity: 0.5 })
+      : new THREE.MeshStandardMaterial({ color: 0x3A3A40, roughness: 0.5, metalness: 0.85 });
+    const lightMat = new THREE.MeshBasicMaterial({ color: style === 'lava' ? 0xFF8030 : 0xFFEE80 });
+    const base = new THREE.Mesh(SHARED_GEO.lampBase, poleMat); base.position.y = 0.15; base.castShadow = true; g.add(base);
+    const pole = new THREE.Mesh(SHARED_GEO.lampPole, poleMat); pole.position.y = 3.3; pole.castShadow = true; g.add(pole);
+    const arm = new THREE.Mesh(SHARED_GEO.lampArm, poleMat); arm.rotation.z = Math.PI / 2; arm.position.set(0.6, 6.2, 0); arm.castShadow = true; g.add(arm);
+    const lampHead = new THREE.Mesh(SHARED_GEO.lampHead, poleMat); lampHead.position.set(1.15, 6.1, 0); lampHead.castShadow = true; g.add(lampHead);
+    const bulb = new THREE.Mesh(SHARED_GEO.lampBulb, lightMat); bulb.position.set(1.15, 5.9, 0); g.add(bulb);
+  }
+
   scene.add(g);
   terrain.destructibles.push({ group: g, type: 'lamp', x, z, radius: 1.0, broken: false, fade: 1.0, materials: null });
   terrain.meshes.push(g);
 }
 
-/* ——— 大铁栅门（东南西北四条路的尽头） ——— */
+/* ---------- 铁门 ---------- */
 function buildGate(angle) {
   const R = 198.4;
   const g = new THREE.Group();
@@ -2191,7 +2673,6 @@ function buildGate(angle) {
 
   const W = 17, H = 9;
 
-  // 竖栅条
   const barGeo = new THREE.CylinderGeometry(0.15, 0.15, H, 6);
   const tipGeo = new THREE.ConeGeometry(0.28, 0.72, 4);
   const barCount = 11;
@@ -2205,13 +2686,11 @@ function buildGate(angle) {
     tip.rotation.y = Math.PI / 4;
     g.add(tip);
   }
-  // 横梁
   for (const y of [1.0, 4.5, H - 0.9]) {
     const rail = new THREE.Mesh(new THREE.BoxGeometry(W + 0.9, 0.34, 0.36), darkIronMat);
     rail.position.set(0, y, 0);
     g.add(rail);
   }
-  // 两侧立柱
   for (const sx of [-1, 1]) {
     const pillar = new THREE.Mesh(new THREE.BoxGeometry(1.2, H + 1.4, 1.2), ironMat);
     pillar.position.set(sx * (W / 2 + 0.5), (H + 1.4) / 2, 0);
@@ -2221,13 +2700,11 @@ function buildGate(angle) {
     cap.rotation.y = Math.PI / 4;
     g.add(cap);
   }
-  // 中缝
   const seamL = new THREE.Mesh(new THREE.BoxGeometry(0.5, H, 0.62), darkIronMat);
   seamL.position.set(-0.52, H / 2, 0.05); g.add(seamL);
   const seamR = new THREE.Mesh(new THREE.BoxGeometry(0.5, H, 0.62), darkIronMat);
   seamR.position.set(0.52, H / 2, 0.05); g.add(seamR);
 
-  // 锁板
   const plateRim = new THREE.Mesh(new THREE.BoxGeometry(3.9, 3.5, 0.34), brassMat);
   plateRim.position.set(0, 4.6, 0.36); g.add(plateRim);
   const plate = new THREE.Mesh(new THREE.BoxGeometry(3.4, 3.0, 0.55), darkIronMat);
@@ -2240,7 +2717,6 @@ function buildGate(angle) {
   const keySlot = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.58, 0.42), brassMat);
   keySlot.position.set(0, 4.70, 0.88); g.add(keySlot);
 
-  // 铆钉
   const rivetGeo = new THREE.SphereGeometry(0.13, 6, 5);
   for (const y of [1.0, 4.5, H - 0.9]) {
     for (let i = 0; i < 8; i++) {
@@ -2250,22 +2726,69 @@ function buildGate(angle) {
       g.add(rv);
     }
   }
-  // 底部防撞条
   const kick = new THREE.Mesh(new THREE.BoxGeometry(W + 1.2, 0.5, 0.95), darkIronMat);
   kick.position.set(0, 0.25, 0.1); g.add(kick);
 
   return g;
 }
-function buildGates() {
+
+function buildCrystalGate(angle) {
+  const R = 198.4;
+  const g = new THREE.Group();
+  g.position.set(Math.sin(angle) * R, 0, Math.cos(angle) * R);
+  g.rotation.y = angle + Math.PI;
+
+  const crystalMat = new THREE.MeshStandardMaterial({ color: 0x60C8FF, roughness: 0.1, metalness: 0.3, transparent: true, opacity: 0.72, emissive: 0x2080C0, emissiveIntensity: 0.75 });
+  const darkMat = new THREE.MeshStandardMaterial({ color: 0x1A3A5A, roughness: 0.3, metalness: 0.7 });
+
+  const W = 17, H = 9;
+
+  const barGeo = new THREE.CylinderGeometry(0.28, 0.28, H, 6);
+  const tipGeo = new THREE.ConeGeometry(0.42, 1.2, 6);
+  const barCount = 9;
+  for (let i = 0; i < barCount; i++) {
+    const x = -W / 2 + (i + 0.5) * (W / barCount);
+    const bar = new THREE.Mesh(barGeo, crystalMat);
+    bar.position.set(x, H / 2, 0);
+    g.add(bar);
+    const tip = new THREE.Mesh(tipGeo, crystalMat);
+    tip.position.set(x, H + 0.6, 0);
+    g.add(tip);
+  }
+  for (const y of [1.0, H - 1.2]) {
+    const rail = new THREE.Mesh(new THREE.BoxGeometry(W + 0.9, 0.4, 0.4), darkMat);
+    rail.position.set(0, y, 0); g.add(rail);
+  }
+  for (const sx of [-1, 1]) {
+    const pillar = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.9, H + 2, 6), crystalMat);
+    pillar.position.set(sx * (W / 2 + 0.6), (H + 2) / 2, 0);
+    g.add(pillar);
+    const cap = new THREE.Mesh(new THREE.ConeGeometry(1.05, 1.6, 6), crystalMat);
+    cap.position.set(sx * (W / 2 + 0.6), H + 2.8, 0);
+    g.add(cap);
+  }
+  const centerGem = new THREE.Mesh(new THREE.OctahedronGeometry(1.2, 0), crystalMat);
+  centerGem.position.set(0, 4.6, 0.3); g.add(centerGem);
+
+  return g;
+}
+
+function buildGates(mapType) {
   for (let i = 0; i < 4; i++) {
-    const gate = buildGate((i / 4) * Math.PI * 2);
+    const gate = mapType === 'aquarium' ? buildCrystalGate((i / 4) * Math.PI * 2) : buildGate((i / 4) * Math.PI * 2);
     scene.add(gate);
     terrain.meshes.push(gate);
   }
 }
 
-function buildTrees() {
+/* ---------- 植被 / 装饰物 ---------- */
+function buildScatterObjects(mapType) {
   const minRoadDist = 11, minFountainDist = 16, targetCount = Tuning.Terrain.treeCount;
+  let spawnFn = spawnTree;
+  if (mapType === 'volcano') spawnFn = spawnRock;
+  else if (mapType === 'desert') spawnFn = spawnCactus;
+  else if (mapType === 'aquarium') spawnFn = spawnCrystal;
+
   let placed = 0;
   for (let i = 0; i < 300 && placed < targetCount; i++) {
     const x = (Math.random() - 0.5) * 360; const z = (Math.random() - 0.5) * 360;
@@ -2275,9 +2798,10 @@ function buildTrees() {
     let tooClose = false;
     for (const d of terrain.destructibles) { const dx = x - d.x, dz = z - d.z; if (dx * dx + dz * dz < 64) { tooClose = true; break; } }
     if (tooClose) continue;
-    spawnTree(x, z); placed++;
+    spawnFn(x, z); placed++;
   }
 }
+
 function spawnTree(x, z) {
   const g = new THREE.Group(); g.position.set(x, 0, z); g.rotation.y = Math.random() * Math.PI * 2;
   const trunkMat = new THREE.MeshStandardMaterial({ color: 0x5A3A20, roughness: 0.9, metalness: 0.05 });
@@ -2292,7 +2816,88 @@ function spawnTree(x, z) {
   terrain.meshes.push(g);
 }
 
-/* ——— 草地草丛（InstancedMesh，单个 draw call，零碰撞，零阴影） ——— */
+function spawnRock(x, z) {
+  const g = new THREE.Group();
+  g.position.set(x, 0, z);
+  g.rotation.y = Math.random() * Math.PI * 2;
+  const rockMat = new THREE.MeshStandardMaterial({ color: 0x3A2A24, roughness: 0.92, metalness: 0.06, flatShading: true, emissive: 0x1A0600, emissiveIntensity: 0.5 });
+  const rockMat2 = new THREE.MeshStandardMaterial({ color: 0x241A16, roughness: 0.95, metalness: 0.05, flatShading: true });
+  const h = 2.2 + Math.random() * 2.4;
+  const r = 1.0 + Math.random() * 0.7;
+  const main = new THREE.Mesh(new THREE.ConeGeometry(r, h, 5 + Math.floor(Math.random() * 3)), rockMat);
+  main.position.y = h / 2;
+  main.castShadow = true;
+  g.add(main);
+  const s1 = new THREE.Mesh(new THREE.ConeGeometry(r * 0.6, h * 0.6, 5), rockMat2);
+  s1.position.set(r * 0.7, h * 0.3, r * 0.4);
+  s1.rotation.z = 0.35;
+  s1.castShadow = true;
+  g.add(s1);
+  scene.add(g);
+  terrain.destructibles.push({ group: g, type: 'rock', x, z, radius: 1.5, broken: false, fade: 1.0, materials: null });
+  terrain.meshes.push(g);
+}
+
+function spawnCactus(x, z) {
+  const g = new THREE.Group();
+  g.position.set(x, 0, z);
+  g.rotation.y = Math.random() * Math.PI * 2;
+  const cactusMat = new THREE.MeshStandardMaterial({ color: 0x3E7A3A, roughness: 0.85, metalness: 0.02, emissive: 0x0A2008, emissiveIntensity: 0.25 });
+  const h = 2.8 + Math.random() * 2.0;
+  const r = 0.42 + Math.random() * 0.16;
+  const trunk = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.9, r, h, 8), cactusMat);
+  trunk.position.y = h / 2; trunk.castShadow = true; g.add(trunk);
+  const topCap = new THREE.Mesh(new THREE.SphereGeometry(r * 0.9, 8, 5), cactusMat);
+  topCap.position.y = h; topCap.scale.y = 0.7; topCap.castShadow = true; g.add(topCap);
+  const armCount = 1 + Math.floor(Math.random() * 2);
+  for (let i = 0; i < armCount; i++) {
+    const side = Math.random() < 0.5 ? -1 : 1;
+    const ay = h * (0.45 + Math.random() * 0.3);
+    const armH = h * (0.35 + Math.random() * 0.25);
+    const arm = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.62, r * 0.62, armH, 8), cactusMat);
+    arm.position.set(side * (r + 0.42), ay, 0);
+    arm.rotation.z = side * -0.4;
+    arm.castShadow = true;
+    g.add(arm);
+    const armTop = new THREE.Mesh(new THREE.SphereGeometry(r * 0.62, 8, 5), cactusMat);
+    armTop.position.set(side * (r + 0.42) - side * 0.28, ay + armH * 0.5, 0);
+    armTop.scale.y = 0.7;
+    armTop.castShadow = true;
+    g.add(armTop);
+  }
+  scene.add(g);
+  terrain.destructibles.push({ group: g, type: 'cactus', x, z, radius: 1.5, broken: false, fade: 1.0, materials: null });
+  terrain.meshes.push(g);
+}
+
+function spawnCrystal(x, z) {
+  const g = new THREE.Group();
+  g.position.set(x, 0, z);
+  g.rotation.y = Math.random() * Math.PI * 2;
+  const crystalMat = new THREE.MeshStandardMaterial({ color: 0x50C8FF, roughness: 0.08, metalness: 0.4, transparent: true, opacity: 0.85, emissive: 0x2060A0, emissiveIntensity: 0.85 });
+  const h = 2.4 + Math.random() * 2.6;
+  const r = 0.5 + Math.random() * 0.35;
+  const main = new THREE.Mesh(new THREE.ConeGeometry(r, h, 6), crystalMat);
+  main.position.y = h / 2; main.castShadow = true; g.add(main);
+  const base = new THREE.Mesh(new THREE.CylinderGeometry(r * 1.3, r * 1.5, 0.4, 6), crystalMat);
+  base.position.y = 0.2; g.add(base);
+  for (let i = 0; i < 2; i++) {
+    const sr = r * (0.4 + Math.random() * 0.25);
+    const sh = h * (0.45 + Math.random() * 0.3);
+    const side = new THREE.Mesh(new THREE.ConeGeometry(sr, sh, 6), crystalMat);
+    const a = Math.random() * Math.PI * 2;
+    side.position.set(Math.cos(a) * (r + 0.35), sh / 2, Math.sin(a) * (r + 0.35));
+    side.rotation.z = (Math.random() - 0.5) * 0.4;
+    side.rotation.x = (Math.random() - 0.5) * 0.4;
+    side.castShadow = true;
+    g.add(side);
+  }
+  scene.add(g);
+  terrain.destructibles.push({ group: g, type: 'crystal', x, z, radius: 1.5, broken: false, fade: 1.0, materials: null });
+  terrain.meshes.push(g);
+}
+
+/* ---------- 草丛 ---------- */
 let _grassGeo = null;
 let grassMesh = null;
 function makeGrassBladeGeometry() {
@@ -2364,6 +2969,7 @@ function clearGrass() {
   }
 }
 
+/* ---------- 碎片 ---------- */
 const DEBRIS_BASE_GEO = new THREE.BoxGeometry(1, 1, 1);
 const debrisList = []; const MAX_DEBRIS = 400;
 function spawnDebris(center, color, count, baseSpeed, baseVel) {
@@ -2397,6 +3003,7 @@ function updateDebris(dt) {
   }
 }
 function clearDebris() { for (const d of debrisList) { scene.remove(d.mesh); d.mesh.material.dispose(); } debrisList.length = 0; }
+
 function breakDestructible(d, hitDir) {
   if (d.broken) return; d.broken = true;
   let dir;
@@ -2404,13 +3011,9 @@ function breakDestructible(d, hitDir) {
   else { dir = new THREE.Vector3(d.x - player.pos.x, 0, d.z - player.pos.z); if (dir.lengthSq() < 0.01) dir.set(0, 0, 1); dir.normalize(); }
   const carSpeed = Math.abs(player.speed); const flySpeed = Math.max(carSpeed * 0.5, 6);
   const baseVel = new THREE.Vector3(dir.x * flySpeed, 0, dir.z * flySpeed);
-  if (d.type === 'tree') {
-    spawnDebris(new THREE.Vector3(d.x, 1.5, d.z), 0x5A3A20, 7, 16, baseVel);
-    spawnDebris(new THREE.Vector3(d.x, 4.5, d.z), 0x3A7028, 9, 18, baseVel);
-    spawnDebris(new THREE.Vector3(d.x, 5.5, d.z), 0x2D5A1A, 6, 16, baseVel);
-  } else if (d.type === 'lamp') {
-    spawnDebris(new THREE.Vector3(d.x, 3, d.z), 0x3A3A40, 8, 20, baseVel);
-    spawnDebris(new THREE.Vector3(d.x, 6, d.z), 0xFFEE80, 4, 14, baseVel);
+  const defs = DEBRIS_DEFS[d.type] || DEBRIS_DEFS.tree;
+  for (const dd of defs) {
+    spawnDebris(new THREE.Vector3(d.x, dd.y, d.z), dd.color, dd.count, dd.speed, baseVel);
   }
   state.screenShake = Math.max(state.screenShake, 14);
   state.hitStop = Tuning.Ram.hitStopDuration;
@@ -2452,15 +3055,39 @@ function checkDestructibles(dt) {
     if (dx * dx + dz * dz < (R + d.radius) * (R + d.radius)) breakDestructible(d, fwd);
   }
 }
-function buildTerrain() { clearTerrain(); buildFountain(); buildRoadsAndLamps(); buildGates(); buildTrees(); buildGrass(); }
+
+function buildTerrain() {
+  clearTerrain();
+  buildEnvironment(currentMapType);
+  if (currentMapType === 'volcano') buildLavaPool();
+  else if (currentMapType === 'desert') buildStatue();
+  else if (currentMapType === 'aquarium') buildFishTank();
+  else buildFountain();
+  buildRoadsAndLamps(currentMapType);
+  buildGates(currentMapType);
+  buildScatterObjects(currentMapType);
+  if (currentMapType === 'park') buildGrass();
+}
 function clearTerrain() {
+  const disposedMats = new Set();
   for (const m of terrain.meshes) {
     scene.remove(m);
     m.traverse(o => {
-      if (o.isMesh && o.geometry && o.geometry !== DEBRIS_BASE_GEO) {
-        let isShared = false;
-        for (const g of Object.values(SHARED_GEO)) if (o.geometry === g) { isShared = true; break; }
-        if (!isShared) o.geometry.dispose();
+      if (o.isMesh) {
+        if (o.geometry && o.geometry !== DEBRIS_BASE_GEO) {
+          let isShared = false;
+          for (const g of Object.values(SHARED_GEO)) if (o.geometry === g) { isShared = true; break; }
+          if (!isShared) o.geometry.dispose();
+        }
+        if (o.material) {
+          const mats = Array.isArray(o.material) ? o.material : [o.material];
+          for (const mat of mats) {
+            if (disposedMats.has(mat)) continue;
+            disposedMats.add(mat);
+            if (mat.map) mat.map.dispose();
+            mat.dispose();
+          }
+        }
       }
     });
   }
@@ -2727,7 +3354,6 @@ function buildHoverModel() {
   const g = new THREE.Group();
   const hullMat = new THREE.MeshStandardMaterial({ color: 0x2A1A4A, roughness: 0.2, metalness: 0.95, emissive: 0x4A1080, emissiveIntensity: 0.5 });
   const trimMat = new THREE.MeshStandardMaterial({ color: 0x1A0F2E, roughness: 0.35, metalness: 0.8 });
-  const chromeMat = MAT.chrome();
   const glowMat = new THREE.MeshBasicMaterial({ color: 0xB060FF, transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
   const headMat = MAT.head();
 
@@ -2797,7 +3423,7 @@ function rebuildCarMesh() {
 }
 
 /* ============================================================
-   🧟 僵尸纹理（更恐怖）
+   🧟 僵尸纹理
    ============================================================ */
 function makeCanvasTexture(size, drawFn) {
   const canvas = document.createElement('canvas');
@@ -2809,7 +3435,6 @@ function makeCanvasTexture(size, drawFn) {
   return tex;
 }
 
-/* 皮肤：灰白底 + 腐烂斑块 + 暗裂 + 血斑 */
 const skinTexture = makeCanvasTexture(192, (ctx, s) => {
   ctx.fillStyle = '#E4E4E4'; ctx.fillRect(0, 0, s, s);
   for (let i = 0; i < 70; i++) {
@@ -2852,12 +3477,11 @@ const skinTexture = makeCanvasTexture(192, (ctx, s) => {
     ctx.beginPath(); ctx.arc(x, y, r * 0.55, 0, Math.PI * 2); ctx.fill();
   }
   for (let i = 0; i < 400; i++) {
-    ctx.fillStyle = `rgba(${20 + Math.random() * 60},${20 + Math.random() * 50},${20 + Math.random() * 40},${0.05 + Math.random() * 0.14})`;
+    ctx.fillStyle = `rgba(${20 + Math.random() * 60 | 0},${20 + Math.random() * 50 | 0},${20 + Math.random() * 40 | 0},${0.05 + Math.random() * 0.14})`;
     ctx.fillRect(Math.random() * s, Math.random() * s, 1 + Math.random() * 4, 1 + Math.random() * 4);
   }
 });
 
-/* 脸：深陷眼窝 + 撕裂的嘴 + 血迹 */
 const faceTexture = makeCanvasTexture(192, (ctx, s) => {
   ctx.fillStyle = '#E4E4E4'; ctx.fillRect(0, 0, s, s);
   for (let i = 0; i < 34; i++) {
@@ -2899,9 +3523,9 @@ const faceTexture = makeCanvasTexture(192, (ctx, s) => {
   for (let i = 0; i < 7; i++) {
     const w = s * 0.036 + Math.random() * s * 0.016;
     const h = s * 0.05 + Math.random() * s * 0.05;
-    ctx.fillStyle = `rgba(${215 + Math.random() * 30},${205 + Math.random() * 30},${168 + Math.random() * 30},1)`;
+    ctx.fillStyle = `rgba(${215 + Math.random() * 30 | 0},${205 + Math.random() * 30 | 0},${168 + Math.random() * 30 | 0},1)`;
     ctx.fillRect(s * (0.31 + i * 0.062), s * 0.685, w, h);
-    ctx.fillStyle = `rgba(${200 + Math.random() * 30},${190 + Math.random() * 30},${160 + Math.random() * 30},1)`;
+    ctx.fillStyle = `rgba(${200 + Math.random() * 30 | 0},${190 + Math.random() * 30 | 0},${160 + Math.random() * 30 | 0},1)`;
     ctx.fillRect(s * (0.31 + i * 0.062), s * 0.815, w, h * 0.8);
   }
   ctx.strokeStyle = 'rgba(80,6,10,0.85)'; ctx.lineWidth = 2.4;
@@ -2915,12 +3539,11 @@ const faceTexture = makeCanvasTexture(192, (ctx, s) => {
   ctx.fillRect(s * 0.40, s * 0.08, s * 0.045, s * 0.20);
   ctx.fillRect(s * 0.56, s * 0.06, s * 0.038, s * 0.16);
   for (let i = 0; i < 300; i++) {
-    ctx.fillStyle = `rgba(${30 + Math.random() * 60},${30 + Math.random() * 50},${28 + Math.random() * 40},${0.05 + Math.random() * 0.13})`;
+    ctx.fillStyle = `rgba(${30 + Math.random() * 60 | 0},${30 + Math.random() * 50 | 0},${28 + Math.random() * 40 | 0},${0.05 + Math.random() * 0.13})`;
     ctx.fillRect(Math.random() * s, Math.random() * s, 1 + Math.random() * 3.5, 1 + Math.random() * 3.5);
   }
 });
 
-/* 衣服：破布 + 污渍 + 血 */
 const clothTexture = makeCanvasTexture(192, (ctx, s) => {
   ctx.fillStyle = '#DEDEDE'; ctx.fillRect(0, 0, s, s);
   ctx.strokeStyle = 'rgba(70,70,70,0.25)'; ctx.lineWidth = 1;
@@ -2953,13 +3576,13 @@ const clothTexture = makeCanvasTexture(192, (ctx, s) => {
     ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
   }
   for (let i = 0; i < 300; i++) {
-    ctx.fillStyle = `rgba(${24 + Math.random() * 50},${22 + Math.random() * 46},${20 + Math.random() * 42},${0.05 + Math.random() * 0.13})`;
+    ctx.fillStyle = `rgba(${24 + Math.random() * 50 | 0},${22 + Math.random() * 46 | 0},${20 + Math.random() * 42 | 0},${0.05 + Math.random() * 0.13})`;
     ctx.fillRect(Math.random() * s, Math.random() * s, 1 + Math.random() * 4, 1 + Math.random() * 4);
   }
 });
 
 /* ============================================================
-   🧟 僵尸骨架 / InstancedMesh
+   🧟 僵尸 InstancedMesh
    ============================================================ */
 const MAX_ZOMBIES = 400;
 const ZOMBIE = {
@@ -3508,7 +4131,7 @@ function drawSpeedOverlay(intensity) {
     const alpha = (0.07 + Math.random() * 0.30) * intensity;
 
     ctx.strokeStyle = `rgba(200,235,255,${alpha.toFixed(3)})`;
-    ctx.lineWidth = 0.6 + Math.random() * 2.4 * intensity;
+        ctx.lineWidth = 0.6 + Math.random() * 2.4 * intensity;
     ctx.beginPath();
     ctx.moveTo(cx + ca * r0, cy + sa * r0);
     ctx.lineTo(cx + ca * (r0 + len), cy + sa * (r0 + len));
@@ -4072,7 +4695,6 @@ function updateEnemies(dt) {
     if (e.attackPhase < 0) e.attackPhase = 0;
   }
 
-  /* ——— 写入 InstancedMesh ——— */
   let zombieIdx = 0;
   for (const e of enemies) {
     if (!e.active || e.isBoss) continue;
@@ -4135,7 +4757,7 @@ function updateEnemies(dt) {
 }
 
 /* ============================================================
-   🔥 敌方火球（红色，与玩家青色弹幕明显区分）
+   🔥 敌方火球
    ============================================================ */
 const enemyBullets = [];
 function spawnEnemyBullet(from, dir, dmg) {
@@ -4220,7 +4842,7 @@ function updateEnemyBullets(dt) {
 }
 
 /* ============================================================
-   🚗 玩家更新（按车辆属性）
+   🚗 玩家更新
    ============================================================ */
 function updatePlayer(dt) {
   const C = V();
@@ -4491,9 +5113,12 @@ function triggerVictory() {
 
   const newCars = getNewlyUnlockedCars();
   const unlockEl = document.getElementById('victoryUnlock');
-  if (newCars.length > 0) {
+  const rewardParts = [];
+  if (newCars.length > 0) rewardParts.push('🔓 解锁新座驾：' + newCars.map(id => VEHICLES[id].name).join('、'));
+  if (lv === 15) rewardParts.push('🔓 解锁「无限模式」');
+  if (rewardParts.length > 0) {
     unlockEl.style.display = 'block';
-    unlockEl.textContent = '🔓 解锁新座驾：' + newCars.map(id => VEHICLES[id].name).join('、');
+    unlockEl.innerHTML = rewardParts.join('<br>');
   } else {
     unlockEl.style.display = 'none';
   }
@@ -4593,6 +5218,7 @@ window.addEventListener('keydown', (e) => {
     if (e.code === 'Digit2') { const c = document.querySelectorAll('.card')[1]; if (c) c.click(); }
     if (e.code === 'Digit3') { const c = document.querySelectorAll('.card')[2]; if (c) c.click(); }
   }
+  if (state.phase === 'story' && (e.code === 'Space' || e.code === 'Enter')) { storySkip(); }
 });
 window.addEventListener('keyup', (e) => { keys[e.code] = false; });
 
@@ -4682,6 +5308,271 @@ function checkOrientation() {
 }
 
 /* ============================================================
+   🎬 剧情动画（3D 建模 + 文本）
+   ============================================================ */
+const STORY_TEXTS = [
+  '一觉醒来……',
+  '城市已经被丧尸吞没，',
+  '只剩下你孤身一人，',
+  '与你的破旧二手车。',
+  '想要活下去的话，',
+  '就油门踩到底，杀出一条生路吧！',
+];
+
+const storyAnim = {
+  renderer: null, scene: null, camera: null,
+  car: null, zombies: [], buildings: [],
+  active: false, t: 0,
+  raf: null, textIndex: -1,
+  onDone: null, finished: false,
+};
+
+function initStoryRenderer() {
+  if (storyAnim.renderer) return;
+  const canvas = document.getElementById('storyCanvas');
+  storyAnim.renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+  storyAnim.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.8));
+  storyAnim.renderer.setSize(window.innerWidth, window.innerHeight, false);
+  storyAnim.renderer.outputColorSpace = THREE.SRGBColorSpace;
+  storyAnim.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  storyAnim.renderer.toneMappingExposure = 0.95;
+  storyAnim.scene = new THREE.Scene();
+  storyAnim.scene.background = new THREE.Color(0x0A0E16);
+  storyAnim.scene.fog = new THREE.Fog(0x0A0E16, 20, 110);
+
+  storyAnim.camera = new THREE.PerspectiveCamera(52, window.innerWidth / window.innerHeight, 0.1, 400);
+  storyAnim.camera.position.set(0, 5, 16);
+  storyAnim.camera.lookAt(0, 2.2, 0);
+
+  /* 灯光 */
+  storyAnim.scene.add(new THREE.HemisphereLight(0x2A4060, 0x080A10, 0.7));
+  const key = new THREE.DirectionalLight(0xFF7040, 1.1);
+  key.position.set(-14, 18, 8); storyAnim.scene.add(key);
+  const rim = new THREE.DirectionalLight(0x4090FF, 0.55);
+  rim.position.set(12, 8, -12); storyAnim.scene.add(rim);
+  const amb = new THREE.AmbientLight(0x305080, 0.35); storyAnim.scene.add(amb);
+
+  /* 地面 */
+  const groundGeo = new THREE.PlaneGeometry(240, 240);
+  const groundMat = new THREE.MeshStandardMaterial({ color: 0x1A1E24, roughness: 0.95, metalness: 0.05 });
+  const ground = new THREE.Mesh(groundGeo, groundMat);
+  ground.rotation.x = -Math.PI / 2;
+  storyAnim.scene.add(ground);
+
+  /* 公路 */
+  const roadMat = new THREE.MeshStandardMaterial({ color: 0x2A2A2A, roughness: 0.9, metalness: 0.05 });
+  const road = new THREE.Mesh(new THREE.PlaneGeometry(14, 200), roadMat);
+  road.rotation.x = -Math.PI / 2; road.position.y = 0.02;
+  storyAnim.scene.add(road);
+  for (let i = -45; i <= 45; i += 6) {
+    const dash = new THREE.Mesh(new THREE.PlaneGeometry(0.5, 2.4), new THREE.MeshBasicMaterial({ color: 0x9A9A70 }));
+    dash.rotation.x = -Math.PI / 2;
+    dash.position.set(0, 0.035, i);
+    storyAnim.scene.add(dash);
+  }
+
+  /* 两侧建筑剪影 */
+  for (let i = 0; i < 18; i++) {
+    const side = i % 2 === 0 ? -1 : 1;
+    const z = -70 + (i / 18) * 140 + Math.random() * 6;
+    const h = 6 + Math.random() * 22;
+    const w = 6 + Math.random() * 8;
+    const d = 6 + Math.random() * 8;
+    const col = new THREE.Color().setHSL(0.60, 0.18 + Math.random() * 0.12, 0.06 + Math.random() * 0.06);
+    const bMat = new THREE.MeshStandardMaterial({ color: col, roughness: 0.92, metalness: 0.12, emissive: 0x000000 });
+    const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), bMat);
+    b.position.set(side * (12 + Math.random() * 22), h / 2, z);
+    b.rotation.y = (Math.random() - 0.5) * 0.3;
+    storyAnim.scene.add(b);
+    storyAnim.buildings.push(b);
+    /* 零星窗户灯 */
+    if (Math.random() < 0.6) {
+      const winMat = new THREE.MeshBasicMaterial({ color: Math.random() < 0.5 ? 0xFFB060 : 0x90D0FF, transparent: true, opacity: 0.55 });
+      for (let k = 0; k < 3; k++) {
+        const win = new THREE.Mesh(new THREE.PlaneGeometry(0.9, 1.2), winMat);
+        win.position.set(
+          b.position.x + (side > 0 ? -w / 2 - 0.02 : w / 2 + 0.02),
+          1.6 + Math.random() * (h - 2.4),
+          b.position.z + (Math.random() - 0.5) * d * 0.7
+        );
+        win.rotation.y = side > 0 ? Math.PI / 2 : -Math.PI / 2;
+        storyAnim.scene.add(win);
+      }
+    }
+  }
+
+  /* 主角车（复用轿跑模型，加一点暗色氛围光） */
+  storyAnim.car = buildCoupeModel();
+  storyAnim.car.position.set(0, 0, 0);
+  storyAnim.car.rotation.y = 0;
+  storyAnim.scene.add(storyAnim.car);
+  const carGlow = new THREE.PointLight(0x4FDDC0, 1.4, 14, 2);
+  carGlow.position.set(0, 1.4, 0);
+  storyAnim.scene.add(carGlow);
+  storyAnim.carGlow = carGlow;
+
+  /* 僵尸剪影（远处环绕） */
+  for (let i = 0; i < 26; i++) {
+    const zg = new THREE.Group();
+    const darkMat = new THREE.MeshStandardMaterial({ color: 0x141820, roughness: 0.95, metalness: 0.05 });
+    const torso = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.24, 0.45), darkMat);
+    torso.position.y = 1.37; zg.add(torso);
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.375, 7, 5), darkMat);
+    head.position.y = 2.30; zg.add(head);
+    for (const sx of [-0.53, 0.53]) {
+      const arm = new THREE.Mesh(new THREE.BoxGeometry(0.21, 1.01, 0.21), darkMat);
+      arm.position.set(sx, 1.44, 0.35); arm.rotation.x = 0.7; zg.add(arm);
+    }
+    for (const sx of [-0.21, 0.21]) {
+      const leg = new THREE.Mesh(new THREE.BoxGeometry(0.29, 1.10, 0.29), darkMat);
+      leg.position.set(sx, 0.55, 0); zg.add(leg);
+    }
+    const a = Math.random() * Math.PI * 2;
+    const r = 14 + Math.random() * 30;
+    zg.position.set(Math.cos(a) * r, 0, Math.sin(a) * r - 6);
+    zg.rotation.y = -a;
+    zg.userData = {
+      phase: Math.random() * Math.PI * 2,
+      speed: 0.3 + Math.random() * 0.5,
+      baseR: r,
+      baseA: a,
+    };
+    storyAnim.scene.add(zg);
+    storyAnim.zombies.push(zg);
+  }
+
+  /* 漂浮尘埃 */
+  const dustGeo = new THREE.BufferGeometry();
+  const dustCount = 220;
+  const dustPos = new Float32Array(dustCount * 3);
+  for (let i = 0; i < dustCount; i++) {
+    dustPos[i * 3] = (Math.random() - 0.5) * 120;
+    dustPos[i * 3 + 1] = 0.5 + Math.random() * 22;
+    dustPos[i * 3 + 2] = (Math.random() - 0.5) * 120;
+  }
+  dustGeo.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+  const dustMat = new THREE.PointsMaterial({ color: 0x8AA8C0, size: 0.12, transparent: true, opacity: 0.35, blending: THREE.AdditiveBlending, depthWrite: false });
+  storyAnim.dust = new THREE.Points(dustGeo, dustMat);
+  storyAnim.scene.add(storyAnim.dust);
+
+  storyAnim.renderer.render(storyAnim.scene, storyAnim.camera);
+}
+
+function showStoryText(idx) {
+  if (idx === storyAnim.textIndex) return;
+  storyAnim.textIndex = idx;
+  const el = document.getElementById('storyText');
+  if (idx < 0 || idx >= STORY_TEXTS.length) {
+    el.style.opacity = '0';
+    return;
+  }
+  el.style.opacity = '0';
+  setTimeout(() => {
+    if (storyAnim.textIndex !== idx) return;
+    el.textContent = STORY_TEXTS[idx];
+    el.style.opacity = '1';
+  }, 180);
+}
+
+function updateStory(now) {
+  if (!storyAnim.active) return;
+  const dt = Math.min((now - storyAnim.lastT) / 1000 || 0.016, 0.05);
+  storyAnim.lastT = now;
+  storyAnim.t += dt;
+  const t = storyAnim.t;
+
+  /* 镜头缓慢推进 */
+  const camZ = 16 - Math.min(t * 0.55, 8.5);
+  const camY = 5 - Math.min(t * 0.09, 1.4);
+  storyAnim.camera.position.set(0, camY, camZ);
+  storyAnim.camera.lookAt(0, 2.1, 0);
+
+  /* 车身轻微起伏 */
+  if (storyAnim.car) {
+    storyAnim.car.position.y = Math.sin(t * 2.1) * 0.045;
+    storyAnim.car.rotation.z = Math.sin(t * 1.3) * 0.012;
+    storyAnim.car.rotation.x = Math.sin(t * 1.7) * 0.008;
+  }
+  if (storyAnim.carGlow) {
+    storyAnim.carGlow.intensity = 1.25 + Math.sin(t * 3.4) * 0.25;
+  }
+
+  /* 僵尸徘徊 */
+  for (const zg of storyAnim.zombies) {
+    const ud = zg.userData;
+    ud.phase += dt * ud.speed * 2.2;
+    const a = ud.baseA + Math.sin(ud.phase * 0.5) * 0.06;
+    const r = ud.baseR + Math.sin(ud.phase * 0.8) * 0.9;
+    zg.position.x = Math.cos(a) * r;
+    zg.position.z = Math.sin(a) * r - 6;
+    zg.rotation.y = -a + Math.sin(ud.phase * 0.7) * 0.25;
+    zg.rotation.z = Math.sin(ud.phase * 1.2) * 0.06;
+  }
+
+  /* 尘埃漂浮 */
+  if (storyAnim.dust) {
+    const posAttr = storyAnim.dust.geometry.attributes.position;
+    const arr = posAttr.array;
+    for (let i = 0; i < arr.length; i += 3) {
+      arr[i] += Math.sin(t * 0.5 + i) * dt * 0.25;
+      arr[i + 1] += dt * 0.28;
+      arr[i + 2] += Math.cos(t * 0.4 + i) * dt * 0.25;
+      if (arr[i + 1] > 24) arr[i + 1] = 0.5;
+    }
+    posAttr.needsUpdate = true;
+  }
+
+  /* 文本切换 */
+  const total = 13.5;
+  const per = total / STORY_TEXTS.length;
+  const idx = Math.min(STORY_TEXTS.length - 1, Math.floor(t / per));
+  showStoryText(idx);
+
+  if (t >= total) {
+    storySkip();
+    return;
+  }
+
+  storyAnim.renderer.render(storyAnim.scene, storyAnim.camera);
+  storyAnim.raf = requestAnimationFrame(updateStory);
+}
+
+function storySkip() {
+  if (!storyAnim.active || storyAnim.finished) return;
+  storyAnim.finished = true;
+  if (storyAnim.raf) { cancelAnimationFrame(storyAnim.raf); storyAnim.raf = null; }
+  showStoryText(-1);
+  const screen = document.getElementById('storyScreen');
+  screen.classList.remove('show');
+  storyAnim.active = false;
+  const cb = storyAnim.onDone;
+  storyAnim.onDone = null;
+  if (cb) setTimeout(cb, 120);
+}
+
+function playStory(onDone) {
+  initStoryRenderer();
+  const screen = document.getElementById('storyScreen');
+  screen.classList.add('show');
+  storyAnim.active = true;
+  storyAnim.finished = false;
+  storyAnim.t = 0;
+  storyAnim.textIndex = -1;
+  storyAnim.onDone = onDone;
+  storyAnim.lastT = performance.now();
+  showStoryText(0);
+  /* 重新调整尺寸 */
+  const w = window.innerWidth, h = window.innerHeight;
+  storyAnim.renderer.setSize(w, h, false);
+  storyAnim.camera.aspect = w / h;
+  storyAnim.camera.updateProjectionMatrix();
+  storyAnim.raf = requestAnimationFrame(updateStory);
+}
+
+document.getElementById('storyScreen').addEventListener('click', storySkip);
+document.getElementById('storyScreen').addEventListener('touchend', (e) => { e.preventDefault(); storySkip(); }, { passive: false });
+
+/* ============================================================
    📋 选关
    ============================================================ */
 let currentPage = 0;
@@ -4753,10 +5644,20 @@ function openLevelGoal(id) {
     document.getElementById('goalMult').textContent = level.mult === 1.5 ? '×1.5 密集' : '正常';
     document.getElementById('goalStars').textContent = `${level.times[0]}s内 ★★★ / ${level.times[1]}s内 ★★ / ${level.times[2]}s内 ★`;
   }
+  document.getElementById('goalReward').textContent = getLevelRewardText(id);
   document.getElementById('levelGoalModal').classList.add('show');
 }
 bindTap(document.getElementById('goalConfirmBtn'), () => { document.getElementById('levelGoalModal').classList.remove('show'); startLevel(pendingLevelId); });
 bindTap(document.getElementById('goalCancelBtn'), () => { document.getElementById('levelGoalModal').classList.remove('show'); });
+
+/* —— 剧情只播放一次 —— */
+const STORY_SEEN_KEY = 'myCarStorySeen';
+function hasSeenStory() {
+  try { return localStorage.getItem(STORY_SEEN_KEY) === '1'; } catch (e) { return false; }
+}
+function markStorySeen() {
+  try { localStorage.setItem(STORY_SEEN_KEY, '1'); } catch (e) {}
+}
 
 function startLevel(levelId) {
   initAudio();
@@ -4771,8 +5672,21 @@ function startLevel(levelId) {
   document.getElementById('startScreen').style.display = 'none';
   document.getElementById('victoryScreen').classList.remove('show');
   document.getElementById('overScreen').classList.remove('show');
-  resetGame();
+
+  const beginPlay = () => {
+    state.phase = 'playing';
+    currentMapType = MAP_POOL[Math.floor(Math.random() * MAP_POOL.length)];
+    resetGame();
+  };
+
+  if (levelId === 1 && !hasSeenStory()) {
+    state.phase = 'story';
+    playStory(() => { markStorySeen(); beginPlay(); });
+  } else {
+    beginPlay();
+  }
 }
+
 function resetGame() {
   state.phase = 'playing';
   state.elapsed = 0; state.wave = 0;
@@ -4818,6 +5732,7 @@ function restartGame() {
   document.getElementById('overScreen').classList.remove('show');
   document.getElementById('pauseMenu').classList.remove('show');
   document.getElementById('cards').classList.remove('show');
+  currentMapType = MAP_POOL[Math.floor(Math.random() * MAP_POOL.length)];
   resetGame();
 }
 
@@ -4829,6 +5744,16 @@ bindTap(document.getElementById('settingsBtn'), () => { initAudio(); sfxUI(); do
 bindTap(document.getElementById('settingsCloseBtn'), () => { document.getElementById('settingsScreen').classList.remove('show'); });
 bindTap(document.getElementById('galleryBtn'), () => { initAudio(); sfxUI(); document.getElementById('galleryScreen').classList.add('show'); setTimeout(() => { initViewer(); setViewerModel('car'); }, 30); });
 bindTap(document.getElementById('galleryCloseBtn'), () => { document.getElementById('galleryScreen').classList.remove('show'); });
+bindTap(document.getElementById('replayStoryBtn'), () => {
+  initAudio(); sfxUI();
+  document.getElementById('galleryScreen').classList.remove('show');
+  state.phase = 'story';
+  playStory(() => {
+    state.phase = 'menu';
+    document.getElementById('galleryScreen').classList.add('show');
+    setTimeout(() => { initViewer(); setViewerModel('car'); }, 30);
+  });
+});
 document.querySelectorAll('.gallery-item').forEach(item => {
   bindTap(item, () => {
     document.querySelectorAll('.gallery-item').forEach(i => i.classList.remove('active'));
@@ -4850,6 +5775,7 @@ bindTap(document.getElementById('vicNextBtn'), () => {
     state.countMult = nextId === 16 ? 1.0 : level.mult;
     state.eliteMix = nextId === 16 ? false : level.elite;
     state.wavesCleared = 0;
+    currentMapType = MAP_POOL[Math.floor(Math.random() * MAP_POOL.length)];
     resetGame();
   }
 });
@@ -5055,7 +5981,7 @@ function renderViewer(dt) {
 }
 
 /* ============================================================
-   🏁 车库 viewer（含 shader 背景网格）
+   🏁 车库 viewer
    ============================================================ */
 const garageViewer = {
   renderer: null, scene: null, camera: null, model: null, initialized: false,
@@ -5350,6 +6276,12 @@ function onResize() {
     menuBgCanvas.style.height = '100%';
   }
 
+  if (storyAnim.renderer) {
+    storyAnim.renderer.setSize(w, h, false);
+    storyAnim.camera.aspect = w / h;
+    storyAnim.camera.updateProjectionMatrix();
+  }
+
   resizeSpeedLineCanvas();
   checkOrientation();
 }
@@ -5385,6 +6317,12 @@ function animate() {
     if (garageOpen) renderGarage(rawDt);
     return;
   }
+
+  if (state.phase === 'story') {
+    /* 剧情动画有独立渲染循环，主循环只负责跳过菜单逻辑 */
+    return;
+  }
+
   if (document.getElementById('galleryScreen').classList.contains('show')) renderViewer(rawDt);
   if (garageOpen) renderGarage(rawDt);
 
@@ -5442,6 +6380,10 @@ function animate() {
 
   renderer.render(scene, camera);
 }
+
+/* 初始场景 */
+currentMapType = 'park';
+buildTerrain();
 resetEnemies();
 rebuildCarMesh();
 animate();
