@@ -276,38 +276,57 @@
     filter:brightness(1.22) saturate(1.08);
   }
 
-  /* 油门 —— 青绿能量核心 */
+  /* 油门 —— 青绿能量核心 · 踏板防滑纹 */
   #touchThrottle{
     right:calc(20px + env(safe-area-inset-right));
     bottom:calc(128px + env(safe-area-inset-bottom));
     width:92px;height:92px;font-size:14px;
     color:#04140E;
     background:
-      linear-gradient(180deg, rgba(255,255,255,.42) 0%, rgba(255,255,255,0) 46%),
-      radial-gradient(circle at 50% 118%, #063A2E 0%, #0F6A56 38%, #1FA98C 70%, #74EBD2 100%);
+      /* 踏板防滑横纹 */
+      repeating-linear-gradient(0deg,
+        rgba(3,10,8,.30) 0px, rgba(3,10,8,.30) 2.5px,
+        rgba(190,255,240,.16) 2.5px, rgba(190,255,240,.16) 6px),
+      /* 顶部金属高光 */
+      linear-gradient(180deg, rgba(255,255,255,.52) 0%, rgba(255,255,255,.06) 34%, rgba(255,255,255,0) 54%),
+      /* 底部能量核心 */
+      radial-gradient(ellipse at 50% 122%, #063A2E 0%, #0F6A56 36%, #1FA98C 68%, #74EBD2 100%);
     box-shadow:
-      inset 0 0 0 2.5px rgba(4,12,10,.92),
-      inset 0 0 0 5px rgba(140,255,225,.26),
-      inset 0 -9px 15px rgba(0,0,0,.40),
-      inset 0 8px 13px rgba(255,255,255,.24);
-    text-shadow:0 1px 0 rgba(190,255,240,.55);
+      inset 0 0 0 2.5px rgba(4,12,10,.95),
+      inset 0 0 0 5px rgba(140,255,225,.30),
+      inset 0 0 16px rgba(0,0,0,.38),
+      inset 0 -10px 18px rgba(0,0,0,.46),
+      inset 0 9px 14px rgba(255,255,255,.26),
+      0 0 22px rgba(79,221,192,.30);
+    text-shadow:0 1px 0 rgba(190,255,240,.65),0 0 8px rgba(190,255,240,.45);
   }
 
-  /* 刹车 —— 赤红制动核心 */
+  /* 倒车 —— 赤红制动核心 · 踏板防滑纹 */
   #touchBrake{
     right:calc(20px + env(safe-area-inset-right));
     bottom:calc(20px + env(safe-area-inset-bottom));
     width:92px;height:92px;font-size:14px;
     color:#FFF;
     background:
-      linear-gradient(180deg, rgba(255,255,255,.34) 0%, rgba(255,255,255,0) 46%),
-      radial-gradient(circle at 50% 118%, #4A0512 0%, #7E1128 38%, #C42A48 70%, #FF7E96 100%);
+      repeating-linear-gradient(0deg,
+        rgba(10,0,4,.34) 0px, rgba(10,0,4,.34) 2.5px,
+        rgba(255,180,196,.16) 2.5px, rgba(255,180,196,.16) 6px),
+      linear-gradient(180deg, rgba(255,255,255,.46) 0%, rgba(255,255,255,.06) 34%, rgba(255,255,255,0) 54%),
+      radial-gradient(ellipse at 50% 122%, #3E0410 0%, #7E1128 36%, #C42A48 68%, #FF7E96 100%);
     box-shadow:
-      inset 0 0 0 2.5px rgba(12,2,4,.92),
-      inset 0 0 0 5px rgba(255,150,175,.26),
-      inset 0 -9px 15px rgba(0,0,0,.42),
-      inset 0 8px 13px rgba(255,255,255,.22);
-    text-shadow:0 1px 0 rgba(0,0,0,.55);
+      inset 0 0 0 2.5px rgba(12,2,4,.95),
+      inset 0 0 0 5px rgba(255,150,175,.30),
+      inset 0 0 16px rgba(0,0,0,.38),
+      inset 0 -10px 18px rgba(0,0,0,.48),
+      inset 0 9px 14px rgba(255,255,255,.24),
+      0 0 22px rgba(255,77,109,.28);
+    text-shadow:0 1px 2px rgba(0,0,0,.85),0 0 8px rgba(0,0,0,.55);
+  }
+
+  /* 踏板踩下感 */
+  #touchThrottle.pressed,#touchBrake.pressed{
+    transform:scale(.93) translateY(2px);
+    filter:brightness(1.28) saturate(1.12);
   }
 
   /* 跳跃 —— 琥珀脉冲 */
@@ -821,9 +840,16 @@
 
   /* ===== 车库 ===== */
   .garage-item.locked{
-    filter:grayscale(1) brightness(.5);
-    cursor:not-allowed;
-    transform:none!important;
+    filter:grayscale(1) brightness(.55);
+    cursor:pointer;
+  }
+  .garage-item.locked:hover{
+    filter:grayscale(.72) brightness(.82);
+    transform:translateX(3px);
+  }
+  .garage-item.locked.active{
+    filter:grayscale(.35) brightness(1.0);
+    box-shadow:inset 0 0 0 1.5px rgba(255,179,71,.8),0 0 16px rgba(255,179,71,.35);
   }
   .garage-item .gi-icon{font-size:16px}
   .garage-item .gi-name{flex:1}
@@ -845,11 +871,29 @@
   }
   .garage-name{color:var(--text);font-size:16px;font-weight:900;letter-spacing:3px}
   .garage-desc{color:var(--text-2);font-size:11px;line-height:1.6;font-style:italic}
+  .garage-desc .lock-line{
+    display:block;margin-top:6px;color:var(--hot);
+    font-style:normal;font-weight:900;letter-spacing:1px;
+  }
   .garage-bars{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px}
   .gbar{display:flex;align-items:center;gap:8px;font-size:10px;color:var(--text-3);letter-spacing:1.5px;font-weight:900}
   .gbar .track{flex:1;height:7px;background:#0A0D14;box-shadow:inset 0 0 0 1px rgba(79,221,192,.2)}
   .gbar .fill{height:100%;background:linear-gradient(90deg,var(--cool),var(--hot));transition:width .25s}
   .garage-actions{display:flex;gap:10px;align-items:center}
+
+  /* 锁定状态的车库按钮（放在 .big-btn:hover 之后以确保覆盖） */
+  .big-btn.locked-btn{
+    color:var(--text-3);
+    background:linear-gradient(180deg,#1B2130,#11151D);
+    box-shadow:inset 0 0 0 1.5px rgba(51,65,92,.85);
+    cursor:not-allowed;
+  }
+  .big-btn.locked-btn::after{background:var(--text-3);opacity:.35}
+  .big-btn.locked-btn:hover{
+    background:linear-gradient(180deg,#1B2130,#11151D);
+    box-shadow:inset 0 0 0 1.5px rgba(51,65,92,.85);
+  }
+  .big-btn.locked-btn:hover::after{opacity:.35}
 
   /* ===== 结算 / 胜利 ===== */
   #overScreen,#victoryScreen{
@@ -1350,7 +1394,7 @@
 
   <div id="joystickBase"><div id="joystickKnob"></div><div id="joystickHint" data-i18n="joystickHint">拖动转向</div></div>
   <div class="touch-btn" id="touchThrottle" data-i18n="btnThrottle">油门</div>
-  <div class="touch-btn" id="touchBrake" data-i18n="btnBrake">刹车</div>
+  <div class="touch-btn" id="touchBrake" data-i18n="btnBrake">倒车</div>
   <div class="touch-btn" id="touchJump" data-i18n="btnJump">跳跃</div>
   <div class="touch-btn" id="touchDodge" data-i18n="btnDodge">闪冲</div>
 
@@ -1601,7 +1645,7 @@ const I18N = {
 
     /* 触摸按钮 */
     joystickHint: '拖动转向',
-    btnThrottle: '油门', btnBrake: '刹车', btnJump: '跳跃', btnDodge: '闪冲',
+    btnThrottle: '油门', btnBrake: '倒车', btnJump: '跳跃', btnDodge: '闪冲',
 
     /* 暂停 */
     paused: '暂 停', resume: '继续游戏', backToMenu: '返回主菜单',
@@ -1684,6 +1728,7 @@ const I18N = {
     garageTitle: '车 库',
     useCar: '选 用 此 车',
     inUse: '使 用 中',
+    carLocked: '未 解 锁',
     statSpeed: '极速', statAccel: '加速', statHandling: '操控', statRam: '冲撞',
 
     /* 剧情 */
@@ -1734,7 +1779,7 @@ const I18N = {
 
       <h3>② 操作 · 电脑</h3>
       <ul>
-        <li><span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span> 或方向键 —— 前进 / 后退 / 左右打方向</li>
+        <li><span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span> 或方向键 —— 前进 / 倒车 / 左右打方向</li>
         <li><span class="key">空格</span> —— 跳跃（落地砸一圈，过程中短暂无敌）</li>
         <li><span class="key">K</span> —— 闪冲瞬移（无敌位移，可以从怪堆里穿过去）</li>
         <li><span class="key">Esc</span> —— 暂停</li>
@@ -1743,7 +1788,7 @@ const I18N = {
       <h3>③ 操作 · 手机横屏</h3>
       <ul>
         <li><b>左侧圆盘</b> —— 按住拖动来转向，松手自动回正</li>
-        <li><b>右下大按钮</b> —— 绿色是油门，红色是刹车</li>
+        <li><b>右下大按钮</b> —— 绿色是油门，红色是倒车</li>
         <li><b>右侧小按钮</b> —— 黄色跳跃，紫色闪冲</li>
       </ul>
 
@@ -1771,6 +1816,7 @@ const I18N = {
         <li>通关第 <b>15</b> 关解锁 <b>火车头</b>。</li>
         <li>无限模式打到第 <b>5 / 10 / 15 / 18 / 20 / 22 / 25</b> 波，依次解锁 <b>坦克 / 未来战车 / 悬浮导弹车 / 幻影战车 / 赛博战车 / 攻城车 / 冠军战车</b>。</li>
         <li>换车入口：主菜单 → <b>车库</b>，每辆车的手感完全不同。</li>
+        <li>车库里的车即使没解锁也能点开看外观，只是暂时不能选用。</li>
         <li>无限模式从一开始就开放，随时可以挑战。</li>
       </ul>
 
@@ -1797,7 +1843,7 @@ const I18N = {
 
     /* Touch buttons */
     joystickHint: 'DRAG TO STEER',
-    btnThrottle: 'GAS', btnBrake: 'BRAKE', btnJump: 'JUMP', btnDodge: 'DASH',
+    btnThrottle: 'GAS', btnBrake: 'REVERSE', btnJump: 'JUMP', btnDodge: 'DASH',
 
     /* Pause */
     paused: 'PAUSED', resume: 'RESUME', backToMenu: 'MAIN MENU',
@@ -1880,6 +1926,7 @@ const I18N = {
     garageTitle: 'GARAGE',
     useCar: 'SELECT THIS CAR',
     inUse: 'IN USE',
+    carLocked: 'LOCKED',
     statSpeed: 'TOP SPEED', statAccel: 'ACCEL', statHandling: 'HANDLING', statRam: 'RAM',
 
     /* Story */
@@ -1939,7 +1986,7 @@ const I18N = {
       <h3>③ Controls · Mobile (Landscape)</h3>
       <ul>
         <li><b>Left joystick</b> —— hold and drag to steer, auto-centers when released</li>
-        <li><b>Big bottom-right buttons</b> —— green is gas, red is brake</li>
+        <li><b>Big bottom-right buttons</b> —— green is gas, red is reverse</li>
         <li><b>Small right-side buttons</b> —— yellow jumps, purple dashes</li>
       </ul>
 
@@ -1967,6 +2014,7 @@ const I18N = {
         <li>Clear Level <b>15</b> for the <b>Locomotive</b>.</li>
         <li>In Endless Mode, reaching waves <b>5 / 10 / 15 / 18 / 20 / 22 / 25</b> unlocks the <b>Tank / Future Car / Hover Missile Car / Phantom Car / Cyber Car / Siege Engine / Champion Car</b>.</li>
         <li>Switch cars via Main Menu → <b>Garage</b>. Every car handles completely differently.</li>
+        <li>Locked cars can still be previewed in the Garage — you just can't select them yet.</li>
         <li>Endless Mode is unlocked from the very start — challenge it any time.</li>
       </ul>
 
@@ -2501,6 +2549,119 @@ function sfxZombieGroan(){ if (!sfxGate('groan')) return; playSweep(180 + Math.r
 function sfxZombieAttack(){ if (!sfxGate('zattack')) return; playSweep(300, 150, 0.15, 'sawtooth', 0.045); playNoise(0.12, 0.035, 1800); }
 function sfxSmash()      { if (!sfxGate('smash')) return; playSweep(180, 60, 0.18, 'sawtooth', 0.09); playNoise(0.18, 0.1, 800); }
 function sfxUI()         { if (!sfxGate('ui')) return; playTone(700, 0.05, 'triangle', 0.035); }
+
+/* ============================================================
+   🏎️🔊 8-bit 引擎声浪（新增）
+   ============================================================ */
+const Engine = {
+  running: false,
+  master: null, filter: null,
+  osc: [], oscGain: [],
+  noiseSrc: null, noiseFilter: null, noiseGain: null,
+  acc: 0,
+  smoothFreq: 60, smoothVol: 0,
+};
+
+function startEngineSound() {
+  if (Engine.running || !audioCtx || !sfxGain) return;
+  const ctx = audioCtx;
+  const now = ctx.currentTime;
+
+  Engine.master = ctx.createGain();
+  Engine.master.gain.value = 0;
+  Engine.master.connect(sfxGain);
+
+  Engine.filter = ctx.createBiquadFilter();
+  Engine.filter.type = 'lowpass';
+  Engine.filter.frequency.value = 600;
+  Engine.filter.Q.value = 2.4;
+  Engine.filter.connect(Engine.master);
+
+  const shapes = ['square', 'sawtooth', 'square'];
+  const gains  = [0.50, 0.34, 0.10];
+  const mults  = [1, 0.5, 2.02];
+
+  Engine.osc = []; Engine.oscGain = [];
+  for (let i = 0; i < 3; i++) {
+    const o = ctx.createOscillator();
+    o.type = shapes[i];
+    o.frequency.value = 60 * mults[i];
+    const g = ctx.createGain();
+    g.gain.value = gains[i];
+    o.connect(g); g.connect(Engine.filter);
+    o.start(now);
+    Engine.osc.push(o);
+    Engine.oscGain.push(g);
+  }
+
+  const len = Math.floor(ctx.sampleRate * 0.8);
+  const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+  const src = ctx.createBufferSource();
+  src.buffer = buf; src.loop = true;
+
+  Engine.noiseFilter = ctx.createBiquadFilter();
+  Engine.noiseFilter.type = 'bandpass';
+  Engine.noiseFilter.frequency.value = 220;
+  Engine.noiseFilter.Q.value = 0.9;
+
+  Engine.noiseGain = ctx.createGain();
+  Engine.noiseGain.gain.value = 0.22;
+
+  src.connect(Engine.noiseFilter);
+  Engine.noiseFilter.connect(Engine.noiseGain);
+  Engine.noiseGain.connect(Engine.master);
+  src.start(now);
+  Engine.noiseSrc = src;
+
+  Engine.running = true;
+}
+
+function updateEngineSound(dt) {
+  if (!Engine.running || !audioCtx) return;
+  Engine.acc += dt;
+  if (Engine.acc < 0.033) return;
+  Engine.acc = 0;
+
+  const ctx = audioCtx;
+  const t = ctx.currentTime;
+  const C = V();
+
+  const spd = player.speed;
+  const rev = spd < -0.5;
+  const ratio = Math.min(1, Math.abs(spd) / Math.max(1, C.maxSpeed));
+  const rpm = Math.pow(ratio, 0.85);
+
+  /* 前进与倒车使用不同的基频曲线与滤波，音色区分明显 */
+  const baseFreq = rev ? (38 + rpm * 72) : (52 + rpm * 164);
+  const cutoff   = rev ? (240 + ratio * 900) : (420 + ratio * 3000);
+  const qVal     = rev ? 5.5 : 2.4;
+
+  Engine.osc[0].frequency.setTargetAtTime(baseFreq, t, 0.05);
+  Engine.osc[1].frequency.setTargetAtTime(baseFreq * 0.5, t, 0.06);
+  Engine.osc[2].frequency.setTargetAtTime(baseFreq * 2.02, t, 0.05);
+
+  Engine.filter.frequency.setTargetAtTime(cutoff, t, 0.08);
+  Engine.filter.Q.setTargetAtTime(qVal, t, 0.12);
+
+  Engine.noiseFilter.frequency.setTargetAtTime(Math.max(80, baseFreq * 3.2), t, 0.07);
+  Engine.noiseGain.gain.setTargetAtTime(rev ? 0.34 : (0.20 + ratio * 0.28), t, 0.10);
+
+  const throttleOn = !!(keys['KeyW'] || keys['ArrowUp'] || touchThrottle);
+  const brakeOn    = !!(keys['KeyS'] || keys['ArrowDown'] || touchBrake);
+
+  let vol = 0;
+  if (state.phase === 'playing') {
+    if (rev) {
+      vol = 0.017 + ratio * 0.030;
+    } else {
+      vol = 0.013 + ratio * 0.048 + (throttleOn ? 0.010 : 0);
+      if (brakeOn) vol *= 0.85;
+    }
+  }
+  Engine.master.gain.setTargetAtTime(vol, t, 0.07);
+}
 
 /* ============================================================
    🎵 多 BGM
@@ -6794,6 +6955,8 @@ function startLevel(levelId) {
 }
 
 function resetGame() {
+  initAudio();
+  startEngineSound();
   state.phase = 'playing';
   state.elapsed = 0; state.wave = 0;
   state.waveTimer = 0; state.waveClearTimer = 0;
@@ -7254,8 +7417,21 @@ function garagePreview(id) {
   garageViewer.yaw = 0.62;
   garageViewer.pitch = 0.26;
 
-  document.getElementById('garageName').textContent = veh.icon + ' ' + vehName(id);
-  document.getElementById('garageDesc').textContent = vehDesc(id);
+  const unlocked = isVehicleUnlocked(id);
+  const ruleText = unlocked ? '' : (CAR_UNLOCK_RULES[id] ? T(CAR_UNLOCK_RULES[id].textKey) : '');
+
+  document.getElementById('garageName').textContent =
+    (unlocked ? '' : '🔒 ') + veh.icon + ' ' + vehName(id);
+
+  /* 描述文本（未解锁时附加解锁条件） */
+  const descEl = document.getElementById('garageDesc');
+  descEl.textContent = vehDesc(id);
+  if (!unlocked && ruleText) {
+    const lockLine = document.createElement('span');
+    lockLine.className = 'lock-line';
+    lockLine.textContent = '🔒 ' + ruleText;
+    descEl.appendChild(lockLine);
+  }
 
   const bars = [
     [T('statSpeed'), veh.maxSpeed / 102],
@@ -7268,7 +7444,12 @@ function garagePreview(id) {
   ).join('');
 
   const selBtn = document.getElementById('garageSelectBtn');
-  if (id === selectedCarId) {
+  selBtn.classList.remove('locked-btn');
+  if (!unlocked) {
+    selBtn.textContent = '🔒 ' + T('carLocked');
+    selBtn.classList.remove('primary');
+    selBtn.classList.add('locked-btn');
+  } else if (id === selectedCarId) {
     selBtn.textContent = T('inUse');
     selBtn.classList.remove('primary');
   } else {
@@ -7290,11 +7471,8 @@ function renderGarageList() {
       (unlocked
         ? (id === selectedCarId ? `<span class="gi-badge">${T('inUse')}</span>` : '')
         : `<span class="gi-lock" title="${ruleText}">🔒</span>`);
-    if (unlocked) {
-      bindTap(el, () => { sfxUI(); garagePreview(id); renderGarageList(); });
-    } else {
-      el.addEventListener('click', () => { sfxUI(); });
-    }
+    /* 未解锁的车辆也可以点击查看外观，只是不能选用 */
+    bindTap(el, () => { sfxUI(); garagePreview(id); renderGarageList(); });
     list.appendChild(el);
   }
 }
@@ -7315,7 +7493,12 @@ function closeGarage() {
 bindTap(document.getElementById('garageBtn'), () => { initAudio(); sfxUI(); openGarage(); });
 bindTap(document.getElementById('garageCloseBtn'), () => { sfxUI(); closeGarage(); });
 bindTap(document.getElementById('garageSelectBtn'), () => {
-  if (!isVehicleUnlocked(garageCurrentId)) return;
+  if (!isVehicleUnlocked(garageCurrentId)) {
+    sfxUI();
+    const rule = CAR_UNLOCK_RULES[garageCurrentId];
+    if (rule) showUnlockToast('🔒 ' + T(rule.textKey));
+    return;
+  }
   if (garageCurrentId === selectedCarId) { sfxUI(); return; }
   selectedCarId = garageCurrentId;
   try { localStorage.setItem('myCarSelectedCar', selectedCarId); } catch (e) {}
@@ -7445,6 +7628,9 @@ function animate() {
   const rawDt = Math.min(clock.getDelta(), 0.05);
 
   if (state.phase === 'boot') { renderer.render(scene, camera); return; }
+
+  /* 引擎声浪（所有阶段都更新，非游戏阶段自动淡出） */
+  updateEngineSound(rawDt);
 
   if (state.phase === 'menu') {
     if (!menuBgStarted2) { initMenuBg(); menuBgStarted2 = true; }
