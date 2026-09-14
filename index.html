@@ -258,39 +258,90 @@
     pointer-events:none;
   }
 
+  /* ============================================================
+     移动端按键（拟物化重制 · 切角八边形 · 内嵌高光/阴影）
+     ============================================================ */
   .touch-btn{
     position:fixed;display:none;align-items:center;justify-content:center;
-    border-radius:50%;font-weight:900;color:#08100E;
+    font-weight:900;font-family:var(--font-ui);
     z-index:20;pointer-events:auto;cursor:pointer;
-    user-select:none;letter-spacing:1px;
-    transition:transform .05s,filter .08s;
+    user-select:none;-webkit-user-select:none;letter-spacing:1px;
+    clip-path:polygon(27% 0,73% 0,100% 27%,100% 73%,73% 100%,27% 100%,0 73%,0 27%);
+    transition:transform .06s, filter .08s;
+    will-change:transform;
+    text-shadow:0 1px 0 rgba(255,255,255,.30);
   }
-  .touch-btn.pressed{transform:scale(.9);filter:brightness(1.25)}
+  .touch-btn.pressed{
+    transform:scale(.92);
+    filter:brightness(1.22) saturate(1.08);
+  }
+
+  /* 油门 —— 青绿能量核心 */
   #touchThrottle{
-    right:calc(20px + env(safe-area-inset-right));bottom:calc(128px + env(safe-area-inset-bottom));
+    right:calc(20px + env(safe-area-inset-right));
+    bottom:calc(128px + env(safe-area-inset-bottom));
     width:92px;height:92px;font-size:14px;
-    background:radial-gradient(circle at 36% 32%,#8CF2DC,#146A5A);
-    box-shadow:0 0 0 3px #080A0F,0 0 24px rgba(79,221,192,.75);
+    color:#04140E;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.42) 0%, rgba(255,255,255,0) 46%),
+      radial-gradient(circle at 50% 118%, #063A2E 0%, #0F6A56 38%, #1FA98C 70%, #74EBD2 100%);
+    box-shadow:
+      inset 0 0 0 2.5px rgba(4,12,10,.92),
+      inset 0 0 0 5px rgba(140,255,225,.26),
+      inset 0 -9px 15px rgba(0,0,0,.40),
+      inset 0 8px 13px rgba(255,255,255,.24);
+    text-shadow:0 1px 0 rgba(190,255,240,.55);
   }
+
+  /* 刹车 —— 赤红制动核心 */
   #touchBrake{
-    right:calc(20px + env(safe-area-inset-right));bottom:calc(20px + env(safe-area-inset-bottom));
+    right:calc(20px + env(safe-area-inset-right));
+    bottom:calc(20px + env(safe-area-inset-bottom));
     width:92px;height:92px;font-size:14px;
-    background:radial-gradient(circle at 36% 32%,#FF8FA3,#8A1B32);
     color:#FFF;
-    box-shadow:0 0 0 3px #080A0F,0 0 24px rgba(255,77,109,.75);
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.34) 0%, rgba(255,255,255,0) 46%),
+      radial-gradient(circle at 50% 118%, #4A0512 0%, #7E1128 38%, #C42A48 70%, #FF7E96 100%);
+    box-shadow:
+      inset 0 0 0 2.5px rgba(12,2,4,.92),
+      inset 0 0 0 5px rgba(255,150,175,.26),
+      inset 0 -9px 15px rgba(0,0,0,.42),
+      inset 0 8px 13px rgba(255,255,255,.22);
+    text-shadow:0 1px 0 rgba(0,0,0,.55);
   }
+
+  /* 跳跃 —— 琥珀脉冲 */
   #touchJump{
-    right:calc(126px + env(safe-area-inset-right));bottom:calc(140px + env(safe-area-inset-bottom));
+    right:calc(126px + env(safe-area-inset-right));
+    bottom:calc(140px + env(safe-area-inset-bottom));
     width:64px;height:64px;font-size:12px;
-    background:radial-gradient(circle at 36% 32%,#FFD98C,#8A5A0E);
-    box-shadow:0 0 0 3px #080A0F,0 0 20px rgba(255,179,71,.75);
+    color:#2A1600;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.45) 0%, rgba(255,255,255,0) 46%),
+      radial-gradient(circle at 50% 118%, #4A2A00 0%, #8A5406 38%, #D89413 70%, #FFD98C 100%);
+    box-shadow:
+      inset 0 0 0 2px rgba(14,8,0,.9),
+      inset 0 0 0 4px rgba(255,220,150,.26),
+      inset 0 -7px 12px rgba(0,0,0,.38),
+      inset 0 6px 10px rgba(255,255,255,.26);
+    text-shadow:0 1px 0 rgba(255,235,190,.5);
   }
+
+  /* 闪冲 —— 幽紫跃迁 */
   #touchDodge{
-    right:calc(126px + env(safe-area-inset-right));bottom:calc(20px + env(safe-area-inset-bottom));
+    right:calc(126px + env(safe-area-inset-right));
+    bottom:calc(20px + env(safe-area-inset-bottom));
     width:64px;height:64px;font-size:12px;
-    background:radial-gradient(circle at 36% 32%,#D2B6FF,#4A1E8A);
     color:#FFF;
-    box-shadow:0 0 0 3px #080A0F,0 0 20px rgba(167,139,250,.75);
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.34) 0%, rgba(255,255,255,0) 46%),
+      radial-gradient(circle at 50% 118%, #240A44 0%, #46188A 38%, #7B45D8 70%, #D2B6FF 100%);
+    box-shadow:
+      inset 0 0 0 2px rgba(8,3,16,.9),
+      inset 0 0 0 4px rgba(190,160,255,.26),
+      inset 0 -7px 12px rgba(0,0,0,.38),
+      inset 0 6px 10px rgba(255,255,255,.22);
+    text-shadow:0 1px 0 rgba(0,0,0,.5);
   }
 
   /* ============================================================
@@ -424,6 +475,7 @@
     padding:26px 28px;
     display:flex;flex-direction:column;gap:11px;
     min-width:250px;max-width:92%;
+    max-height:92vh;overflow-y:auto;
   }
   .pause-box h2{
     color:var(--text);font-size:18px;letter-spacing:8px;
@@ -443,6 +495,7 @@
   }
   .pause-box button:hover{background:linear-gradient(180deg,#2C3852,#1A2130);box-shadow:inset 0 0 0 1.5px rgba(79,221,192,.7)}
   .pause-box button:active{transform:translate(2px,2px)}
+
   .settings-title{
     color:var(--hot);font-size:10px;letter-spacing:4px;
     text-align:center;margin-top:10px;margin-bottom:2px;font-weight:900;
@@ -474,6 +527,52 @@
     min-width:30px;text-align:right;font-variant-numeric:tabular-nums;
   }
 
+  /* ===== 菜单内全屏按钮 ===== */
+  .settings-box .fs-btn{
+    background:linear-gradient(180deg,#232C40,#151A26);
+    border:none;
+    color:var(--text);
+    font-family:var(--font-ui);font-weight:900;
+    font-size:13px;padding:11px 16px;
+    cursor:pointer;letter-spacing:3px;
+    clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+    box-shadow:inset 0 0 0 1.5px rgba(79,221,192,.35);
+    transition:transform .05s, background .1s, box-shadow .1s;
+  }
+  .settings-box .fs-btn:hover{background:linear-gradient(180deg,#2C3852,#1A2130);box-shadow:inset 0 0 0 1.5px rgba(79,221,192,.7)}
+  .settings-box .fs-btn:active{transform:translate(2px,2px)}
+
+  /* ===== 菜单内语言行（暂停 / 设置共用） ===== */
+  .lang-row{
+    display:flex;gap:8px;justify-content:center;padding:2px 0;
+  }
+  .lang-row .lang-btn{
+    flex:1;min-width:0;
+    height:34px;
+    padding:0 10px;
+    font-size:12px;
+    letter-spacing:2px;
+    background:linear-gradient(180deg,#1B2333,#10141D);
+    color:var(--text-3);
+    border:none;
+    font-family:var(--font-ui);font-weight:900;
+    cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);
+    box-shadow:inset 0 0 0 1.5px rgba(79,221,192,.28);
+    transition:all .15s;
+  }
+  .lang-row .lang-btn:hover{
+    color:var(--text-2);
+    box-shadow:inset 0 0 0 1.5px rgba(79,221,192,.7),0 0 16px rgba(79,221,192,.2);
+  }
+  .lang-row .lang-btn.active{
+    background:linear-gradient(180deg,var(--hot),var(--hot-2));
+    color:#1A0F02;
+    box-shadow:0 0 18px rgba(255,179,71,.55);
+  }
+  .lang-row .lang-btn:active{transform:translate(2px,2px)}
+
   /* ===== 主菜单 ===== */
   #startScreen{
     position:fixed;inset:0;z-index:50;
@@ -481,7 +580,7 @@
     gap:10px;pointer-events:auto;padding:16px;overflow:hidden;
   }
   #menuBgCanvas{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0}
-  #startScreen > *:not(#menuBgCanvas){position:relative;z-index:1}
+  #startScreen > *:not(#menuBgCanvas):not(#langSwitch){position:relative;z-index:1}
   #startScreen h1{
     font-size:clamp(28px,6.2vw,58px);
     color:var(--text);font-weight:900;letter-spacing:6px;
@@ -545,11 +644,11 @@
   #startScreen.boot-transition > .btn-grid{animation:bootFadeIn .9s .9s cubic-bezier(.2,.8,.2,1) both}
   @keyframes bootFadeIn{from{opacity:0;transform:translateY(30px) scale(.94)}to{opacity:1;transform:translateY(0) scale(1)}}
 
-  /* ===== 语言切换（主界面左下角） ===== */
+  /* ===== 语言切换（主界面左下角 · 已修复定位） ===== */
   #langSwitch{
     position:fixed;
-    left:calc(6px + env(safe-area-inset-left));
-    bottom:calc(6px + env(safe-area-inset-bottom));
+    left:calc(8px + env(safe-area-inset-left));
+    bottom:calc(8px + env(safe-area-inset-bottom));
     display:flex;gap:8px;
     z-index:6;
     pointer-events:auto;
@@ -593,6 +692,7 @@
     padding:26px 28px;
     display:flex;flex-direction:column;gap:12px;
     min-width:280px;max-width:92%;
+    max-height:92vh;overflow-y:auto;
   }
   .settings-box h2{
     color:var(--text);font-size:18px;letter-spacing:8px;
@@ -797,6 +897,32 @@
     box-shadow:inset 0 0 0 1.5px rgba(255,179,71,.5);
     clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);
     animation:pulse 1.6s ease-in-out infinite;
+  }
+
+  /* ===== 浮动解锁提示 ===== */
+  .floating-toast{
+    position:fixed;
+    left:50%;top:18%;
+    transform:translateX(-50%);
+    z-index:180;
+    pointer-events:none;
+    white-space:nowrap;
+    max-width:90vw;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    color:var(--hot);
+    font-size:13px;font-weight:900;letter-spacing:2px;
+    background:linear-gradient(180deg,#2A1E0A,#16100A);
+    padding:10px 18px;
+    box-shadow:inset 0 0 0 1.5px rgba(255,179,71,.65), 0 6px 22px rgba(0,0,0,.6);
+    clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+    animation:toastIn .45s cubic-bezier(.2,1.4,.5,1);
+    transition:opacity .5s ease-out;
+  }
+  .floating-toast.out{opacity:0}
+  @keyframes toastIn{
+    from{opacity:0;transform:translateX(-50%) translateY(-18px) scale(.92)}
+    to{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}
   }
 
   .victory-stars{
@@ -1124,7 +1250,7 @@
     #bootScreen .boot-hint{font-size:13px;padding:11px 22px;letter-spacing:4px;margin-top:18px}
     #bootScreen .boot-sub{font-size:10px;letter-spacing:3px}
 
-    #langSwitch{left:calc(4px + env(safe-area-inset-left));bottom:calc(4px + env(safe-area-inset-bottom));gap:6px}
+    #langSwitch{left:calc(6px + env(safe-area-inset-left));bottom:calc(6px + env(safe-area-inset-bottom));gap:6px}
     .lang-btn{width:32px;height:32px;font-size:11px}
 
     .over-box,.victory-box{padding:16px 18px}
@@ -1175,12 +1301,15 @@
     .settings-title{font-size:10px;letter-spacing:3px}
     .slider-row label{font-size:10px;min-width:34px;letter-spacing:1px}
     .slider-row .vol-val{font-size:10px;min-width:26px}
+    .lang-row .lang-btn{height:30px;font-size:11px}
+    .settings-box .fs-btn{font-size:12px;padding:9px 14px}
 
     #levelSelectScreen h2{letter-spacing:5px}
     #forceRotateHint{font-size:10px;padding:6px 12px;letter-spacing:1px}
     #bossBar{top:calc(60px + env(safe-area-inset-top));width:80%}
     #bossBar .boss-label{font-size:11px;letter-spacing:4px}
     .unlock-toast{font-size:10.5px;letter-spacing:1px}
+    .floating-toast{font-size:11px;padding:8px 14px;top:14%}
     #storyText{font-size:13px;letter-spacing:2px;bottom:18%}
   }
 
@@ -1235,6 +1364,13 @@
       <div class="settings-title" data-i18n="volumeTitle">音 量 调 节</div>
       <div class="slider-row"><label data-i18n="sfx">音效</label><input type="range" class="vol-slider" data-type="sfx" min="0" max="100" value="100"><span class="vol-val" data-val="sfx">100</span></div>
       <div class="slider-row"><label data-i18n="music">音乐</label><input type="range" class="vol-slider" data-type="music" min="0" max="100" value="100"><span class="vol-val" data-val="music">100</span></div>
+      <div class="settings-title" data-i18n="displayTitle">显 示</div>
+      <button class="fs-btn" data-fs-btn="1">全 屏</button>
+      <div class="settings-title" data-i18n="langTitle">语 言</div>
+      <div class="lang-row">
+        <button class="lang-btn" data-lang="en" title="English">EN</button>
+        <button class="lang-btn" data-lang="zh" title="简体中文">中</button>
+      </div>
     </div>
   </div>
 
@@ -1323,6 +1459,8 @@
       <div class="settings-title" data-i18n="volumeTitle">音 量 调 节</div>
       <div class="slider-row"><label data-i18n="sfx">音效</label><input type="range" class="vol-slider" data-type="sfx" min="0" max="100" value="100"><span class="vol-val" data-val="sfx">100</span></div>
       <div class="slider-row"><label data-i18n="music">音乐</label><input type="range" class="vol-slider" data-type="music" min="0" max="100" value="100"><span class="vol-val" data-val="music">100</span></div>
+      <div class="settings-title" data-i18n="displayTitle">显 示</div>
+      <button class="fs-btn" data-fs-btn="1">全 屏</button>
       <button class="big-btn" id="settingsCloseBtn" data-i18n="close" style="margin-top:12px">关 闭</button>
     </div>
   </div>
@@ -1468,6 +1606,8 @@ const I18N = {
     /* 暂停 */
     paused: '暂 停', resume: '继续游戏', backToMenu: '返回主菜单',
     volumeTitle: '音 量 调 节', sfx: '音效', music: '音乐',
+    displayTitle: '显 示', langTitle: '语 言',
+    fullscreen: '全 屏', exitFullscreen: '退 出 全 屏',
 
     /* 主菜单 */
     startGame: '开 始 游 戏', garageBtn: '车 库', galleryBtn: '鉴 赏',
@@ -1499,11 +1639,18 @@ const I18N = {
     unlockTruck: '解锁「大卡车」',
     unlockTrain: '解锁「火车头」',
     unlockHover: '突破第 15 波解锁「悬浮导弹车」',
+    unlockByWave: '通过波次解锁更多战车',
     carUnlockDefault: '默认拥有',
     carUnlockMotorcycle: '通关第 5 关解锁',
     carUnlockTruck: '通关第 8 关解锁',
     carUnlockTrain: '通关第 15 关解锁',
     carUnlockHover: '无限模式通过第 15 波解锁',
+    carUnlockTank: '无限模式通过第 5 波解锁',
+    carUnlockFuture: '无限模式通过第 10 波解锁',
+    carUnlockPhantom: '无限模式通过第 18 波解锁',
+    carUnlockCyber: '无限模式通过第 20 波解锁',
+    carUnlockSiege: '无限模式通过第 22 波解锁',
+    carUnlockChampion: '无限模式通过第 25 波解锁',
 
     /* 胜利 */
     levelClear: '关 卡 完 成',
@@ -1621,7 +1768,8 @@ const I18N = {
       <ul>
         <li>打光本关要求的波次就算通关，用时越短星星越多。</li>
         <li>通关第 <b>5</b> 关解锁 <b>摩托车</b>；第 <b>8</b> 关解锁 <b>大卡车</b>。</li>
-        <li>通关第 <b>15</b> 关解锁 <b>火车头</b>；无限模式打到第 <b>15</b> 波解锁 <b>悬浮导弹车</b>。</li>
+        <li>通关第 <b>15</b> 关解锁 <b>火车头</b>。</li>
+        <li>无限模式打到第 <b>5 / 10 / 15 / 18 / 20 / 22 / 25</b> 波，依次解锁 <b>坦克 / 未来战车 / 悬浮导弹车 / 幻影战车 / 赛博战车 / 攻城车 / 冠军战车</b>。</li>
         <li>换车入口：主菜单 → <b>车库</b>，每辆车的手感完全不同。</li>
         <li>无限模式从一开始就开放，随时可以挑战。</li>
       </ul>
@@ -1654,6 +1802,8 @@ const I18N = {
     /* Pause */
     paused: 'PAUSED', resume: 'RESUME', backToMenu: 'MAIN MENU',
     volumeTitle: 'VOLUME', sfx: 'SFX', music: 'MUSIC',
+    displayTitle: 'DISPLAY', langTitle: 'LANGUAGE',
+    fullscreen: 'FULLSCREEN', exitFullscreen: 'EXIT FULLSCREEN',
 
     /* Main menu */
     startGame: 'START GAME', garageBtn: 'GARAGE', galleryBtn: 'GALLERY',
@@ -1685,11 +1835,18 @@ const I18N = {
     unlockTruck: 'Unlock "Big Rig"',
     unlockTrain: 'Unlock "Locomotive"',
     unlockHover: 'Reach wave 15 to unlock "Hover Missile Car"',
+    unlockByWave: 'Clear waves to unlock more vehicles',
     carUnlockDefault: 'Owned by default',
     carUnlockMotorcycle: 'Clear Level 5 to unlock',
     carUnlockTruck: 'Clear Level 8 to unlock',
     carUnlockTrain: 'Clear Level 15 to unlock',
     carUnlockHover: 'Reach wave 15 in Endless Mode',
+    carUnlockTank: 'Reach wave 5 in Endless Mode',
+    carUnlockFuture: 'Reach wave 10 in Endless Mode',
+    carUnlockPhantom: 'Reach wave 18 in Endless Mode',
+    carUnlockCyber: 'Reach wave 20 in Endless Mode',
+    carUnlockSiege: 'Reach wave 22 in Endless Mode',
+    carUnlockChampion: 'Reach wave 25 in Endless Mode',
 
     /* Victory */
     levelClear: 'LEVEL CLEAR',
@@ -1807,7 +1964,8 @@ const I18N = {
       <ul>
         <li>Clear the required waves to finish a level. Faster times earn more stars.</li>
         <li>Clear Level <b>5</b> to unlock the <b>Motorcycle</b>; Level <b>8</b> for the <b>Big Rig</b>.</li>
-        <li>Clear Level <b>15</b> for the <b>Locomotive</b>; reach wave <b>15</b> in Endless Mode for the <b>Hover Missile Car</b>.</li>
+        <li>Clear Level <b>15</b> for the <b>Locomotive</b>.</li>
+        <li>In Endless Mode, reaching waves <b>5 / 10 / 15 / 18 / 20 / 22 / 25</b> unlocks the <b>Tank / Future Car / Hover Missile Car / Phantom Car / Cyber Car / Siege Engine / Champion Car</b>.</li>
         <li>Switch cars via Main Menu → <b>Garage</b>. Every car handles completely differently.</li>
         <li>Endless Mode is unlocked from the very start — challenge it any time.</li>
       </ul>
@@ -1920,7 +2078,7 @@ function getLevelName(id) {
 function getLevelRewardText(id) {
   const parts = [];
   if (id === 16) {
-    parts.push(T('unlockHover'));
+    parts.push(T('unlockByWave'));
   } else {
     if (id < 15) parts.push(T('unlockNext'));
     else if (id === 15) parts.push(T('unlockEndless'));
@@ -2008,8 +2166,30 @@ const VEHICLES = {
     flame: [[1.00, 0.90, 0.55], [1.00, 0.42, 0.08], [0.35, 0.10, 0.02]],
     preview: { dist: 19, height: 2.4 },
   },
+  tank: {
+    id: 'tank', name: '坦克', icon: '🛡️',
+    desc: '履带压过一切的重装堡垒。速度慢、转向笨，但冲撞力近乎碾压——正面硬刚从不吃亏。',
+    maxSpeed: 48, accel: 15, brake: 100, friction: 1.7,
+    maxSteer: 0.56, steerFalloff: 0.26, steerResponse: 6, yawRateBase: 4.6, lowSpeedSteerPoint: 9,
+    hitRadius: 5.2, ramBase: 40, ramPerSpeed: 0.44,
+    exhausts: [[-0.85, 1.92, -3.62], [0.85, 1.92, -3.62]],
+    exhaustDir: [0, 0, -1],
+    flame: [[0.62, 0.55, 0.48], [1.00, 0.58, 0.18], [0.42, 0.12, 0.02]],
+    preview: { dist: 18, height: 2.4 },
+  },
+  future: {
+    id: 'future', name: '未来战车', icon: '🛸',
+    desc: '纳米涂层 + 等离子推进。加速猛、转向顺、极速高，只是车体偏轻，硬碰硬会吃亏。',
+    maxSpeed: 92, accel: 33, brake: 68, friction: 0.85,
+    maxSteer: 1.00, steerFalloff: 0.08, steerResponse: 15, yawRateBase: 11.4, lowSpeedSteerPoint: 3,
+    hitRadius: 3.0, ramBase: 24, ramPerSpeed: 0.36,
+    exhausts: [[-0.62, 0.82, -3.00], [0.62, 0.82, -3.00]],
+    exhaustDir: [0, 0, -1],
+    flame: [[0.88, 1.00, 1.00], [0.28, 0.88, 1.00], [0.05, 0.35, 1.00]],
+    preview: { dist: 12.5, height: 1.5 },
+  },
   hover: {
-    id: 'hover', name: '悬浮导弹车', icon: '🛸',
+    id: 'hover', name: '悬浮导弹车', icon: '🚀',
     desc: '黑市流出的实验兵器。悬浮滑行、转向顺滑，撞击附带高热切割——尖锐、炫酷、危险。',
     maxSpeed: 78, accel: 27, brake: 62, friction: 1.0,
     maxSteer: 0.96, steerFalloff: 0.07, steerResponse: 12, yawRateBase: 9.6, lowSpeedSteerPoint: 3,
@@ -2018,6 +2198,50 @@ const VEHICLES = {
     exhaustDir: [0, 0, -1],
     flame: [[0.94, 0.76, 1.00], [0.72, 0.40, 1.00], [0.32, 0.08, 0.70]],
     preview: { dist: 12, height: 1.6 },
+  },
+  phantom: {
+    id: 'phantom', name: '幻影战车', icon: '👻',
+    desc: '半透明的幽影载具。极速最高、转向最灵敏，撞击却很轻——它靠的是“打不到”，不是“撞得疼”。',
+    maxSpeed: 100, accel: 36, brake: 60, friction: 0.75,
+    maxSteer: 1.15, steerFalloff: 0.06, steerResponse: 17, yawRateBase: 12.6, lowSpeedSteerPoint: 3,
+    hitRadius: 2.6, ramBase: 17, ramPerSpeed: 0.36,
+    exhausts: [[-0.40, 0.86, -3.50], [0.40, 0.86, -3.50]],
+    exhaustDir: [0, 0, -1],
+    flame: [[0.92, 0.72, 1.00], [0.62, 0.26, 1.00], [0.26, 0.05, 0.66]],
+    preview: { dist: 11, height: 1.2 },
+  },
+  cyber: {
+    id: 'cyber', name: '赛博战车', icon: '⚡',
+    desc: '霓虹管线布满全身，尾焰自带电子脉冲。攻守均衡，是最“全能”的一辆改装车。',
+    maxSpeed: 84, accel: 29, brake: 78, friction: 1.05,
+    maxSteer: 0.92, steerFalloff: 0.11, steerResponse: 13, yawRateBase: 9.4, lowSpeedSteerPoint: 4,
+    hitRadius: 3.4, ramBase: 27, ramPerSpeed: 0.38,
+    exhausts: [[-0.55, 0.72, -2.42], [0.55, 0.72, -2.42]],
+    exhaustDir: [0, 0, -1],
+    flame: [[1.00, 1.00, 0.60], [1.00, 0.30, 0.78], [0.62, 0.06, 0.92]],
+    preview: { dist: 12.5, height: 1.6 },
+  },
+  siege: {
+    id: 'siege', name: '攻城车', icon: '🏰',
+    desc: '带推铲与冲锤的重型工程车。极速最低，但冲撞力全车库第一，一次正面撞击就能清空一条街。',
+    maxSpeed: 40, accel: 11, brake: 110, friction: 1.9,
+    maxSteer: 0.45, steerFalloff: 0.30, steerResponse: 5, yawRateBase: 3.8, lowSpeedSteerPoint: 11,
+    hitRadius: 6.4, ramBase: 52, ramPerSpeed: 0.46,
+    exhausts: [[-1.20, 4.00, -3.00], [1.20, 4.00, -3.00]],
+    exhaustDir: [0, 1, 0],
+    flame: [[1.00, 0.86, 0.48], [1.00, 0.44, 0.08], [0.30, 0.06, 0.02]],
+    preview: { dist: 21, height: 2.8 },
+  },
+  champion: {
+    id: 'champion', name: '冠军战车', icon: '🏆',
+    desc: '冠军限定涂装的方程式战车。速度、加速、操控、撞击无一短板——它是所有幸存者的最终答案。',
+    maxSpeed: 86, accel: 31, brake: 90, friction: 1.0,
+    maxSteer: 0.98, steerFalloff: 0.09, steerResponse: 14, yawRateBase: 10.2, lowSpeedSteerPoint: 3,
+    hitRadius: 3.6, ramBase: 34, ramPerSpeed: 0.42,
+    exhausts: [[-0.34, 1.15, -2.50], [0.34, 1.15, -2.50]],
+    exhaustDir: [0, 0, -1],
+    flame: [[1.00, 1.00, 0.86], [1.00, 0.78, 0.26], [1.00, 0.45, 0.04]],
+    preview: { dist: 13, height: 1.6 },
   },
 };
 
@@ -2038,9 +2262,33 @@ const VEHICLE_I18N = {
     zh: { name: '火车头', desc: '单节蒸汽机车。转向迟钝到令人绝望，但没有任何东西能挡住它——撞谁谁飞。' },
     en: { name: 'Locomotive', desc: 'A single-car steam engine. Hopelessly sluggish steering, but nothing can stop it — anything you hit goes flying.' },
   },
+  tank: {
+    zh: { name: '坦克', desc: '履带压过一切的重装堡垒。速度慢、转向笨，但冲撞力近乎碾压——正面硬刚从不吃亏。' },
+    en: { name: 'Tank', desc: 'A tracked fortress that crushes everything. Slow and clumsy, but its ramming power is overwhelming — never lose a head-on collision.' },
+  },
+  future: {
+    zh: { name: '未来战车', desc: '纳米涂层 + 等离子推进。加速猛、转向顺、极速高，只是车体偏轻，硬碰硬会吃亏。' },
+    en: { name: 'Future Car', desc: 'Nano coating plus plasma thrust. Violent acceleration, smooth steering, high top speed — but a light chassis that loses pure slugfests.' },
+  },
   hover: {
     zh: { name: '悬浮导弹车', desc: '黑市流出的实验兵器。悬浮滑行、转向顺滑，撞击附带高热切割——尖锐、炫酷、危险。' },
     en: { name: 'Hover Missile Car', desc: 'A black-market experimental weapon. Hovers, glides, turns smoothly, and rams with cutting heat — sharp, flashy, dangerous.' },
+  },
+  phantom: {
+    zh: { name: '幻影战车', desc: '半透明的幽影载具。极速最高、转向最灵敏，撞击却很轻——它靠的是“打不到”，不是“撞得疼”。' },
+    en: { name: 'Phantom Car', desc: 'A translucent spectre craft. Highest top speed, sharpest steering, but a light ram — it survives by not being hit, not by hitting hard.' },
+  },
+  cyber: {
+    zh: { name: '赛博战车', desc: '霓虹管线布满全身，尾焰自带电子脉冲。攻守均衡，是最“全能”的一辆改装车。' },
+    en: { name: 'Cyber Car', desc: 'Neon tubing over every panel, exhaust spitting digital pulses. Balanced in every stat — the most all-round modified car there is.' },
+  },
+  siege: {
+    zh: { name: '攻城车', desc: '带推铲与冲锤的重型工程车。极速最低，但冲撞力全车库第一，一次正面撞击就能清空一条街。' },
+    en: { name: 'Siege Engine', desc: 'A heavy engineering vehicle with a dozer blade and ram hammer. Lowest top speed, but the highest ramming power in the garage — one hit can clear a street.' },
+  },
+  champion: {
+    zh: { name: '冠军战车', desc: '冠军限定涂装的方程式战车。速度、加速、操控、撞击无一短板——它是所有幸存者的最终答案。' },
+    en: { name: 'Champion Car', desc: 'A champion-liveried formula car. Speed, acceleration, handling, ramming — no weak stat at all. The final answer for every survivor.' },
   },
 };
 function vehName(id) {
@@ -2064,7 +2312,13 @@ const CAR_UNLOCK_RULES = {
   motorcycle: { textKey: 'carUnlockMotorcycle', check: () => isLevelCleared(5) },
   truck:      { textKey: 'carUnlockTruck',      check: () => isLevelCleared(8) },
   train:      { textKey: 'carUnlockTrain',      check: () => isLevelCleared(15) },
+  tank:       { textKey: 'carUnlockTank',       check: () => (progress.infiniteBest || 0) >= 5 },
+  future:     { textKey: 'carUnlockFuture',     check: () => (progress.infiniteBest || 0) >= 10 },
   hover:      { textKey: 'carUnlockHover',      check: () => (progress.infiniteBest || 0) >= 15 },
+  phantom:    { textKey: 'carUnlockPhantom',    check: () => (progress.infiniteBest || 0) >= 18 },
+  cyber:      { textKey: 'carUnlockCyber',      check: () => (progress.infiniteBest || 0) >= 20 },
+  siege:      { textKey: 'carUnlockSiege',      check: () => (progress.infiniteBest || 0) >= 22 },
+  champion:   { textKey: 'carUnlockChampion',   check: () => (progress.infiniteBest || 0) >= 25 },
 };
 function isVehicleUnlocked(id) {
   if (id === 'coupe') return true;
@@ -2371,12 +2625,18 @@ function musicHat(t) {
 /* ============================================================
    🖥️ 全屏 + 强制横屏
    ============================================================ */
+function isFullscreen() {
+  return !!(document.fullscreenElement || document.webkitFullscreenElement ||
+            document.mozFullScreenElement || document.msFullscreenElement);
+}
 function requestFullscreenSafe() {
   if (ENV.detected && !ENV.canFullscreen) return false;
   try {
     const el = document.documentElement;
     if (el.requestFullscreen) { el.requestFullscreen().catch(() => {}); return true; }
     if (el.webkitRequestFullscreen) { el.webkitRequestFullscreen(); return true; }
+    if (el.mozRequestFullScreen) { el.mozRequestFullScreen(); return true; }
+    if (el.msRequestFullscreen) { el.msRequestFullscreen(); return true; }
   } catch (e) {}
   return false;
 }
@@ -2387,6 +2647,30 @@ function enableForceRotate() {
   setTimeout(onResize, 30);
   setTimeout(onResize, 120);
   setTimeout(onResize, 300);
+}
+function toggleFullscreen() {
+  sfxUI();
+  if (isFullscreen()) {
+    try {
+      if (document.exitFullscreen) document.exitFullscreen();
+      else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
+      else if (document.msExitFullscreen) document.msExitFullscreen();
+    } catch (e) {}
+    return;
+  }
+  if (ENV.isMobile && ENV.detected && !ENV.canFullscreen) {
+    enableForceRotate();
+    return;
+  }
+  if (requestFullscreenSafe()) tryLockLandscape();
+  setTimeout(updateFullscreenButtons, 160);
+}
+function updateFullscreenButtons() {
+  const fs = isFullscreen() || state.forceRotate;
+  document.querySelectorAll('.fs-btn').forEach(b => {
+    b.textContent = fs ? T('exitFullscreen') : T('fullscreen');
+  });
 }
 
 /* ============================================================
@@ -2503,7 +2787,6 @@ const MAP_POOL = ['park', 'volcano', 'desert', 'aquarium'];
 let currentMapType = 'park';
 const MAP_META = {
   park:     { sky: 0x7FB4DE, hemiSky: 0xC8E8FF, hemiGround: 0x5A6A72, hemiInt: 1.0, sunCol: 0xFFF4E0, sunInt: 1.3, roofCol: 0x2D5A20, ridgeCol: 0x1A3A0A, grid1: 0xA8E088, grid2: 0x88C068, fogNear: 120, fogFar: 400 },
-  /* 火山地图：天光整体抬高，地面调亮，保证暗色僵尸轮廓清晰可辨 */
   volcano:  { sky: 0x3A1E18, hemiSky: 0xB86A52, hemiGround: 0x3E2E26, hemiInt: 1.05, sunCol: 0xFF9A58, sunInt: 1.30, roofCol: 0x3A1410, ridgeCol: 0x1A0808, grid1: 0xC05838, grid2: 0x703020, fogNear: 95,  fogFar: 330 },
   desert:   { sky: 0xC8A870, hemiSky: 0xFFF0C0, hemiGround: 0x8A7040, hemiInt: 1.1,  sunCol: 0xFFF4D0, sunInt: 1.55, roofCol: 0x8A7A5A, ridgeCol: 0x5A4A30, grid1: 0xE0C888, grid2: 0xA89060, fogNear: 130, fogFar: 420 },
   aquarium: { sky: 0x1C5478, hemiSky: 0x80D0F0, hemiGround: 0x103050, hemiInt: 1.05, sunCol: 0xA0E0FF, sunInt: 1.05, roofCol: 0x1A4A6A, ridgeCol: 0x0A2A44, grid1: 0x60C8E8, grid2: 0x307898, fogNear: 80,  fogFar: 300 },
@@ -2538,7 +2821,6 @@ function makeGroundTexture(type) {
       ctx.fillRect(Math.random() * size, Math.random() * size, 1 + Math.random() * 2.5, 1 + Math.random() * 2.5);
     }
   } else if (type === 'volcanic') {
-    /* ★ 火山灰地面：中高明度冷灰底色，让深色僵尸剪影保持清晰对比 */
     ctx.fillStyle = '#8E8A82'; ctx.fillRect(0, 0, size, size);
     for (let i = 0; i < 260; i++) {
       const x = Math.random() * size, y = Math.random() * size, r = 5 + Math.random() * 28;
@@ -2589,7 +2871,6 @@ function makeGroundTexture(type) {
       ctx.fillRect(Math.random() * size, Math.random() * size, 1 + Math.random() * 3, 1 + Math.random() * 3);
     }
   } else {
-    /* 草地 */
     ctx.fillStyle = '#6FA84F'; ctx.fillRect(0, 0, size, size);
     for (let i = 0; i < 220; i++) {
       const x = Math.random() * size, y = Math.random() * size, r = 8 + Math.random() * 30;
@@ -2680,7 +2961,6 @@ function makeWallTexture(type) {
     grad.addColorStop(0.5, '#0E3C60');
     grad.addColorStop(1, '#082438');
     ctx.fillStyle = grad; ctx.fillRect(0, 0, 256, 256);
-    /* 玻璃面板分格 */
     ctx.strokeStyle = 'rgba(120,220,255,0.35)';
     ctx.lineWidth = 3;
     for (let i = 0; i <= 4; i++) {
@@ -2695,7 +2975,6 @@ function makeWallTexture(type) {
       ctx.beginPath(); ctx.moveTo(p, 0); ctx.lineTo(p, 256); ctx.stroke();
       ctx.beginPath(); ctx.moveTo(0, p); ctx.lineTo(256, p); ctx.stroke();
     }
-    /* 水波光斑 */
     for (let i = 0; i < 44; i++) {
       const x = Math.random() * 256, y = Math.random() * 256, r = 6 + Math.random() * 34;
       const g = ctx.createRadialGradient(x, y, 0, x, y, r);
@@ -2703,14 +2982,12 @@ function makeWallTexture(type) {
       g.addColorStop(1, 'rgba(160,240,255,0)');
       ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
     }
-    /* 气泡 */
     for (let i = 0; i < 90; i++) {
       const x = Math.random() * 256, y = Math.random() * 256, r = 1 + Math.random() * 4;
       ctx.strokeStyle = `rgba(200,245,255,${0.18 + Math.random() * 0.32})`;
       ctx.lineWidth = 0.8;
       ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.stroke();
     }
-    /* 鱼剪影 */
     for (let i = 0; i < 12; i++) {
       const x = Math.random() * 256, y = Math.random() * 256;
       const s = 0.6 + Math.random() * 1.2;
@@ -2725,7 +3002,6 @@ function makeWallTexture(type) {
       ctx.closePath(); ctx.fill();
     }
   } else {
-    /* 红砖 */
     ctx.fillStyle = '#6E2C1E'; ctx.fillRect(0, 0, 256, 256);
     const rowH = 24, brickW = 48;
     ctx.fillStyle = '#301A12';
@@ -2805,25 +3081,21 @@ function buildEnvironment(mapType) {
 
   const meta = MAP_META[mapType] || MAP_META.park;
 
-  /* 天空与雾 */
   scene.background.setHex(meta.sky);
   scene.fog.color.setHex(meta.sky);
   scene.fog.near = meta.fogNear;
   scene.fog.far = meta.fogFar;
 
-  /* 光照 */
   hemi.color.setHex(meta.hemiSky);
   hemi.groundColor.setHex(meta.hemiGround);
   hemi.intensity = meta.hemiInt;
   sun.color.setHex(meta.sunCol);
   sun.intensity = meta.sunInt;
 
-  /* 太阳与云 */
   sunOrb.visible = (mapType === 'park' || mapType === 'desert');
   sunGlow.visible = sunOrb.visible;
   cloudGroup.visible = (mapType === 'park' || mapType === 'desert');
 
-  /* 地面 */
   const gTex = makeGroundTexture(mapType === 'volcano' ? 'volcanic' : mapType === 'desert' ? 'sand' : mapType === 'aquarium' ? 'marble' : 'grass');
   groundMesh = new THREE.Mesh(
     new THREE.PlaneGeometry(400, 400),
@@ -2833,13 +3105,11 @@ function buildEnvironment(mapType) {
   groundMesh.receiveShadow = true;
   scene.add(groundMesh);
 
-  /* 网格 */
   gridMesh = new THREE.GridHelper(400, 100, meta.grid1, meta.grid2);
   gridMesh.material.transparent = true; gridMesh.material.opacity = 0.09;
   gridMesh.position.y = 0.015;
   scene.add(gridMesh);
 
-  /* 围墙 */
   const wTex = makeWallTexture(mapType === 'volcano' ? 'volcanic' : mapType === 'desert' ? 'stone' : mapType === 'aquarium' ? 'aquarium' : 'brick');
   wallMesh = new THREE.Mesh(
     new THREE.CylinderGeometry(200, 200, 10, 64, 1, true),
@@ -2848,7 +3118,6 @@ function buildEnvironment(mapType) {
   wallMesh.position.y = 5;
   scene.add(wallMesh);
 
-  /* 顶檐 */
   roofMesh = new THREE.Mesh(
     new THREE.CylinderGeometry(201.5, 199.5, 1.2, 64, 1, true),
     new THREE.MeshStandardMaterial({ color: meta.roofCol, roughness: 0.55, metalness: 0.3, side: THREE.DoubleSide, emissive: 0x000000, emissiveIntensity: 0.15 })
@@ -3049,7 +3318,6 @@ function spawnLamp(x, z, style) {
   g.position.set(x, 0, z);
 
   if (style === 'blue') {
-    /* 小型圆柱形蓝色灯柱 */
     const poleMat = new THREE.MeshStandardMaterial({ color: 0x204060, roughness: 0.35, metalness: 0.8 });
     const glassMat = new THREE.MeshStandardMaterial({ color: 0x60C8FF, roughness: 0.1, metalness: 0.3, transparent: true, opacity: 0.85, emissive: 0x2080D0, emissiveIntensity: 1.2 });
     const base = new THREE.Mesh(SHARED_GEO.lampBase, poleMat);
@@ -3516,7 +3784,7 @@ function clearTerrain() {
 }
 
 /* ============================================================
-   🏎️ 车辆建模（5 种）
+   🏎️ 车辆建模（11 种）
    ============================================================ */
 const MAT = {
   body:  () => new THREE.MeshStandardMaterial({ color: 0x2A6FB8, roughness: 0.28, metalness: 0.85, emissive: 0x0A2040, emissiveIntensity: 0.35 }),
@@ -3823,12 +4091,374 @@ function buildHoverModel() {
   return g;
 }
 
+/* ---------- 新增 6 辆战车 ---------- */
+
+/* 🛡️ 坦克 */
+function buildTankModel() {
+  const g = new THREE.Group();
+  const armor = new THREE.MeshStandardMaterial({ color: 0x4E5A3C, roughness: 0.68, metalness: 0.5, emissive: 0x0A1408, emissiveIntensity: 0.3 });
+  const armorDark = new THREE.MeshStandardMaterial({ color: 0x2C3524, roughness: 0.78, metalness: 0.55 });
+  const trackMat = new THREE.MeshStandardMaterial({ color: 0x15181A, roughness: 0.96, metalness: 0.15 });
+  const metal = MAT.chrome();
+  const headMat = MAT.head();
+  const tailMat = MAT.tail();
+
+  const hull = new THREE.Mesh(new THREE.BoxGeometry(2.5, 1.0, 5.0), armor);
+  hull.position.set(0, 1.25, -0.1); g.add(hull);
+  const glacis = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.22, 1.5), armorDark);
+  glacis.position.set(0, 1.62, 2.35); glacis.rotation.x = -0.42; g.add(glacis);
+  const bustle = new THREE.Mesh(new THREE.BoxGeometry(2.0, 0.7, 1.0), armorDark);
+  bustle.position.set(0, 1.35, -3.0); g.add(bustle);
+
+  for (const sx of [-1.35, 1.35]) {
+    const track = new THREE.Mesh(new THREE.BoxGeometry(0.72, 1.0, 5.3), trackMat);
+    track.position.set(sx, 0.62, -0.1); g.add(track);
+    for (let i = 0; i < 5; i++) {
+      const w = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.42, 0.78, 12), armorDark);
+      w.rotation.z = Math.PI / 2;
+      w.position.set(sx, 0.62, -2.1 + i * 1.05); g.add(w);
+    }
+    const skirt = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.5, 4.6), armor);
+    skirt.position.set(sx + (sx > 0 ? 0.44 : -0.44), 1.05, -0.1); g.add(skirt);
+  }
+
+  const turret = new THREE.Mesh(new THREE.CylinderGeometry(1.18, 1.34, 0.9, 10), armor);
+  turret.position.set(0, 2.2, -0.35); g.add(turret);
+  const turretTop = new THREE.Mesh(new THREE.CylinderGeometry(0.85, 1.05, 0.35, 10), armorDark);
+  turretTop.position.set(0, 2.8, -0.35); g.add(turretTop);
+  const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.19, 3.6, 10), armorDark);
+  barrel.rotation.x = Math.PI / 2; barrel.position.set(0, 2.28, 1.85); g.add(barrel);
+  const muzzle = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.24, 0.42, 10), armor);
+  muzzle.rotation.x = Math.PI / 2; muzzle.position.set(0, 2.28, 3.6); g.add(muzzle);
+  const cupola = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.46, 0.4, 10), armorDark);
+  cupola.position.set(0.55, 3.05, -0.9); g.add(cupola);
+
+  for (const sx of [-0.85, 0.85]) {
+    const hl = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.18, 0.1), headMat);
+    hl.position.set(sx, 1.78, 3.02); g.add(hl);
+  }
+  for (const sx of [-1.0, 1.0]) {
+    const tl = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.16, 0.1), tailMat);
+    tl.position.set(sx, 1.35, -3.52); g.add(tl);
+  }
+  for (const sx of [-0.85, 0.85]) {
+    const ex = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.13, 0.7, 8), metal);
+    ex.rotation.x = Math.PI / 2; ex.position.set(sx, 1.92, -3.62); g.add(ex);
+  }
+
+  const glowMat = new THREE.MeshBasicMaterial({ color: 0xFFA040, transparent: true, opacity: 0.26, blending: THREE.AdditiveBlending, depthWrite: false });
+  const glow = new THREE.Mesh(new THREE.PlaneGeometry(3.4, 6.6), glowMat);
+  glow.rotation.x = -Math.PI / 2; glow.position.y = 0.05; g.add(glow);
+
+  g.traverse(o => { if (o.isMesh) o.castShadow = true; });
+  return g;
+}
+
+/* 🛸 未来战车 */
+function buildFutureModel() {
+  const g = new THREE.Group();
+  const hullMat = new THREE.MeshStandardMaterial({ color: 0xE2EEF6, roughness: 0.12, metalness: 0.9, emissive: 0x0A3050, emissiveIntensity: 0.6 });
+  const darkMat = new THREE.MeshStandardMaterial({ color: 0x14243A, roughness: 0.35, metalness: 0.85 });
+  const glowMat = new THREE.MeshBasicMaterial({ color: 0x40E8FF, transparent: true, opacity: 0.75, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
+  const headMat = MAT.head();
+
+  const base = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.44, 4.2), hullMat);
+  base.position.set(0, 0.80, -0.2); g.add(base);
+
+  const nose = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.30, 1.6), hullMat);
+  nose.position.set(0, 0.72, 2.35); nose.rotation.x = 0.16; g.add(nose);
+  const noseTip = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.16, 0.7), darkMat);
+  noseTip.position.set(0, 0.60, 3.25); g.add(noseTip);
+
+  const canopy = new THREE.Mesh(new THREE.SphereGeometry(0.85, 10, 7, 0, Math.PI * 2, 0, Math.PI * 0.55), MAT.glass());
+  canopy.scale.set(1.0, 0.75, 1.7);
+  canopy.position.set(0, 1.02, 0.55); g.add(canopy);
+  const spine = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.28, 3.0), darkMat);
+  spine.position.set(0, 1.06, -1.0); g.add(spine);
+
+  for (const sx of [-1, 1]) {
+    const wing = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.12, 1.9), hullMat);
+    wing.position.set(sx * 1.55, 0.86, -1.2);
+    wing.rotation.z = sx * 0.12; wing.rotation.y = sx * -0.16;
+    g.add(wing);
+    const wingGlow = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.24, 1.5), glowMat);
+    wingGlow.position.set(sx * 2.26, 0.94, -1.34);
+    g.add(wingGlow);
+  }
+
+  for (const sx of [-0.62, 0.62]) {
+    const pod = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.42, 1.5, 12), darkMat);
+    pod.rotation.x = Math.PI / 2; pod.position.set(sx, 0.82, -2.2); g.add(pod);
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(0.34, 0.07, 8, 20), glowMat);
+    ring.position.set(sx, 0.82, -2.96); g.add(ring);
+  }
+
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(1.5, 0.09, 8, 36), glowMat);
+  ring.rotation.x = -Math.PI / 2; ring.position.y = 0.34; g.add(ring);
+  const ring2 = new THREE.Mesh(new THREE.TorusGeometry(1.05, 0.05, 8, 28), glowMat);
+  ring2.rotation.x = -Math.PI / 2; ring2.position.y = 0.18; g.add(ring2);
+
+  for (const sx of [-0.42, 0.42]) {
+    const hl = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.10, 0.09), headMat);
+    hl.position.set(sx, 0.86, 3.12); g.add(hl);
+  }
+  const glow = new THREE.Mesh(new THREE.PlaneGeometry(3.0, 7.0), glowMat.clone());
+  glow.material.opacity = 0.2;
+  glow.rotation.x = -Math.PI / 2; glow.position.y = 0.05; g.add(glow);
+
+  g.traverse(o => { if (o.isMesh) o.castShadow = true; });
+  return g;
+}
+
+/* 👻 幻影战车 */
+function buildPhantomModel() {
+  const g = new THREE.Group();
+  const hullMat = new THREE.MeshStandardMaterial({ color: 0x2A1A45, roughness: 0.22, metalness: 0.8, emissive: 0x2A0A50, emissiveIntensity: 0.7, transparent: true, opacity: 0.92 });
+  const trimMat = new THREE.MeshStandardMaterial({ color: 0x120A24, roughness: 0.4, metalness: 0.75 });
+  const glowMat = new THREE.MeshBasicMaterial({ color: 0xA060FF, transparent: true, opacity: 0.6, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
+  const headMat = MAT.head();
+
+  const nose = new THREE.Mesh(new THREE.ConeGeometry(0.62, 3.2, 4), hullMat);
+  nose.rotation.x = Math.PI / 2; nose.rotation.y = Math.PI / 4;
+  nose.scale.set(1.35, 1, 1);
+  nose.position.set(0, 0.82, 1.45); g.add(nose);
+
+  const body = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.46, 2.4), hullMat);
+  body.position.set(0, 0.82, -0.9); g.add(body);
+
+  const tail = new THREE.Mesh(new THREE.ConeGeometry(0.7, 1.6, 4), hullMat);
+  tail.rotation.x = -Math.PI / 2; tail.rotation.y = Math.PI / 4;
+  tail.scale.set(1.2, 1, 1);
+  tail.position.set(0, 0.82, -2.8); g.add(tail);
+
+  const canopy = new THREE.Mesh(new THREE.BoxGeometry(0.78, 0.34, 1.5), MAT.glass());
+  canopy.position.set(0, 1.14, -0.15); canopy.rotation.x = -0.08; g.add(canopy);
+
+  for (const sx of [-1, 1]) {
+    const fin = new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.08, 0.9), hullMat);
+    fin.position.set(sx * 1.15, 0.9, -1.7);
+    fin.rotation.z = sx * 0.24; fin.rotation.y = sx * 0.4;
+    g.add(fin);
+    const finGlow = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.16, 1.0), glowMat);
+    finGlow.position.set(sx * 1.98, 1.06, -1.95);
+    finGlow.rotation.z = sx * 0.24; finGlow.rotation.y = sx * 0.4;
+    g.add(finGlow);
+  }
+
+  for (const sx of [-0.4, 0.4]) {
+    const core = new THREE.Mesh(new THREE.SphereGeometry(0.26, 10, 8), glowMat);
+    core.position.set(sx, 0.86, -3.3); g.add(core);
+  }
+
+  const ring = new THREE.Mesh(new THREE.TorusGeometry(1.35, 0.07, 8, 36), glowMat);
+  ring.rotation.x = -Math.PI / 2; ring.position.y = 0.30; g.add(ring);
+
+  for (const sx of [-0.30, 0.30]) {
+    const hl = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.09, 0.08), headMat);
+    hl.position.set(sx, 0.88, 2.9); g.add(hl);
+  }
+
+  const glow = new THREE.Mesh(new THREE.PlaneGeometry(2.6, 6.4), glowMat.clone());
+  glow.material.opacity = 0.24;
+  glow.rotation.x = -Math.PI / 2; glow.position.y = 0.05; g.add(glow);
+
+  g.traverse(o => { if (o.isMesh) o.castShadow = true; });
+  return g;
+}
+
+/* ⚡ 赛博战车 */
+function buildCyberModel() {
+  const g = new THREE.Group();
+  const bodyMat = new THREE.MeshStandardMaterial({ color: 0x14161F, roughness: 0.24, metalness: 0.92, emissive: 0x180A2A, emissiveIntensity: 0.5 });
+  const panelMat = new THREE.MeshStandardMaterial({ color: 0x2A2F44, roughness: 0.35, metalness: 0.85 });
+  const neonPink = new THREE.MeshBasicMaterial({ color: 0xFF3AA0, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
+  const neonYellow = new THREE.MeshBasicMaterial({ color: 0xFFE040, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
+  const headMat = MAT.head();
+  const tireMat = MAT.tire();
+
+  const chassis = new THREE.Mesh(new THREE.BoxGeometry(1.9, 0.34, 4.3), bodyMat);
+  chassis.position.set(0, 0.66, -0.1); g.add(chassis);
+
+  const hood = new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.34, 1.7), panelMat);
+  hood.position.set(0, 1.0, 1.5); hood.rotation.x = 0.12; g.add(hood);
+  const cabin = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.52, 1.7), bodyMat);
+  cabin.position.set(0, 1.18, -0.2); g.add(cabin);
+  const windshield = new THREE.Mesh(new THREE.BoxGeometry(1.36, 0.5, 0.07), MAT.glass());
+  windshield.position.set(0, 1.18, 0.72); windshield.rotation.x = 0.62; g.add(windshield);
+  const rearGlass = new THREE.Mesh(new THREE.BoxGeometry(1.3, 0.42, 0.07), MAT.glass());
+  rearGlass.position.set(0, 1.18, -1.05); rearGlass.rotation.x = -0.7; g.add(rearGlass);
+
+  for (const sx of [-1, 1]) {
+    const strip = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.07, 3.6), neonPink);
+    strip.position.set(sx * 0.96, 0.72, -0.1); g.add(strip);
+    const strip2 = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.06, 2.2), neonYellow);
+    strip2.position.set(sx * 0.78, 1.44, -0.2); g.add(strip2);
+  }
+  const frontBar = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.09, 0.08), neonPink);
+  frontBar.position.set(0, 0.76, 2.16); g.add(frontBar);
+  const rearBar = new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.11, 0.08), neonPink);
+  rearBar.position.set(0, 1.0, -2.26); g.add(rearBar);
+
+  const tireGeo = new THREE.CylinderGeometry(0.50, 0.50, 0.36, 18);
+  const rimGeo = new THREE.CylinderGeometry(0.28, 0.28, 0.38, 10);
+  for (const [wx, wz] of [[-1.02, 1.42], [1.02, 1.42], [-1.02, -1.42], [1.02, -1.42]]) {
+    const t = new THREE.Mesh(tireGeo, tireMat); t.rotation.z = Math.PI / 2; t.position.set(wx, 0.50, wz); g.add(t);
+    const r = new THREE.Mesh(rimGeo, neonPink); r.rotation.z = Math.PI / 2; r.position.set(wx, 0.50, wz); g.add(r);
+  }
+
+  const wing = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.08, 0.44), bodyMat);
+  wing.position.set(0, 1.58, -1.95); wing.rotation.x = -0.12; g.add(wing);
+  for (const sx of [-0.68, 0.68]) {
+    const stand = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.3, 0.14), panelMat);
+    stand.position.set(sx, 1.44, -1.95); g.add(stand);
+  }
+
+  for (const sx of [-0.55, 0.55]) {
+    const hl = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.12, 0.09), headMat);
+    hl.position.set(sx, 1.02, 2.32); g.add(hl);
+  }
+
+  const glow = new THREE.Mesh(new THREE.PlaneGeometry(3.0, 6.4), neonPink.clone());
+  glow.material.opacity = 0.2;
+  glow.rotation.x = -Math.PI / 2; glow.position.y = 0.05; g.add(glow);
+
+  g.traverse(o => { if (o.isMesh) o.castShadow = true; });
+  return g;
+}
+
+/* 🏰 攻城车 */
+function buildSiegeModel() {
+  const g = new THREE.Group();
+  const armorMat = new THREE.MeshStandardMaterial({ color: 0x4A4038, roughness: 0.72, metalness: 0.6, emissive: 0x1A0C04, emissiveIntensity: 0.3 });
+  const darkMat = new THREE.MeshStandardMaterial({ color: 0x241E1A, roughness: 0.85, metalness: 0.55 });
+  const metalMat = MAT.chrome();
+  const tireMat = MAT.tire();
+  const headMat = MAT.head();
+  const tailMat = MAT.tail();
+
+  const hull = new THREE.Mesh(new THREE.BoxGeometry(3.0, 1.5, 6.4), armorMat);
+  hull.position.set(0, 1.55, -0.4); g.add(hull);
+  const topArmor = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.5, 4.2), darkMat);
+  topArmor.position.set(0, 2.5, -1.0); g.add(topArmor);
+  const blade = new THREE.Mesh(new THREE.BoxGeometry(4.0, 1.6, 0.4), darkMat);
+  blade.position.set(0, 1.0, 3.5); blade.rotation.x = -0.25; g.add(blade);
+  for (let i = 0; i < 6; i++) {
+    const tooth = new THREE.Mesh(new THREE.ConeGeometry(0.16, 0.6, 4), metalMat);
+    tooth.rotation.x = Math.PI / 2;
+    tooth.position.set(-1.5 + i * 0.6, 0.5, 3.9); g.add(tooth);
+  }
+  const ram = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.34, 3.0, 10), darkMat);
+  ram.rotation.x = Math.PI / 2; ram.position.set(0, 2.0, 1.5); g.add(ram);
+  const ramHead = new THREE.Mesh(new THREE.SphereGeometry(0.48, 10, 8), metalMat);
+  ramHead.position.set(0, 2.0, 3.05); g.add(ramHead);
+
+  const cab = new THREE.Mesh(new THREE.BoxGeometry(1.7, 0.9, 1.4), armorMat);
+  cab.position.set(0, 3.15, -2.4); g.add(cab);
+  const cabWin = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.5, 0.08), MAT.glass());
+  cabWin.position.set(0, 3.28, -1.72); g.add(cabWin);
+
+  const tireGeo = new THREE.CylinderGeometry(0.88, 0.88, 0.62, 20);
+  const rimGeo = new THREE.CylinderGeometry(0.42, 0.42, 0.64, 10);
+  for (const az of [2.4, 0.2, -2.0]) {
+    for (const sx of [-1.6, 1.6]) {
+      const t = new THREE.Mesh(tireGeo, tireMat); t.rotation.z = Math.PI / 2; t.position.set(sx, 0.88, az); g.add(t);
+      const r = new THREE.Mesh(rimGeo, metalMat); r.rotation.z = Math.PI / 2; r.position.set(sx, 0.88, az); g.add(r);
+    }
+  }
+  for (const sx of [-1.2, 1.2]) {
+    const stack = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.2, 2.0, 10), metalMat);
+    stack.position.set(sx, 3.0, -3.0); g.add(stack);
+  }
+
+  for (const sx of [-1.0, 1.0]) {
+    const hl = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.24, 0.1), headMat);
+    hl.position.set(sx, 2.2, 2.78); g.add(hl);
+    const tl = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.2, 0.1), tailMat);
+    tl.position.set(sx, 1.7, -3.62); g.add(tl);
+  }
+
+  const glow = new THREE.Mesh(new THREE.PlaneGeometry(4.4, 9.6), new THREE.MeshBasicMaterial({ color: 0xFFA040, transparent: true, opacity: 0.26, blending: THREE.AdditiveBlending, depthWrite: false }));
+  glow.rotation.x = -Math.PI / 2; glow.position.y = 0.05; g.add(glow);
+
+  g.traverse(o => { if (o.isMesh) o.castShadow = true; });
+  return g;
+}
+
+/* 🏆 冠军战车 */
+function buildChampionModel() {
+  const g = new THREE.Group();
+  const goldMat = new THREE.MeshStandardMaterial({ color: 0xE8B53A, roughness: 0.18, metalness: 1.0, emissive: 0x4A3000, emissiveIntensity: 0.4 });
+  const bodyMat = new THREE.MeshStandardMaterial({ color: 0xB01A28, roughness: 0.22, metalness: 0.85, emissive: 0x300408, emissiveIntensity: 0.4 });
+  const darkMat = MAT.dark();
+  const tireMat = MAT.tire();
+  const headMat = MAT.head();
+  const tailMat = MAT.tail();
+
+  const tub = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.42, 4.4), bodyMat);
+  tub.position.set(0, 0.72, 0); g.add(tub);
+  const nose = new THREE.Mesh(new THREE.ConeGeometry(0.42, 1.9, 6), bodyMat);
+  nose.rotation.x = Math.PI / 2; nose.position.set(0, 0.72, 3.0); g.add(nose);
+  const frontWing = new THREE.Mesh(new THREE.BoxGeometry(2.6, 0.08, 0.7), goldMat);
+  frontWing.position.set(0, 0.5, 3.7); g.add(frontWing);
+  for (const sx of [-0.95, 0.95]) {
+    const ep = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.5, 0.7), bodyMat);
+    ep.position.set(sx, 0.72, 3.7); g.add(ep);
+  }
+  for (const sx of [-0.82, 0.82]) {
+    const pod = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.46, 1.9), bodyMat);
+    pod.position.set(sx, 0.78, -0.35); g.add(pod);
+    const podTop = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.07, 1.6), goldMat);
+    podTop.position.set(sx, 1.02, -0.35); g.add(podTop);
+  }
+  const cockpit = new THREE.Mesh(new THREE.BoxGeometry(0.66, 0.3, 1.3), MAT.glass());
+  cockpit.position.set(0, 1.04, 0.75); cockpit.rotation.x = -0.12; g.add(cockpit);
+  const intake = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.34, 0.7), darkMat);
+  intake.position.set(0, 1.12, -0.35); g.add(intake);
+  const rearWing = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.09, 0.62), goldMat);
+  rearWing.position.set(0, 1.62, -2.1); rearWing.rotation.x = -0.14; g.add(rearWing);
+  for (const sx of [-0.62, 0.62]) {
+    const stand = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.65, 0.16), bodyMat);
+    stand.position.set(sx, 1.32, -2.1); g.add(stand);
+  }
+  const diffuser = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.34, 0.5), darkMat);
+  diffuser.position.set(0, 0.6, -2.5); g.add(diffuser);
+
+  const tireGeo = new THREE.CylinderGeometry(0.52, 0.52, 0.42, 20);
+  const rimGeo = new THREE.CylinderGeometry(0.30, 0.30, 0.44, 8);
+  for (const [wx, wz] of [[-1.12, 1.75], [1.12, 1.75], [-1.16, -1.72], [1.16, -1.72]]) {
+    const t = new THREE.Mesh(tireGeo, tireMat); t.rotation.z = Math.PI / 2; t.position.set(wx, 0.52, wz); g.add(t);
+    const r = new THREE.Mesh(rimGeo, goldMat); r.rotation.z = Math.PI / 2; r.position.set(wx, 0.52, wz); g.add(r);
+  }
+  const hl = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.1, 0.08), headMat);
+  hl.position.set(0, 0.76, 3.9); g.add(hl);
+  for (const sx of [-0.42, 0.42]) {
+    const tl = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.12, 0.08), tailMat);
+    tl.position.set(sx, 0.86, -2.74); g.add(tl);
+  }
+  for (const sx of [-0.34, 0.34]) {
+    const ex = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.3, 10), goldMat);
+    ex.rotation.x = Math.PI / 2; ex.position.set(sx, 1.15, -2.42); g.add(ex);
+  }
+
+  const glow = new THREE.Mesh(new THREE.PlaneGeometry(3.2, 7.0), new THREE.MeshBasicMaterial({ color: 0xFFC860, transparent: true, opacity: 0.28, blending: THREE.AdditiveBlending, depthWrite: false }));
+  glow.rotation.x = -Math.PI / 2; glow.position.y = 0.05; g.add(glow);
+
+  g.traverse(o => { if (o.isMesh) o.castShadow = true; });
+  return g;
+}
+
 function buildVehicleModel(id) {
   switch (id) {
     case 'motorcycle': return buildMotorcycleModel();
     case 'truck':      return buildTruckModel();
     case 'train':      return buildTrainModel();
     case 'hover':      return buildHoverModel();
+    case 'tank':       return buildTankModel();
+    case 'future':     return buildFutureModel();
+    case 'phantom':    return buildPhantomModel();
+    case 'cyber':      return buildCyberModel();
+    case 'siege':      return buildSiegeModel();
+    case 'champion':   return buildChampionModel();
     default:           return buildCoupeModel();
   }
 }
@@ -4985,6 +5615,27 @@ function checkPointOverflow() {
 /* ============================================================
    🌊 波次
    ============================================================ */
+function showUnlockToast(text) {
+  const el = document.createElement('div');
+  el.className = 'floating-toast';
+  el.textContent = text;
+  document.body.appendChild(el);
+  setTimeout(() => el.classList.add('out'), 1900);
+  setTimeout(() => { if (el.parentNode) el.remove(); }, 2500);
+}
+function recordInfiniteWave() {
+  state.wavesCleared++;
+  const best = Math.max(progress.infiniteBest || 0, state.wavesCleared);
+  if (best !== (progress.infiniteBest || 0)) {
+    progress.infiniteBest = best;
+    saveProgress();
+    const newCars = getNewlyUnlockedCars();
+    if (newCars.length > 0) {
+      showUnlockToast(T('newCarUnlocked', newCars.map(id => vehName(id)).join(lang === 'zh' ? '、' : ', ')));
+      sfxCardPick();
+    }
+  }
+}
 function startWave() {
   state.wave++;
   state.waveTimer = 0; state.waveClearTimer = 0;
@@ -5001,9 +5652,7 @@ function updateSpawning(dt) {
   state.waveTimer += dt;
   if (state.mode === 'infinite') {
     if (state.waveTimer >= Tuning.Wave.waveDuration) {
-      state.wavesCleared++;
-      const best = Math.max(progress.infiniteBest || 0, state.wavesCleared);
-      if (best !== (progress.infiniteBest || 0)) { progress.infiniteBest = best; saveProgress(); }
+      recordInfiniteWave();
       startWave(); return;
     }
     let nonBossCount = 0;
@@ -5012,9 +5661,7 @@ function updateSpawning(dt) {
     if (cleared) {
       state.waveClearTimer += dt;
       if (state.waveClearTimer >= Tuning.Wave.clearWaveDelay) {
-        state.wavesCleared++;
-        const best = Math.max(progress.infiniteBest || 0, state.wavesCleared);
-        if (best !== (progress.infiniteBest || 0)) { progress.infiniteBest = best; saveProgress(); }
+        recordInfiniteWave();
         startWave(); return;
       }
     } else state.waveClearTimer = 0;
@@ -5706,12 +6353,15 @@ bindTouchButton('touchJump', () => { if (state.phase === 'playing') doJump(); },
 bindTouchButton('touchDodge', () => { if (state.phase === 'playing') doDodge(); }, () => {});
 
 bindTap(document.getElementById('pauseBtn'), () => { initAudio(); togglePause(); });
-document.querySelectorAll('.pause-box button').forEach(btn => {
+document.querySelectorAll('.pause-box button[data-act]').forEach(btn => {
   bindTap(btn, () => {
     const act = btn.dataset.act;
     if (act === 'resume') togglePause();
     else if (act === 'menu') { document.getElementById('pauseMenu').classList.remove('show'); backToLevelSelect(); }
   });
+});
+document.querySelectorAll('.fs-btn').forEach(btn => {
+  bindTap(btn, () => { initAudio(); toggleFullscreen(); });
 });
 function bindVolumeSliders() {
   document.querySelectorAll('.vol-slider').forEach(slider => {
@@ -5740,6 +6390,7 @@ function togglePause() {
   if (state.phase === 'playing') {
     state.phase = 'paused';
     document.getElementById('pauseMenu').classList.add('show');
+    updateFullscreenButtons();
     if (musicGain) musicGain.gain.value = state.musicOn ? state.musicVolume * 0.22 * 0.4 : 0;
   } else if (state.phase === 'paused') {
     state.phase = 'playing';
@@ -5810,7 +6461,6 @@ function initStoryRenderer() {
   storyAnim.camera.position.set(0, 5, 16);
   storyAnim.camera.lookAt(0, 2.2, 0);
 
-  /* 灯光 */
   storyAnim.scene.add(new THREE.HemisphereLight(0x2A4060, 0x080A10, 0.7));
   const key = new THREE.DirectionalLight(0xFF7040, 1.1);
   key.position.set(-14, 18, 8); storyAnim.scene.add(key);
@@ -5818,14 +6468,12 @@ function initStoryRenderer() {
   rim.position.set(12, 8, -12); storyAnim.scene.add(rim);
   const amb = new THREE.AmbientLight(0x305080, 0.35); storyAnim.scene.add(amb);
 
-  /* 地面 */
   const groundGeo = new THREE.PlaneGeometry(240, 240);
   const groundMat = new THREE.MeshStandardMaterial({ color: 0x1A1E24, roughness: 0.95, metalness: 0.05 });
   const ground = new THREE.Mesh(groundGeo, groundMat);
   ground.rotation.x = -Math.PI / 2;
   storyAnim.scene.add(ground);
 
-  /* 公路 */
   const roadMat = new THREE.MeshStandardMaterial({ color: 0x2A2A2A, roughness: 0.9, metalness: 0.05 });
   const road = new THREE.Mesh(new THREE.PlaneGeometry(14, 200), roadMat);
   road.rotation.x = -Math.PI / 2; road.position.y = 0.02;
@@ -5837,7 +6485,6 @@ function initStoryRenderer() {
     storyAnim.scene.add(dash);
   }
 
-  /* 两侧建筑剪影 */
   for (let i = 0; i < 18; i++) {
     const side = i % 2 === 0 ? -1 : 1;
     const z = -70 + (i / 18) * 140 + Math.random() * 6;
@@ -5851,7 +6498,6 @@ function initStoryRenderer() {
     b.rotation.y = (Math.random() - 0.5) * 0.3;
     storyAnim.scene.add(b);
     storyAnim.buildings.push(b);
-    /* 零星窗户灯 */
     if (Math.random() < 0.6) {
       const winMat = new THREE.MeshBasicMaterial({ color: Math.random() < 0.5 ? 0xFFB060 : 0x90D0FF, transparent: true, opacity: 0.55 });
       for (let k = 0; k < 3; k++) {
@@ -5867,7 +6513,6 @@ function initStoryRenderer() {
     }
   }
 
-  /* 主角车（复用轿跑模型，加一点暗色氛围光） */
   storyAnim.car = buildCoupeModel();
   storyAnim.car.position.set(0, 0, 0);
   storyAnim.car.rotation.y = 0;
@@ -5877,7 +6522,6 @@ function initStoryRenderer() {
   storyAnim.scene.add(carGlow);
   storyAnim.carGlow = carGlow;
 
-  /* 僵尸剪影（远处环绕） */
   for (let i = 0; i < 26; i++) {
     const zg = new THREE.Group();
     const darkMat = new THREE.MeshStandardMaterial({ color: 0x141820, roughness: 0.95, metalness: 0.05 });
@@ -5907,7 +6551,6 @@ function initStoryRenderer() {
     storyAnim.zombies.push(zg);
   }
 
-  /* 漂浮尘埃 */
   const dustGeo = new THREE.BufferGeometry();
   const dustCount = 220;
   const dustPos = new Float32Array(dustCount * 3);
@@ -5948,13 +6591,11 @@ function updateStory(now) {
   storyAnim.t += dt;
   const t = storyAnim.t;
 
-  /* 镜头缓慢推进 */
   const camZ = 16 - Math.min(t * 0.55, 8.5);
   const camY = 5 - Math.min(t * 0.09, 1.4);
   storyAnim.camera.position.set(0, camY, camZ);
   storyAnim.camera.lookAt(0, 2.1, 0);
 
-  /* 车身轻微起伏 */
   if (storyAnim.car) {
     storyAnim.car.position.y = Math.sin(t * 2.1) * 0.045;
     storyAnim.car.rotation.z = Math.sin(t * 1.3) * 0.012;
@@ -5964,7 +6605,6 @@ function updateStory(now) {
     storyAnim.carGlow.intensity = 1.25 + Math.sin(t * 3.4) * 0.25;
   }
 
-  /* 僵尸徘徊 */
   for (const zg of storyAnim.zombies) {
     const ud = zg.userData;
     ud.phase += dt * ud.speed * 2.2;
@@ -5976,7 +6616,6 @@ function updateStory(now) {
     zg.rotation.z = Math.sin(ud.phase * 1.2) * 0.06;
   }
 
-  /* 尘埃漂浮 */
   if (storyAnim.dust) {
     const posAttr = storyAnim.dust.geometry.attributes.position;
     const arr = posAttr.array;
@@ -5989,7 +6628,6 @@ function updateStory(now) {
     posAttr.needsUpdate = true;
   }
 
-  /* 文本切换 */
   const texts = storyAnim.texts || STORY_TEXTS[lang] || STORY_TEXTS.en;
   const total = 13.5;
   const per = total / texts.length;
@@ -6030,7 +6668,6 @@ function playStory(onDone) {
   storyAnim.onDone = onDone;
   storyAnim.lastT = performance.now();
   showStoryText(0);
-  /* 重新调整尺寸 */
   const w = window.innerWidth, h = window.innerHeight;
   storyAnim.renderer.setSize(w, h, false);
   storyAnim.camera.aspect = w / h;
@@ -6209,7 +6846,7 @@ let menuBgStarted2 = false;
 bindTap(document.getElementById('startBtn'), () => { initAudio(); sfxUI(); showLevelSelect(); });
 bindTap(document.getElementById('helpBtn'), () => { initAudio(); sfxUI(); document.getElementById('helpScreen').classList.add('show'); });
 bindTap(document.getElementById('helpCloseBtn'), () => { document.getElementById('helpScreen').classList.remove('show'); });
-bindTap(document.getElementById('settingsBtn'), () => { initAudio(); sfxUI(); document.getElementById('settingsScreen').classList.add('show'); });
+bindTap(document.getElementById('settingsBtn'), () => { initAudio(); sfxUI(); document.getElementById('settingsScreen').classList.add('show'); updateFullscreenButtons(); });
 bindTap(document.getElementById('settingsCloseBtn'), () => { document.getElementById('settingsScreen').classList.remove('show'); });
 bindTap(document.getElementById('galleryBtn'), () => { initAudio(); sfxUI(); document.getElementById('galleryScreen').classList.add('show'); setTimeout(() => { initViewer(); setViewerModel('car'); }, 30); });
 bindTap(document.getElementById('galleryCloseBtn'), () => { document.getElementById('galleryScreen').classList.remove('show'); });
@@ -6272,6 +6909,7 @@ function applyLanguage() {
   document.querySelectorAll('.lang-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.lang === lang);
   });
+  updateFullscreenButtons();
 
   /* 刷新动态面板 */
   if (document.getElementById('levelSelectScreen').classList.contains('show')) renderLevelSelect();
@@ -6620,10 +7258,10 @@ function garagePreview(id) {
   document.getElementById('garageDesc').textContent = vehDesc(id);
 
   const bars = [
-    [T('statSpeed'), veh.maxSpeed / 92],
-    [T('statAccel'), veh.accel / 32],
-    [T('statHandling'), veh.yawRateBase / 11],
-    [T('statRam'), veh.ramBase / 46],
+    [T('statSpeed'), veh.maxSpeed / 102],
+    [T('statAccel'), veh.accel / 36],
+    [T('statHandling'), veh.yawRateBase / 13],
+    [T('statRam'), veh.ramBase / 54],
   ];
   document.getElementById('garageBars').innerHTML = bars.map(([label, v]) =>
     `<div class="gbar"><span>${label}</span><span class="track"><span class="fill" style="width:${Math.min(100, Math.round(v * 100))}%"></span></span></div>`
@@ -6787,10 +7425,12 @@ function onResize() {
 
   resizeSpeedLineCanvas();
   checkOrientation();
+  updateFullscreenButtons();
 }
 window.addEventListener('resize', onResize);
 window.addEventListener('orientationchange', () => setTimeout(onResize, 120));
-document.addEventListener('fullscreenchange', () => setTimeout(onResize, 120));
+document.addEventListener('fullscreenchange', () => { setTimeout(onResize, 120); updateFullscreenButtons(); });
+document.addEventListener('webkitfullscreenchange', () => { setTimeout(onResize, 120); updateFullscreenButtons(); });
 setTimeout(onResize, 100);
 setTimeout(onResize, 400);
 resizeSpeedLineCanvas();
@@ -6822,7 +7462,6 @@ function animate() {
   }
 
   if (state.phase === 'story') {
-    /* 剧情动画有独立渲染循环，主循环只负责跳过菜单逻辑 */
     return;
   }
 
