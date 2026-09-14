@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="mobile-web-app-capable" content="yes">
-<title>我的超级二手车</title>
+<title>Beater Goes Rogue</title>
 <style>
   :root{
     --bg:#080A0F;
@@ -87,6 +87,7 @@
     font-family:var(--font-ui);
   }
   #bootScreen h1 span{color:var(--hot)}
+  #bootScreen h1 em{font-style:normal;color:var(--hot)}
   @keyframes bootPulse{
     0%,100%{transform:scale(1); filter:brightness(1)}
     50%{transform:scale(1.02); filter:brightness(1.12)}
@@ -96,6 +97,7 @@
     font-size:12px;letter-spacing:5px;
     font-weight:800;opacity:.85;
     position:relative;
+    text-align:center;
   }
   #bootScreen .boot-hint{
     color:var(--bg);
@@ -495,6 +497,7 @@
   #startScreen .sub{
     color:var(--cool);font-size:12px;letter-spacing:5px;
     margin-bottom:6px;font-weight:800;opacity:.9;
+    text-align:center;
   }
   .btn-grid{
     display:grid;grid-template-columns:1fr 1fr;gap:11px;
@@ -541,6 +544,39 @@
   #startScreen.boot-transition > .sub{animation:bootFadeIn .8s .6s cubic-bezier(.2,.8,.2,1) both}
   #startScreen.boot-transition > .btn-grid{animation:bootFadeIn .9s .9s cubic-bezier(.2,.8,.2,1) both}
   @keyframes bootFadeIn{from{opacity:0;transform:translateY(30px) scale(.94)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+  /* ===== 语言切换（主界面左下角） ===== */
+  #langSwitch{
+    position:fixed;
+    left:calc(6px + env(safe-area-inset-left));
+    bottom:calc(6px + env(safe-area-inset-bottom));
+    display:flex;gap:8px;
+    z-index:6;
+    pointer-events:auto;
+  }
+  .lang-btn{
+    width:40px;height:40px;
+    background:linear-gradient(180deg,#1B2333,#10141D);
+    color:var(--text-3);
+    border:none;
+    font-family:var(--font-ui);font-weight:900;
+    font-size:12px;letter-spacing:1px;
+    cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    clip-path:polygon(7px 0,100% 0,100% calc(100% - 7px),calc(100% - 7px) 100%,0 100%,0 7px);
+    box-shadow:inset 0 0 0 1.5px rgba(79,221,192,.28);
+    transition:all .15s;
+  }
+  .lang-btn:hover{
+    color:var(--text-2);
+    box-shadow:inset 0 0 0 1.5px rgba(79,221,192,.7),0 0 16px rgba(79,221,192,.2);
+  }
+  .lang-btn.active{
+    background:linear-gradient(180deg,var(--hot),var(--hot-2));
+    color:#1A0F02;
+    box-shadow:0 0 18px rgba(255,179,71,.55);
+  }
+  .lang-btn:active{transform:translate(2px,2px)}
 
   /* ===== Modal ===== */
   .modal{
@@ -1088,6 +1124,9 @@
     #bootScreen .boot-hint{font-size:13px;padding:11px 22px;letter-spacing:4px;margin-top:18px}
     #bootScreen .boot-sub{font-size:10px;letter-spacing:3px}
 
+    #langSwitch{left:calc(4px + env(safe-area-inset-left));bottom:calc(4px + env(safe-area-inset-bottom));gap:6px}
+    .lang-btn{width:32px;height:32px;font-size:11px}
+
     .over-box,.victory-box{padding:16px 18px}
     .over-box h2,.victory-box h2{font-size:16px;letter-spacing:4px;margin-bottom:4px}
     .over-box .over-sub,.victory-box .victory-sub{font-size:10px;letter-spacing:2px;margin-bottom:10px}
@@ -1155,10 +1194,10 @@
 <body>
 
 <div id="bootScreen">
-  <h1>我的<em>超级</em>二手车</h1>
-  <div class="boot-sub">手动驾驶 × 自动弹幕 × 肉鸽构筑</div>
-  <div class="boot-hint">点 击 屏 幕 开 始</div>
-  <div class="boot-loading" id="bootLoading">初始化中…</div>
+  <h1 data-i18n-html="gameTitle">我的<em>超级</em>二手车</h1>
+  <div class="boot-sub" data-i18n="subtitle">手动驾驶 × 自动弹幕 × 肉鸽构筑</div>
+  <div class="boot-hint" data-i18n="tapToStart">点 击 屏 幕 开 始</div>
+  <div class="boot-loading" id="bootLoading" data-i18n="initializing">初始化中…</div>
 </div>
 
 <div id="gameWrapper">
@@ -1168,10 +1207,10 @@
       <div class="bar-wrap"><div class="bar-fill" id="hpFill"></div><div class="bar-label" id="hpLabel">100 / 100</div></div>
       <div class="bar-wrap"><div class="bar-fill" id="ptFill" style="transform:scaleX(0)"></div><div class="bar-label" id="ptLabel">0 / 100</div></div>
       <div class="stat-line">
-        <span>波次<b id="statWave">W1</b></span>
-        <span>击杀<b id="statKills">0</b></span>
-        <span>场上<b id="statField">0</b></span>
-        <span>时间<b id="statTime">0:00</b></span>
+        <span><span data-i18n="wave">波次</span><b id="statWave">W1</b></span>
+        <span><span data-i18n="kills">击杀</span><b id="statKills">0</b></span>
+        <span><span data-i18n="field">场上</span><b id="statField">0</b></span>
+        <span><span data-i18n="timeLbl">时间</span><b id="statTime">0:00</b></span>
       </div>
     </div>
     <div id="bossBar"><div class="boss-label">BOSS</div><div class="bar-wrap"><div class="bar-fill" id="bossFill" style="transform:scaleX(1)"></div></div></div>
@@ -1180,47 +1219,51 @@
 
   <button id="pauseBtn">❚❚</button>
 
-  <div id="joystickBase"><div id="joystickKnob"></div><div id="joystickHint">拖动转向</div></div>
-  <div class="touch-btn" id="touchThrottle">油门</div>
-  <div class="touch-btn" id="touchBrake">刹车</div>
-  <div class="touch-btn" id="touchJump">跳跃</div>
-  <div class="touch-btn" id="touchDodge">闪冲</div>
+  <div id="joystickBase"><div id="joystickKnob"></div><div id="joystickHint" data-i18n="joystickHint">拖动转向</div></div>
+  <div class="touch-btn" id="touchThrottle" data-i18n="btnThrottle">油门</div>
+  <div class="touch-btn" id="touchBrake" data-i18n="btnBrake">刹车</div>
+  <div class="touch-btn" id="touchJump" data-i18n="btnJump">跳跃</div>
+  <div class="touch-btn" id="touchDodge" data-i18n="btnDodge">闪冲</div>
 
   <div id="cards"><div class="card-row" id="cardRow"></div></div>
 
   <div id="pauseMenu">
     <div class="pause-box">
-      <h2>暂 停</h2>
-      <button data-act="resume">继续游戏</button>
-      <button data-act="menu">返回主菜单</button>
-      <div class="settings-title">音 量 调 节</div>
-      <div class="slider-row"><label>音效</label><input type="range" class="vol-slider" data-type="sfx" min="0" max="100" value="100"><span class="vol-val" data-val="sfx">100</span></div>
-      <div class="slider-row"><label>音乐</label><input type="range" class="vol-slider" data-type="music" min="0" max="100" value="100"><span class="vol-val" data-val="music">100</span></div>
+      <h2 data-i18n="paused">暂 停</h2>
+      <button data-act="resume" data-i18n="resume">继续游戏</button>
+      <button data-act="menu" data-i18n="backToMenu">返回主菜单</button>
+      <div class="settings-title" data-i18n="volumeTitle">音 量 调 节</div>
+      <div class="slider-row"><label data-i18n="sfx">音效</label><input type="range" class="vol-slider" data-type="sfx" min="0" max="100" value="100"><span class="vol-val" data-val="sfx">100</span></div>
+      <div class="slider-row"><label data-i18n="music">音乐</label><input type="range" class="vol-slider" data-type="music" min="0" max="100" value="100"><span class="vol-val" data-val="music">100</span></div>
     </div>
   </div>
 
   <div id="startScreen">
     <canvas id="menuBgCanvas"></canvas>
-    <h1>我的<em>超级</em>二手车</h1>
-    <div class="sub">手动驾驶 × 自动弹幕 × 肉鸽构筑</div>
+    <h1 data-i18n-html="gameTitle">我的<em>超级</em>二手车</h1>
+    <div class="sub" data-i18n="subtitle">手动驾驶 × 自动弹幕 × 肉鸽构筑</div>
     <div class="btn-grid">
-      <button class="big-btn primary span2" id="startBtn">开 始 游 戏</button>
-      <button class="big-btn" id="garageBtn">车 库</button>
-      <button class="big-btn" id="galleryBtn">鉴 赏</button>
-      <button class="big-btn" id="helpBtn">游戏说明</button>
-      <button class="big-btn" id="settingsBtn">设 置</button>
+      <button class="big-btn primary span2" id="startBtn" data-i18n="startGame">开 始 游 戏</button>
+      <button class="big-btn" id="garageBtn" data-i18n="garageBtn">车 库</button>
+      <button class="big-btn" id="galleryBtn" data-i18n="galleryBtn">鉴 赏</button>
+      <button class="big-btn" id="helpBtn" data-i18n="helpBtn">游戏说明</button>
+      <button class="big-btn" id="settingsBtn" data-i18n="settingsBtn">设 置</button>
+    </div>
+    <div id="langSwitch">
+      <button class="lang-btn" data-lang="en" title="English">EN</button>
+      <button class="lang-btn" data-lang="zh" title="简体中文">中</button>
     </div>
   </div>
 
   <div id="levelSelectScreen">
-    <h2>选 择 关 卡</h2>
+    <h2 data-i18n="selectLevel">选 择 关 卡</h2>
     <div class="level-grid" id="levelGrid"></div>
     <div class="page-controls">
       <button class="page-btn" id="prevPageBtn">◀</button>
       <span class="page-indicator" id="pageIndicator">1 / 3</span>
       <button class="page-btn" id="nextPageBtn">▶</button>
     </div>
-    <button class="big-btn" id="levelBackBtn">返回主菜单</button>
+    <button class="big-btn" id="levelBackBtn" data-i18n="backToMainMenu">返回主菜单</button>
   </div>
 
   <div id="levelGoalModal">
@@ -1228,64 +1271,310 @@
       <div class="goal-lv" id="goalLv">第 1 关</div>
       <h2 id="goalName">新手试炼</h2>
       <div class="goal-content">
-        <div class="goal-item"><span class="bullet">▶</span><span>通关目标：<span class="accent" id="goalWaves">通过 2 波僵尸</span></span></div>
-        <div class="goal-item"><span class="bullet">▶</span><span>怪物数量：<span class="accent" id="goalMult">正常</span></span></div>
-        <div class="goal-item"><span class="bullet">▶</span><span>完成奖励：<span class="accent" id="goalReward">解锁下一关</span></span></div>
-        <div class="goal-item"><span class="bullet">▶</span><span>星级标准：<span class="accent" id="goalStars">45s内 ★★★ / 70s内 ★★ / 100s内 ★</span></span></div>
+        <div class="goal-item"><span class="bullet">▶</span><span><span data-i18n="objective">通关目标：</span><span class="accent" id="goalWaves">通过 2 波僵尸</span></span></div>
+        <div class="goal-item"><span class="bullet">▶</span><span><span data-i18n="density">怪物数量：</span><span class="accent" id="goalMult">正常</span></span></div>
+        <div class="goal-item"><span class="bullet">▶</span><span><span data-i18n="rewardLbl">完成奖励：</span><span class="accent" id="goalReward">解锁下一关</span></span></div>
+        <div class="goal-item"><span class="bullet">▶</span><span><span data-i18n="starCriteria">星级标准：</span><span class="accent" id="goalStars">45s内 ★★★ / 70s内 ★★ / 100s内 ★</span></span></div>
       </div>
-      <button class="big-btn primary" id="goalConfirmBtn">开 始 挑 战</button>
-      <button class="big-btn" id="goalCancelBtn" style="margin-top:8px;font-size:12px;padding:9px 16px">取 消</button>
+      <button class="big-btn primary" id="goalConfirmBtn" data-i18n="startChallenge">开 始 挑 战</button>
+      <button class="big-btn" id="goalCancelBtn" data-i18n="cancel" style="margin-top:8px;font-size:12px;padding:9px 16px">取 消</button>
     </div>
   </div>
 
   <div id="victoryScreen">
     <div class="victory-box">
-      <h2>关 卡 完 成</h2>
+      <h2 data-i18n="levelClear">关 卡 完 成</h2>
       <div class="victory-sub" id="victoryLv">第 1 关</div>
       <div class="victory-stars" id="victoryStars"><span class="star">★</span><span class="star">★</span><span class="star">★</span></div>
       <div class="unlock-toast" id="victoryUnlock" style="display:none"></div>
       <div class="victory-stats">
-        <div class="stat-item"><div class="lbl">用时</div><div class="val" id="vicTime">0:00</div></div>
-        <div class="stat-item"><div class="lbl">击杀</div><div class="val" id="vicKills">0</div></div>
-        <div class="stat-item"><div class="lbl">波次</div><div class="val" id="vicWaves">0</div></div>
-        <div class="stat-item"><div class="lbl">累计积分</div><div class="val" id="vicPoints">0</div></div>
+        <div class="stat-item"><div class="lbl" data-i18n="timeStat">用时</div><div class="val" id="vicTime">0:00</div></div>
+        <div class="stat-item"><div class="lbl" data-i18n="killsStat">击杀</div><div class="val" id="vicKills">0</div></div>
+        <div class="stat-item"><div class="lbl" data-i18n="wavesStat">波次</div><div class="val" id="vicWaves">0</div></div>
+        <div class="stat-item"><div class="lbl" data-i18n="pointsStat">累计积分</div><div class="val" id="vicPoints">0</div></div>
       </div>
       <div class="btn-group">
-        <button class="big-btn primary" id="vicNextBtn">下 一 关</button>
-        <button class="big-btn" id="vicMenuBtn">返 回 选 关</button>
+        <button class="big-btn primary" id="vicNextBtn" data-i18n="nextLevel">下 一 关</button>
+        <button class="big-btn" id="vicMenuBtn" data-i18n="backToSelect">返 回 选 关</button>
       </div>
     </div>
   </div>
 
   <div id="overScreen">
     <div class="over-box">
-      <h2>战 斗 结 束</h2>
+      <h2 data-i18n="gameOver">战 斗 结 束</h2>
       <div class="over-sub" id="overSub">我的超级二手车</div>
       <div class="over-stats">
-        <div class="stat-item"><div class="lbl">波次</div><div class="val" id="ovWave">0</div></div>
-        <div class="stat-item"><div class="lbl">击杀</div><div class="val" id="ovKills">0</div></div>
-        <div class="stat-item"><div class="lbl">存活</div><div class="val" id="ovTime">0:00</div></div>
-        <div class="stat-item"><div class="lbl">累计积分</div><div class="val" id="ovPoints">0</div></div>
+        <div class="stat-item"><div class="lbl" data-i18n="wavesStat">波次</div><div class="val" id="ovWave">0</div></div>
+        <div class="stat-item"><div class="lbl" data-i18n="killsStat">击杀</div><div class="val" id="ovKills">0</div></div>
+        <div class="stat-item"><div class="lbl" data-i18n="survived">存活</div><div class="val" id="ovTime">0:00</div></div>
+        <div class="stat-item"><div class="lbl" data-i18n="pointsStat">累计积分</div><div class="val" id="ovPoints">0</div></div>
       </div>
       <div class="btn-group">
-        <button class="big-btn primary" id="restartBtn">再 来 一 局</button>
-        <button class="big-btn" id="menuBtn">返 回 选 关</button>
+        <button class="big-btn primary" id="restartBtn" data-i18n="retry">再 来 一 局</button>
+        <button class="big-btn" id="menuBtn" data-i18n="backToSelect">返 回 选 关</button>
       </div>
     </div>
   </div>
 
   <div id="settingsScreen" class="modal">
     <div class="settings-box">
-      <h2>设 置</h2>
-      <div class="settings-title">音 量 调 节</div>
-      <div class="slider-row"><label>音效</label><input type="range" class="vol-slider" data-type="sfx" min="0" max="100" value="100"><span class="vol-val" data-val="sfx">100</span></div>
-      <div class="slider-row"><label>音乐</label><input type="range" class="vol-slider" data-type="music" min="0" max="100" value="100"><span class="vol-val" data-val="music">100</span></div>
-      <button class="big-btn" id="settingsCloseBtn" style="margin-top:12px">关 闭</button>
+      <h2 data-i18n="settingsTitle">设 置</h2>
+      <div class="settings-title" data-i18n="volumeTitle">音 量 调 节</div>
+      <div class="slider-row"><label data-i18n="sfx">音效</label><input type="range" class="vol-slider" data-type="sfx" min="0" max="100" value="100"><span class="vol-val" data-val="sfx">100</span></div>
+      <div class="slider-row"><label data-i18n="music">音乐</label><input type="range" class="vol-slider" data-type="music" min="0" max="100" value="100"><span class="vol-val" data-val="music">100</span></div>
+      <button class="big-btn" id="settingsCloseBtn" data-i18n="close" style="margin-top:12px">关 闭</button>
     </div>
   </div>
 
   <div id="helpScreen" class="modal">
     <div class="help-box">
+      <div id="helpBody" data-i18n-html="helpBody"></div>
+      <div class="close-wrap"><button class="big-btn" id="helpCloseBtn" data-i18n="close">关 闭</button></div>
+    </div>
+  </div>
+
+  <div id="galleryScreen">
+    <div class="gallery-box">
+      <div class="gallery-header">
+        <h2 data-i18n="galleryTitle">角 色 鉴 赏</h2>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="big-btn" id="replayStoryBtn" data-i18n="storyBtn" style="padding:7px 13px;font-size:11px;letter-spacing:2px">▶ 剧 情</button>
+          <button class="close-btn" id="galleryCloseBtn">×</button>
+        </div>
+      </div>
+      <div class="gallery-content">
+        <div class="gallery-list" id="galleryList">
+          <div class="gallery-item active" data-type="car" data-i18n="listCar">🚗 座驾</div>
+          <div class="gallery-item" data-type="mob" data-i18n="listMob">🧟 暴徒僵尸</div>
+          <div class="gallery-item" data-type="bomber" data-i18n="listBomber">💥 自爆僵尸</div>
+          <div class="gallery-item" data-type="ranged" data-i18n="listRanged">🎯 远程僵尸</div>
+          <div class="gallery-item" data-type="shield" data-i18n="listShield">🛡️ 盾兵僵尸</div>
+          <div class="gallery-item" data-type="elite" data-i18n="listElite">💜 精英僵尸</div>
+          <div class="gallery-item" data-type="boss" data-i18n="listBoss">👑 僵尸之王</div>
+        </div>
+        <div class="gallery-viewer">
+          <canvas id="viewerCanvas"></canvas>
+          <div class="viewer-hint" data-i18n="dragRotate">拖 动 旋 转</div>
+          <div class="viewer-info">
+            <div class="viewer-name" id="viewerName">超级二手车</div>
+            <div class="viewer-desc" id="viewerDesc"></div>
+            <div class="viewer-stats" id="viewerStats"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="garageScreen">
+    <div class="gallery-box">
+      <div class="gallery-header">
+        <h2 data-i18n="garageTitle">车 库</h2>
+        <button class="close-btn" id="garageCloseBtn">×</button>
+      </div>
+      <div class="gallery-content">
+        <div class="gallery-list" id="garageList"></div>
+        <div class="garage-viewer">
+          <canvas id="garageCanvas"></canvas>
+          <div class="viewer-hint" data-i18n="dragRotate">拖 动 旋 转</div>
+          <div class="garage-info">
+            <div class="garage-name" id="garageName">轿跑车</div>
+            <div class="garage-desc" id="garageDesc"></div>
+            <div class="garage-bars" id="garageBars"></div>
+            <div class="garage-actions">
+              <button class="big-btn primary" id="garageSelectBtn" data-i18n="useCar" style="flex:1">选 用 此 车</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="storyScreen">
+    <canvas id="storyCanvas"></canvas>
+    <div id="storyText"></div>
+    <div id="storySkip" data-i18n="storySkip">点 击 跳 过</div>
+  </div>
+
+  <div id="rotateHint">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg>
+    <div data-i18n="rotateHint">请将手机横过来</div>
+  </div>
+
+  <div id="dmgLayer"></div>
+  <div id="whiteFlash"></div>
+  <div id="dangerVignette"></div>
+
+  <canvas id="speedLines"></canvas>
+  <div id="speedVignette"></div>
+
+</div>
+
+<script type="importmap">
+{ "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+
+/* ============================================================
+   🌐 环境检测
+   ============================================================ */
+const ENV = (() => {
+  const ua = navigator.userAgent;
+  const apps = [
+    { name: '微信',   key: 'wechat',   regex: /MicroMessenger/i,            canFullscreen: false },
+    { name: 'QQ',     key: 'qq',       regex: /\sQQ\/[\d.]+/i,               canFullscreen: false },
+    { name: 'QQ浏览器', key: 'qqbrowser', regex: /MQQBrowser/i,              canFullscreen: true  },
+    { name: '钉钉',   key: 'dingtalk', regex: /DingTalk/i,                   canFullscreen: false },
+    { name: '支付宝', key: 'alipay',   regex: /AlipayClient/i,               canFullscreen: false },
+    { name: '微博',   key: 'weibo',    regex: /Weibo/i,                      canFullscreen: false },
+    { name: '抖音',   key: 'douyin',   regex: /BytedanceWebview|aweme/i,     canFullscreen: false },
+    { name: '快手',   key: 'kuaishou', regex: /Kwai|com\.kuaishou/i,         canFullscreen: false },
+    { name: '百度',   key: 'baidu',    regex: /baiduboxapp/i,                canFullscreen: false },
+    { name: '小红书', key: 'xhs',      regex: /XHS/i,                        canFullscreen: false },
+    { name: '飞书',   key: 'feishu',   regex: /Lark/i,                       canFullscreen: false },
+    { name: 'UC',     key: 'uc',       regex: /UCBrowser/i,                  canFullscreen: true  },
+    { name: '夸克',   key: 'quark',    regex: /Quark/i,                      canFullscreen: true  },
+    { name: '搜狗',   key: 'sogou',    regex: /SogouMobileBrowser/i,         canFullscreen: true  },
+  ];
+  let inApp = { detected: false, name: '浏览器', key: 'browser', canFullscreen: true };
+  for (const app of apps) { if (app.regex.test(ua)) { inApp = { detected: true, ...app }; break; } }
+  const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(ua) || ('ontouchstart' in window && window.innerWidth < 1024);
+  const isIOS = /iphone|ipad|ipod/i.test(ua);
+  const isAndroid = /android/i.test(ua);
+  return { ...inApp, isMobile, isIOS, isAndroid };
+})();
+
+/* ============================================================
+   🌍 多语言系统
+   ============================================================ */
+const I18N = {
+  zh: {
+    /* 标题 / 启动 */
+    gameTitle: '我的<em>超级</em>二手车',
+    gameTitlePlain: '我的超级二手车',
+    subtitle: '手动驾驶 × 自动弹幕 × 肉鸽构筑',
+    tapToStart: '点 击 屏 幕 开 始',
+    initializing: '初始化中…',
+
+    /* HUD */
+    wave: '波次', kills: '击杀', field: '场上', timeLbl: '时间',
+
+    /* 触摸按钮 */
+    joystickHint: '拖动转向',
+    btnThrottle: '油门', btnBrake: '刹车', btnJump: '跳跃', btnDodge: '闪冲',
+
+    /* 暂停 */
+    paused: '暂 停', resume: '继续游戏', backToMenu: '返回主菜单',
+    volumeTitle: '音 量 调 节', sfx: '音效', music: '音乐',
+
+    /* 主菜单 */
+    startGame: '开 始 游 戏', garageBtn: '车 库', galleryBtn: '鉴 赏',
+    helpBtn: '游戏说明', settingsBtn: '设 置',
+
+    /* 选关 */
+    selectLevel: '选 择 关 卡', backToMainMenu: '返回主菜单',
+
+    /* 关卡目标 */
+    levelLabel: (n) => `第 ${n} 关`,
+    endlessLabel: '无 限 模 式',
+    objective: '通关目标：',
+    density: '怪物数量：',
+    rewardLbl: '完成奖励：',
+    starCriteria: '星级标准：',
+    goalWavesN: (n) => `通过 ${n} 波僵尸`,
+    goalEndless: '无限波次，尽可能生存',
+    densityNormal: '正常',
+    densityDense: '×1.5 密集',
+    starNone: '无上限挑战',
+    starTimes: (a, b, c) => `${a}s内 ★★★ / ${b}s内 ★★ / ${c}s内 ★`,
+    startChallenge: '开 始 挑 战',
+    cancel: '取 消',
+
+    /* 奖励 */
+    unlockNext: '解锁下一关',
+    unlockEndless: '解锁「无限模式」',
+    unlockMotorcycle: '解锁「摩托车」',
+    unlockTruck: '解锁「大卡车」',
+    unlockTrain: '解锁「火车头」',
+    unlockHover: '突破第 15 波解锁「悬浮导弹车」',
+    carUnlockDefault: '默认拥有',
+    carUnlockMotorcycle: '通关第 5 关解锁',
+    carUnlockTruck: '通关第 8 关解锁',
+    carUnlockTrain: '通关第 15 关解锁',
+    carUnlockHover: '无限模式通过第 15 波解锁',
+
+    /* 胜利 */
+    levelClear: '关 卡 完 成',
+    nextLevel: '下 一 关',
+    unlockEndlessBtn: '解 锁 无 限',
+    backToSelect: '返 回 选 关',
+    timeStat: '用时', killsStat: '击杀', wavesStat: '波次', pointsStat: '累计积分',
+    newCarUnlocked: (names) => `🔓 解锁新座驾：${names}`,
+    endlessUnlocked: '🔓 解锁「无限模式」',
+    levelWithName: (n, name) => `第 ${n} 关 · ${name}`,
+
+    /* 失败 */
+    gameOver: '战 斗 结 束', survived: '存活', retry: '再 来 一 局',
+
+    /* 设置 / 通用 */
+    settingsTitle: '设 置', close: '关 闭',
+
+    /* 图鉴 */
+    galleryTitle: '角 色 鉴 赏',
+    storyBtn: '▶ 剧 情',
+    listCar: '🚗 座驾',
+    listMob: '🧟 暴徒僵尸',
+    listBomber: '💥 自爆僵尸',
+    listRanged: '🎯 远程僵尸',
+    listShield: '🛡️ 盾兵僵尸',
+    listElite: '💜 精英僵尸',
+    listBoss: '👑 僵尸之王',
+    dragRotate: '拖 动 旋 转',
+
+    /* 车库 */
+    garageTitle: '车 库',
+    useCar: '选 用 此 车',
+    inUse: '使 用 中',
+    statSpeed: '极速', statAccel: '加速', statHandling: '操控', statRam: '冲撞',
+
+    /* 剧情 */
+    storySkip: '点 击 跳 过',
+    rotateHint: '请将手机横过来',
+
+    /* 卡牌 */
+    cardActivate: '激活：',
+    cardImmediate: '立即回复',
+    cardHealEffect: '立即回复 30% HP',
+    cardHealDesc: '立即回复 30% 最大 HP',
+    skillInactive: '（未激活）',
+
+    card_basic_name: '平A', card_basic_desc: '自动向前方扇形敌人发射能量针',
+    card_aoe_name: '群攻', card_aoe_desc: '向锁定目标发射火球，爆炸成环形冲击波',
+    card_shock_name: '冲击波', card_shock_desc: '撞击时对周围敌人溅射伤害',
+    card_heal_name: '治疗', card_heal_desc: '主动攻击命中时概率回血',
+    card_crit_name: '暴击', card_crit_desc: '每次伤害概率暴击',
+    card_execute_name: '瞬杀', card_execute_desc: '概率秒杀非Boss（精英减半）',
+    card_luck_name: '运气', card_luck_desc: '所有概率被动 +%',
+    card_thunder_name: '天雷', card_thunder_desc: '主动命中时概率触发全屏闪电',
+    card_chain_name: '连锁', card_chain_desc: '命中后对周围敌人溅射 50% 伤害',
+    card_freeze_name: '冻结', card_freeze_desc: '被攻击的敌人减速',
+    card_energy_name: '蓄能', card_energy_desc: '击杀积分加成（抽卡更快）',
+    card_healcard_name: '回复', card_healcard_desc: '立即回复 30% 最大 HP',
+
+    /* 剧情文本 */
+    story: [
+      '一觉醒来……',
+      '城市已经被丧尸吞没，',
+      '只剩下你孤身一人，',
+      '与你的破旧二手车。',
+      '想要活下去的话，',
+      '就油门踩到底，杀出一条生路吧！',
+    ],
+
+    /* 帮助 */
+    helpBody: `
       <h2>新 手 指 南</h2>
 
       <h3>① 三十秒上手</h3>
@@ -1344,122 +1633,207 @@
         <li>车速超过七成会出现速度线和尾焰，这时候撞谁谁飞。</li>
         <li>血量低于 30% 屏幕边缘会闪红光，赶紧找机会回血。</li>
       </ul>
+    `,
+  },
 
-      <div class="close-wrap"><button class="big-btn" id="helpCloseBtn">关 闭</button></div>
-    </div>
-  </div>
+  en: {
+    /* Title / Boot */
+    gameTitle: 'Beater <em>Goes</em> Rogue',
+    gameTitlePlain: 'Beater Goes Rogue',
+    subtitle: 'MANUAL DRIVING × AUTO-FIRE × ROGUELIKE BUILDS',
+    tapToStart: 'TAP  TO  START',
+    initializing: 'INITIALIZING…',
 
-  <div id="galleryScreen">
-    <div class="gallery-box">
-      <div class="gallery-header">
-        <h2>角 色 鉴 赏</h2>
-        <div style="display:flex;gap:8px;align-items:center">
-          <button class="big-btn" id="replayStoryBtn" style="padding:7px 13px;font-size:11px;letter-spacing:2px">▶ 剧 情</button>
-          <button class="close-btn" id="galleryCloseBtn">×</button>
-        </div>
-      </div>
-      <div class="gallery-content">
-        <div class="gallery-list" id="galleryList">
-          <div class="gallery-item active" data-type="car">🚗 座驾</div>
-          <div class="gallery-item" data-type="mob">🧟 暴徒僵尸</div>
-          <div class="gallery-item" data-type="bomber">💥 自爆僵尸</div>
-          <div class="gallery-item" data-type="ranged">🎯 远程僵尸</div>
-          <div class="gallery-item" data-type="shield">🛡️ 盾兵僵尸</div>
-          <div class="gallery-item" data-type="elite">💜 精英僵尸</div>
-          <div class="gallery-item" data-type="boss">👑 僵尸之王</div>
-        </div>
-        <div class="gallery-viewer">
-          <canvas id="viewerCanvas"></canvas>
-          <div class="viewer-hint">拖 动 旋 转</div>
-          <div class="viewer-info">
-            <div class="viewer-name" id="viewerName">超级二手车</div>
-            <div class="viewer-desc" id="viewerDesc"></div>
-            <div class="viewer-stats" id="viewerStats"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+    /* HUD */
+    wave: 'WAVE', kills: 'KILLS', field: 'FIELD', timeLbl: 'TIME',
 
-  <div id="garageScreen">
-    <div class="gallery-box">
-      <div class="gallery-header">
-        <h2>车 库</h2>
-        <button class="close-btn" id="garageCloseBtn">×</button>
-      </div>
-      <div class="gallery-content">
-        <div class="gallery-list" id="garageList"></div>
-        <div class="garage-viewer">
-          <canvas id="garageCanvas"></canvas>
-          <div class="viewer-hint">拖 动 旋 转</div>
-          <div class="garage-info">
-            <div class="garage-name" id="garageName">轿跑车</div>
-            <div class="garage-desc" id="garageDesc"></div>
-            <div class="garage-bars" id="garageBars"></div>
-            <div class="garage-actions">
-              <button class="big-btn primary" id="garageSelectBtn" style="flex:1">选 用 此 车</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+    /* Touch buttons */
+    joystickHint: 'DRAG TO STEER',
+    btnThrottle: 'GAS', btnBrake: 'BRAKE', btnJump: 'JUMP', btnDodge: 'DASH',
 
-  <div id="storyScreen">
-    <canvas id="storyCanvas"></canvas>
-    <div id="storyText"></div>
-    <div id="storySkip">点 击 跳 过</div>
-  </div>
+    /* Pause */
+    paused: 'PAUSED', resume: 'RESUME', backToMenu: 'MAIN MENU',
+    volumeTitle: 'VOLUME', sfx: 'SFX', music: 'MUSIC',
 
-  <div id="rotateHint">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg>
-    <div>请将手机横过来</div>
-  </div>
+    /* Main menu */
+    startGame: 'START GAME', garageBtn: 'GARAGE', galleryBtn: 'GALLERY',
+    helpBtn: 'HOW TO PLAY', settingsBtn: 'SETTINGS',
 
-  <div id="dmgLayer"></div>
-  <div id="whiteFlash"></div>
-  <div id="dangerVignette"></div>
+    /* Level select */
+    selectLevel: 'SELECT LEVEL', backToMainMenu: 'MAIN MENU',
 
-  <canvas id="speedLines"></canvas>
-  <div id="speedVignette"></div>
+    /* Level goal */
+    levelLabel: (n) => `LEVEL ${n}`,
+    endlessLabel: 'ENDLESS MODE',
+    objective: 'Objective: ',
+    density: 'Enemy density: ',
+    rewardLbl: 'Reward: ',
+    starCriteria: 'Star rating: ',
+    goalWavesN: (n) => `Clear ${n} waves`,
+    goalEndless: 'Endless waves — survive as long as you can',
+    densityNormal: 'Normal',
+    densityDense: '×1.5 Dense',
+    starNone: 'No limit — push as far as you can',
+    starTimes: (a, b, c) => `★★★ under ${a}s / ★★ under ${b}s / ★ under ${c}s`,
+    startChallenge: 'START',
+    cancel: 'CANCEL',
 
-</div>
+    /* Rewards */
+    unlockNext: 'Unlock next level',
+    unlockEndless: 'Unlock "Endless Mode"',
+    unlockMotorcycle: 'Unlock "Motorcycle"',
+    unlockTruck: 'Unlock "Big Rig"',
+    unlockTrain: 'Unlock "Locomotive"',
+    unlockHover: 'Reach wave 15 to unlock "Hover Missile Car"',
+    carUnlockDefault: 'Owned by default',
+    carUnlockMotorcycle: 'Clear Level 5 to unlock',
+    carUnlockTruck: 'Clear Level 8 to unlock',
+    carUnlockTrain: 'Clear Level 15 to unlock',
+    carUnlockHover: 'Reach wave 15 in Endless Mode',
 
-<script type="importmap">
-{ "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
-</script>
+    /* Victory */
+    levelClear: 'LEVEL CLEAR',
+    nextLevel: 'NEXT LEVEL',
+    unlockEndlessBtn: 'UNLOCK ENDLESS',
+    backToSelect: 'LEVEL SELECT',
+    timeStat: 'TIME', killsStat: 'KILLS', wavesStat: 'WAVES', pointsStat: 'TOTAL SCORE',
+    newCarUnlocked: (names) => `🔓 New vehicle unlocked: ${names}`,
+    endlessUnlocked: '🔓 "Endless Mode" unlocked',
+    levelWithName: (n, name) => `Level ${n} · ${name}`,
 
-<script type="module">
-import * as THREE from 'three';
+    /* Game over */
+    gameOver: 'GAME OVER', survived: 'SURVIVED', retry: 'RETRY',
 
-/* ============================================================
-   🌐 环境检测
-   ============================================================ */
-const ENV = (() => {
-  const ua = navigator.userAgent;
-  const apps = [
-    { name: '微信',   key: 'wechat',   regex: /MicroMessenger/i,            canFullscreen: false },
-    { name: 'QQ',     key: 'qq',       regex: /\sQQ\/[\d.]+/i,               canFullscreen: false },
-    { name: 'QQ浏览器', key: 'qqbrowser', regex: /MQQBrowser/i,              canFullscreen: true  },
-    { name: '钉钉',   key: 'dingtalk', regex: /DingTalk/i,                   canFullscreen: false },
-    { name: '支付宝', key: 'alipay',   regex: /AlipayClient/i,               canFullscreen: false },
-    { name: '微博',   key: 'weibo',    regex: /Weibo/i,                      canFullscreen: false },
-    { name: '抖音',   key: 'douyin',   regex: /BytedanceWebview|aweme/i,     canFullscreen: false },
-    { name: '快手',   key: 'kuaishou', regex: /Kwai|com\.kuaishou/i,         canFullscreen: false },
-    { name: '百度',   key: 'baidu',    regex: /baiduboxapp/i,                canFullscreen: false },
-    { name: '小红书', key: 'xhs',      regex: /XHS/i,                        canFullscreen: false },
-    { name: '飞书',   key: 'feishu',   regex: /Lark/i,                       canFullscreen: false },
-    { name: 'UC',     key: 'uc',       regex: /UCBrowser/i,                  canFullscreen: true  },
-    { name: '夸克',   key: 'quark',    regex: /Quark/i,                      canFullscreen: true  },
-    { name: '搜狗',   key: 'sogou',    regex: /SogouMobileBrowser/i,         canFullscreen: true  },
-  ];
-  let inApp = { detected: false, name: '浏览器', key: 'browser', canFullscreen: true };
-  for (const app of apps) { if (app.regex.test(ua)) { inApp = { detected: true, ...app }; break; } }
-  const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(ua) || ('ontouchstart' in window && window.innerWidth < 1024);
-  const isIOS = /iphone|ipad|ipod/i.test(ua);
-  const isAndroid = /android/i.test(ua);
-  return { ...inApp, isMobile, isIOS, isAndroid };
-})();
+    /* Settings / common */
+    settingsTitle: 'SETTINGS', close: 'CLOSE',
+
+    /* Gallery */
+    galleryTitle: 'GALLERY',
+    storyBtn: '▶ STORY',
+    listCar: '🚗 RIDE',
+    listMob: '🧟 Thug Zombie',
+    listBomber: '💥 Bomber Zombie',
+    listRanged: '🎯 Ranged Zombie',
+    listShield: '🛡️ Shield Zombie',
+    listElite: '💜 Elite Zombie',
+    listBoss: '👑 Zombie King',
+    dragRotate: 'DRAG TO ROTATE',
+
+    /* Garage */
+    garageTitle: 'GARAGE',
+    useCar: 'SELECT THIS CAR',
+    inUse: 'IN USE',
+    statSpeed: 'TOP SPEED', statAccel: 'ACCEL', statHandling: 'HANDLING', statRam: 'RAM',
+
+    /* Story */
+    storySkip: 'TAP TO SKIP',
+    rotateHint: 'PLEASE ROTATE YOUR DEVICE',
+
+    /* Cards */
+    cardActivate: 'Activate: ',
+    cardImmediate: 'Instant heal',
+    cardHealEffect: 'Instantly restore 30% HP',
+    cardHealDesc: 'Instantly restore 30% max HP',
+    skillInactive: '(inactive)',
+
+    card_basic_name: 'Basic Shot', card_basic_desc: 'Auto-fires energy needles at enemies in front',
+    card_aoe_name: 'AoE Blast', card_aoe_desc: 'Fires a fireball at the locked target, exploding into a ring shockwave',
+    card_shock_name: 'Shockwave', card_shock_desc: 'Ramming splashes damage to nearby enemies',
+    card_heal_name: 'Mending', card_heal_desc: 'Chance to heal on hit',
+    card_crit_name: 'Crit', card_crit_desc: 'Every hit has a chance to critically strike',
+    card_execute_name: 'Execute', card_execute_desc: 'Chance to instantly kill non-bosses (halved vs elites)',
+    card_luck_name: 'Luck', card_luck_desc: 'All proc chances +%',
+    card_thunder_name: 'Thunder', card_thunder_desc: 'Chance to trigger screen-wide lightning on hit',
+    card_chain_name: 'Chain', card_chain_desc: 'Hits splash 50% damage to nearby enemies',
+    card_freeze_name: 'Freeze', card_freeze_desc: 'Slows enemies you damage',
+    card_energy_name: 'Energy', card_energy_desc: 'Kill score bonus (draw cards faster)',
+    card_healcard_name: 'Restore', card_healcard_desc: 'Instantly restore 30% max HP',
+
+    /* Story text */
+    story: [
+      'You wake up…',
+      'The city has been swallowed by the undead.',
+      'All that is left is you,',
+      'and your beat-up second-hand car.',
+      'If you want to live,',
+      'floor the gas and carve out a way!',
+    ],
+
+    /* Help */
+    helpBody: `
+      <h2>BEGINNER'S GUIDE</h2>
+
+      <h3>① Get Going in 30 Seconds</h3>
+      <ul>
+        <li><b>Floor it and ram zombies.</b> The faster you drive, the harder you hit — this is your strongest move.</li>
+        <li><b>Your guns fire automatically.</b> No attack button needed — skills trigger on their own.</li>
+        <li><b>Fill the score bar to pick a card.</b> Choose 1 of 3, get stronger, then keep charging.</li>
+        <li><b>Lose all HP and it's over.</b> Dodge the red fireballs and don't let zombies touch you.</li>
+      </ul>
+
+      <h3>② Controls · PC</h3>
+      <ul>
+        <li><span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span> or arrow keys —— forward / reverse / steer</li>
+        <li><span class="key">SPACE</span> —— jump (slam on landing, brief invulnerability)</li>
+        <li><span class="key">K</span> —— dash (invulnerable blink, pass right through crowds)</li>
+        <li><span class="key">ESC</span> —— pause</li>
+      </ul>
+
+      <h3>③ Controls · Mobile (Landscape)</h3>
+      <ul>
+        <li><b>Left joystick</b> —— hold and drag to steer, auto-centers when released</li>
+        <li><b>Big bottom-right buttons</b> —— green is gas, red is brake</li>
+        <li><b>Small right-side buttons</b> —— yellow jumps, purple dashes</li>
+      </ul>
+
+      <h3>④ Four Zombies, Four Answers</h3>
+      <ul>
+        <li><b>Thug</b> —— just ram them, no need to slow down.</li>
+        <li><b>Bomber</b> —— wears a red ring and explodes when close. Ram it early or dodge.</li>
+        <li><b>Ranged</b> —— lobs red fireballs from a distance. Charge it down first.</li>
+        <li><b>Shield</b> —— tough from the front. Circle behind and ram for several times the damage.</li>
+        <li><b>Elite / BOSS</b> —— tanky and hard-hitting. Ram, then back off. Don't hug them.</li>
+      </ul>
+
+      <h3>⑤ How to Pick Cards</h3>
+      <ul>
+        <li>You always choose 1 of 3. <b>Grab unseen cards first</b> to fill out your skill bar.</li>
+        <li><b>AoE / Thunder / Chain</b> —— fastest clear, the top pick when the map is swarmed.</li>
+        <li><b>Energy</b> —— draws your next card faster. The earlier you take it, the more it pays off.</li>
+        <li><b>Restore</b> —— don't hesitate when you're low. Just take it.</li>
+      </ul>
+
+      <h3>⑥ Levels &amp; Unlocks</h3>
+      <ul>
+        <li>Clear the required waves to finish a level. Faster times earn more stars.</li>
+        <li>Clear Level <b>5</b> to unlock the <b>Motorcycle</b>; Level <b>8</b> for the <b>Big Rig</b>.</li>
+        <li>Clear Level <b>15</b> for the <b>Locomotive</b>; reach wave <b>15</b> in Endless Mode for the <b>Hover Missile Car</b>.</li>
+        <li>Switch cars via Main Menu → <b>Garage</b>. Every car handles completely differently.</li>
+        <li>Endless Mode is unlocked from the very start — challenge it any time.</li>
+      </ul>
+
+      <h3>⑦ A Few Tips</h3>
+      <ul>
+        <li>High-speed rams grant brief invulnerability — keep going through, don't brake.</li>
+        <li>Trees and lamps shatter on impact with no damage taken. Very satisfying.</li>
+        <li>Above 70% top speed you get speed lines and exhaust flames — anything you hit goes flying.</li>
+        <li>Below 30% HP the screen edges pulse red — find a way to heal, fast.</li>
+      </ul>
+    `,
+  },
+};
+
+let lang = 'en';
+try { const s = localStorage.getItem('myCarLang'); if (s === 'zh' || s === 'en') lang = s; } catch (e) {}
+
+function T(key, ...args) {
+  const pack = I18N[lang] || I18N.en;
+  let v = pack[key];
+  if (v === undefined) v = I18N.en[key];
+  if (typeof v === 'function') return v(...args);
+  return v === undefined ? key : v;
+}
+function TL() { return I18N[lang] || I18N.en; }
 
 /* ============================================================
    ⭐ 全局 Tap 事件系统
@@ -1533,19 +1907,28 @@ const LEVELS = [
   { name: '无限模式', waves: Infinity, mult: 1.0, elite: false, times: null },
 ];
 
+const LEVEL_NAMES = {
+  zh: ['新手试炼','荒野初探','车流涌动','尸潮来袭','钢铁洪流','加重压力','层层逼近','血肉之墙','绝境求生','狂潮','精准打击','铁壁铜墙','暗流涌动','地狱之路','钢铁炼狱','无限模式'],
+  en: ['Novice Trial','Into the Wild','Traffic Surge','Horde Incoming','Steel Tide','Rising Pressure','Closing In','Wall of Flesh','Desperate Survival','Frenzy','Precision Strike','Iron Wall','Undercurrent','Road to Hell','Steel Purgatory','Endless Mode'],
+};
+function getLevelName(id) {
+  const arr = LEVEL_NAMES[lang] || LEVEL_NAMES.en;
+  return arr[id - 1] || (LEVEL_NAMES.en[id - 1] || '');
+}
+
 /* —— 每关奖励文案 —— */
 function getLevelRewardText(id) {
   const parts = [];
   if (id === 16) {
-    parts.push('突破第 15 波解锁「悬浮导弹车」');
+    parts.push(T('unlockHover'));
   } else {
-    if (id < 15) parts.push('解锁下一关');
-    else if (id === 15) parts.push('解锁「无限模式」');
-    if (id === 5)  parts.push('解锁「摩托车」');
-    if (id === 8)  parts.push('解锁「大卡车」');
-    if (id === 15) parts.push('解锁「火车头」');
+    if (id < 15) parts.push(T('unlockNext'));
+    else if (id === 15) parts.push(T('unlockEndless'));
+    if (id === 5)  parts.push(T('unlockMotorcycle'));
+    if (id === 8)  parts.push(T('unlockTruck'));
+    if (id === 15) parts.push(T('unlockTrain'));
   }
-  return parts.join('　+　');
+  return parts.join(lang === 'zh' ? '　+　' : '  +  ');
 }
 
 let progress = {};
@@ -1638,6 +2021,37 @@ const VEHICLES = {
   },
 };
 
+const VEHICLE_I18N = {
+  coupe: {
+    zh: { name: '轿跑车', desc: '一台被诅咒的 2003 年二手轿跑。均衡、可靠、没有短板——你永远可以相信它。' },
+    en: { name: 'Coupe', desc: 'A cursed 2003 second-hand coupe. Balanced, reliable, no weak spots — you can always count on it.' },
+  },
+  motorcycle: {
+    zh: { name: '摩托车', desc: '轻量、敏捷、转得像疯了一样。极速极高但撞击力度偏弱——用灵活换生存。' },
+    en: { name: 'Motorcycle', desc: 'Light, agile, turns like a maniac. Huge top speed but weaker ramming — trade toughness for mobility.' },
+  },
+  truck: {
+    zh: { name: '大卡车', desc: '重甲洪流。加速慢、转向笨，但这一撞下去，整条街都得让路。' },
+    en: { name: 'Big Rig', desc: 'A rolling fortress. Slow to accelerate and clumsy to steer, but one hit makes the whole street give way.' },
+  },
+  train: {
+    zh: { name: '火车头', desc: '单节蒸汽机车。转向迟钝到令人绝望，但没有任何东西能挡住它——撞谁谁飞。' },
+    en: { name: 'Locomotive', desc: 'A single-car steam engine. Hopelessly sluggish steering, but nothing can stop it — anything you hit goes flying.' },
+  },
+  hover: {
+    zh: { name: '悬浮导弹车', desc: '黑市流出的实验兵器。悬浮滑行、转向顺滑，撞击附带高热切割——尖锐、炫酷、危险。' },
+    en: { name: 'Hover Missile Car', desc: 'A black-market experimental weapon. Hovers, glides, turns smoothly, and rams with cutting heat — sharp, flashy, dangerous.' },
+  },
+};
+function vehName(id) {
+  const v = VEHICLE_I18N[id];
+  return (v && v[lang] && v[lang].name) || VEHICLES[id].name;
+}
+function vehDesc(id) {
+  const v = VEHICLE_I18N[id];
+  return (v && v[lang] && v[lang].desc) || VEHICLES[id].desc;
+}
+
 let selectedCarId = 'coupe';
 try {
   const s = localStorage.getItem('myCarSelectedCar');
@@ -1646,11 +2060,11 @@ try {
 function V() { return VEHICLES[selectedCarId] || VEHICLES.coupe; }
 
 const CAR_UNLOCK_RULES = {
-  coupe:      { text: '默认拥有' },
-  motorcycle: { text: '通关第 5 关解锁', check: () => isLevelCleared(5) },
-  truck:      { text: '通关第 8 关解锁', check: () => isLevelCleared(8) },
-  train:      { text: '通关第 15 关解锁', check: () => isLevelCleared(15) },
-  hover:      { text: '无限模式通过第 15 波解锁', check: () => (progress.infiniteBest || 0) >= 15 },
+  coupe:      { textKey: 'carUnlockDefault' },
+  motorcycle: { textKey: 'carUnlockMotorcycle', check: () => isLevelCleared(5) },
+  truck:      { textKey: 'carUnlockTruck',      check: () => isLevelCleared(8) },
+  train:      { textKey: 'carUnlockTrain',      check: () => isLevelCleared(15) },
+  hover:      { textKey: 'carUnlockHover',      check: () => (progress.infiniteBest || 0) >= 15 },
 };
 function isVehicleUnlocked(id) {
   if (id === 'coupe') return true;
@@ -2089,7 +2503,8 @@ const MAP_POOL = ['park', 'volcano', 'desert', 'aquarium'];
 let currentMapType = 'park';
 const MAP_META = {
   park:     { sky: 0x7FB4DE, hemiSky: 0xC8E8FF, hemiGround: 0x5A6A72, hemiInt: 1.0, sunCol: 0xFFF4E0, sunInt: 1.3, roofCol: 0x2D5A20, ridgeCol: 0x1A3A0A, grid1: 0xA8E088, grid2: 0x88C068, fogNear: 120, fogFar: 400 },
-  volcano:  { sky: 0x3A1E18, hemiSky: 0xA05040, hemiGround: 0x280808, hemiInt: 0.85, sunCol: 0xFF8040, sunInt: 1.15, roofCol: 0x3A1410, ridgeCol: 0x1A0808, grid1: 0xA04030, grid2: 0x602010, fogNear: 90,  fogFar: 320 },
+  /* 火山地图：天光整体抬高，地面调亮，保证暗色僵尸轮廓清晰可辨 */
+  volcano:  { sky: 0x3A1E18, hemiSky: 0xB86A52, hemiGround: 0x3E2E26, hemiInt: 1.05, sunCol: 0xFF9A58, sunInt: 1.30, roofCol: 0x3A1410, ridgeCol: 0x1A0808, grid1: 0xC05838, grid2: 0x703020, fogNear: 95,  fogFar: 330 },
   desert:   { sky: 0xC8A870, hemiSky: 0xFFF0C0, hemiGround: 0x8A7040, hemiInt: 1.1,  sunCol: 0xFFF4D0, sunInt: 1.55, roofCol: 0x8A7A5A, ridgeCol: 0x5A4A30, grid1: 0xE0C888, grid2: 0xA89060, fogNear: 130, fogFar: 420 },
   aquarium: { sky: 0x1C5478, hemiSky: 0x80D0F0, hemiGround: 0x103050, hemiInt: 1.05, sunCol: 0xA0E0FF, sunInt: 1.05, roofCol: 0x1A4A6A, ridgeCol: 0x0A2A44, grid1: 0x60C8E8, grid2: 0x307898, fogNear: 80,  fogFar: 300 },
 };
@@ -2123,18 +2538,22 @@ function makeGroundTexture(type) {
       ctx.fillRect(Math.random() * size, Math.random() * size, 1 + Math.random() * 2.5, 1 + Math.random() * 2.5);
     }
   } else if (type === 'volcanic') {
-    ctx.fillStyle = '#241E1C'; ctx.fillRect(0, 0, size, size);
+    /* ★ 火山灰地面：中高明度冷灰底色，让深色僵尸剪影保持清晰对比 */
+    ctx.fillStyle = '#8E8A82'; ctx.fillRect(0, 0, size, size);
     for (let i = 0; i < 260; i++) {
       const x = Math.random() * size, y = Math.random() * size, r = 5 + Math.random() * 28;
       const g = ctx.createRadialGradient(x, y, 0, x, y, r);
-      if (Math.random() < 0.5) { g.addColorStop(0, 'rgba(72,60,54,0.55)'); g.addColorStop(1, 'rgba(72,60,54,0)'); }
-      else { g.addColorStop(0, 'rgba(12,8,6,0.6)'); g.addColorStop(1, 'rgba(12,8,6,0)'); }
+      if (Math.random() < 0.5) {
+        g.addColorStop(0, 'rgba(198,192,182,0.55)'); g.addColorStop(1, 'rgba(198,192,182,0)');
+      } else {
+        g.addColorStop(0, 'rgba(88,78,70,0.42)'); g.addColorStop(1, 'rgba(88,78,70,0)');
+      }
       ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
     }
     ctx.lineCap = 'round';
     for (let i = 0; i < 34; i++) {
-      ctx.strokeStyle = `rgba(${200 + Math.random() * 55 | 0},${50 + Math.random() * 60 | 0},${10 + Math.random() * 30 | 0},${0.35 + Math.random() * 0.5})`;
-      ctx.lineWidth = 0.7 + Math.random() * 2.2;
+      ctx.strokeStyle = `rgba(255,${150 + Math.random() * 70 | 0},${30 + Math.random() * 40 | 0},${0.50 + Math.random() * 0.45})`;
+      ctx.lineWidth = 0.9 + Math.random() * 2.6;
       let x = Math.random() * size, y = Math.random() * size;
       ctx.beginPath(); ctx.moveTo(x, y);
       for (let j = 0; j < 5; j++) { x += (Math.random() - 0.5) * 36; y += (Math.random() - 0.5) * 36; ctx.lineTo(x, y); }
@@ -2142,9 +2561,9 @@ function makeGroundTexture(type) {
     }
     for (let i = 0; i < 600; i++) {
       const v = Math.random();
-      ctx.fillStyle = v < 0.7
-        ? `rgba(60,50,46,${0.1 + Math.random() * 0.3})`
-        : `rgba(180,70,20,${0.1 + Math.random() * 0.25})`;
+      ctx.fillStyle = v < 0.62
+        ? `rgba(104,94,84,${0.08 + Math.random() * 0.20})`
+        : `rgba(255,164,54,${0.16 + Math.random() * 0.32})`;
       ctx.fillRect(Math.random() * size, Math.random() * size, 1 + Math.random() * 3, 1 + Math.random() * 3);
     }
   } else if (type === 'marble') {
@@ -2212,17 +2631,17 @@ function makeWallTexture(type) {
   const ctx = canvas.getContext('2d');
 
   if (type === 'volcanic') {
-    ctx.fillStyle = '#2A1814'; ctx.fillRect(0, 0, 256, 256);
+    ctx.fillStyle = '#3A2620'; ctx.fillRect(0, 0, 256, 256);
     for (let i = 0; i < 90; i++) {
       const x = Math.random() * 256, y = Math.random() * 256;
       const w = 18 + Math.random() * 46, h = 12 + Math.random() * 32;
       const v = 0.7 + Math.random() * 0.6;
-      ctx.fillStyle = `rgb(${Math.min(255, 62 * v) | 0},${Math.min(255, 36 * v) | 0},${Math.min(255, 30 * v) | 0})`;
+      ctx.fillStyle = `rgb(${Math.min(255, 86 * v) | 0},${Math.min(255, 52 * v) | 0},${Math.min(255, 42 * v) | 0})`;
       ctx.fillRect(x, y, w, h);
     }
     ctx.lineCap = 'round';
     for (let i = 0; i < 40; i++) {
-      ctx.strokeStyle = `rgba(${200 + Math.random() * 55 | 0},${60 + Math.random() * 70 | 0},${10 + Math.random() * 30 | 0},${0.30 + Math.random() * 0.5})`;
+      ctx.strokeStyle = `rgba(${220 + Math.random() * 35 | 0},${80 + Math.random() * 80 | 0},${16 + Math.random() * 34 | 0},${0.30 + Math.random() * 0.5})`;
       ctx.lineWidth = 0.8 + Math.random() * 2.6;
       let x = Math.random() * 256, y = Math.random() * 256;
       ctx.beginPath(); ctx.moveTo(x, y);
@@ -2230,7 +2649,7 @@ function makeWallTexture(type) {
       ctx.stroke();
     }
     for (let i = 0; i < 500; i++) {
-      ctx.fillStyle = `rgba(${20 + Math.random() * 60 | 0},${12 + Math.random() * 40 | 0},${10 + Math.random() * 30 | 0},${0.08 + Math.random() * 0.22})`;
+      ctx.fillStyle = `rgba(${30 + Math.random() * 70 | 0},${18 + Math.random() * 50 | 0},${14 + Math.random() * 40 | 0},${0.08 + Math.random() * 0.22})`;
       ctx.fillRect(Math.random() * 256, Math.random() * 256, 1 + Math.random() * 4, 1 + Math.random() * 4);
     }
   } else if (type === 'stone') {
@@ -2480,8 +2899,8 @@ function buildFountain() {
 }
 
 function buildLavaPool() {
-  const rockMat = new THREE.MeshStandardMaterial({ color: 0x2A1A14, roughness: 0.95, metalness: 0.05, flatShading: true });
-  const rockMat2 = new THREE.MeshStandardMaterial({ color: 0x3A2420, roughness: 0.92, metalness: 0.06, flatShading: true, emissive: 0x200800, emissiveIntensity: 0.5 });
+  const rockMat = new THREE.MeshStandardMaterial({ color: 0x3A2A24, roughness: 0.95, metalness: 0.05, flatShading: true });
+  const rockMat2 = new THREE.MeshStandardMaterial({ color: 0x4A3028, roughness: 0.92, metalness: 0.06, flatShading: true, emissive: 0x2A0C00, emissiveIntensity: 0.5 });
   const lavaMat = new THREE.MeshBasicMaterial({ color: 0xFF6A10 });
   const lavaGlowMat = new THREE.MeshBasicMaterial({ color: 0xFFB040, transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
   const group = new THREE.Group();
@@ -2591,7 +3010,7 @@ function buildRoadsAndLamps(mapType) {
 
   let roadMat;
   if (mapType === 'volcano') {
-    roadMat = new THREE.MeshStandardMaterial({ color: 0xFF6A1A, roughness: 0.4, metalness: 0.05, emissive: 0xFF3C00, emissiveIntensity: 0.9 });
+    roadMat = new THREE.MeshStandardMaterial({ color: 0xFF8A2E, roughness: 0.4, metalness: 0.05, emissive: 0xFF4C10, emissiveIntensity: 0.75 });
   } else if (mapType === 'aquarium') {
     roadMat = new THREE.MeshStandardMaterial({ color: 0x9ED8E8, roughness: 0.08, metalness: 0.4, transparent: true, opacity: 0.68, emissive: 0x2070A0, emissiveIntensity: 0.4, side: THREE.DoubleSide });
   } else {
@@ -2645,9 +3064,9 @@ function spawnLamp(x, z, style) {
     top.position.y = 6.15; g.add(top);
   } else {
     const poleMat = style === 'lava'
-      ? new THREE.MeshStandardMaterial({ color: 0x2A1A14, roughness: 0.55, metalness: 0.7, emissive: 0x300800, emissiveIntensity: 0.5 })
+      ? new THREE.MeshStandardMaterial({ color: 0x3A2620, roughness: 0.55, metalness: 0.7, emissive: 0x400C00, emissiveIntensity: 0.6 })
       : new THREE.MeshStandardMaterial({ color: 0x3A3A40, roughness: 0.5, metalness: 0.85 });
-    const lightMat = new THREE.MeshBasicMaterial({ color: style === 'lava' ? 0xFF8030 : 0xFFEE80 });
+    const lightMat = new THREE.MeshBasicMaterial({ color: style === 'lava' ? 0xFF9A40 : 0xFFEE80 });
     const base = new THREE.Mesh(SHARED_GEO.lampBase, poleMat); base.position.y = 0.15; base.castShadow = true; g.add(base);
     const pole = new THREE.Mesh(SHARED_GEO.lampPole, poleMat); pole.position.y = 3.3; pole.castShadow = true; g.add(pole);
     const arm = new THREE.Mesh(SHARED_GEO.lampArm, poleMat); arm.rotation.z = Math.PI / 2; arm.position.set(0.6, 6.2, 0); arm.castShadow = true; g.add(arm);
@@ -2820,8 +3239,8 @@ function spawnRock(x, z) {
   const g = new THREE.Group();
   g.position.set(x, 0, z);
   g.rotation.y = Math.random() * Math.PI * 2;
-  const rockMat = new THREE.MeshStandardMaterial({ color: 0x3A2A24, roughness: 0.92, metalness: 0.06, flatShading: true, emissive: 0x1A0600, emissiveIntensity: 0.5 });
-  const rockMat2 = new THREE.MeshStandardMaterial({ color: 0x241A16, roughness: 0.95, metalness: 0.05, flatShading: true });
+  const rockMat = new THREE.MeshStandardMaterial({ color: 0x5A4038, roughness: 0.92, metalness: 0.06, flatShading: true, emissive: 0x2A0A00, emissiveIntensity: 0.5 });
+  const rockMat2 = new THREE.MeshStandardMaterial({ color: 0x3A2A24, roughness: 0.95, metalness: 0.05, flatShading: true });
   const h = 2.2 + Math.random() * 2.4;
   const r = 1.0 + Math.random() * 0.7;
   const main = new THREE.Mesh(new THREE.ConeGeometry(r, h, 5 + Math.floor(Math.random() * 3)), rockMat);
@@ -3708,6 +4127,39 @@ const ENEMY_DEFS = {
   elite:  { hp: 300, speed: 12, dmg: 40, cloth: 0x5A1E70, skin: 0xA868C0, radius: 2.0, scale: { x: 1.4, y: 1.5, z: 1.4 }, isBoss: false },
   boss:   { hp: 3000,speed: 9,  dmg: 60, cloth: 0x7A1828, skin: 0xE05060, radius: 4.0, scale: { x: 1.0, y: 1.0, z: 1.0 }, isBoss: true  },
 };
+
+/* —— 图鉴 / 敌人文案 —— */
+const ENEMY_I18N = {
+  mob: {
+    zh: { name: '🧟 暴徒僵尸', desc: '最常见的僵尸，速度不快，但架不住人多。它们最爱做三件事：跑、嚎、撞车。腐烂的皮肤下几乎能看到骨头。', stats: ['HP 30', '速度 16 m/s', '伤害 25/s'] },
+    en: { name: '🧟 Thug Zombie', desc: 'The most common zombie. Not fast, but there are always more of them. Their three favourite hobbies: running, howling, and headbutting cars.', stats: ['HP 30', 'Speed 16 m/s', 'Damage 25/s'] },
+  },
+  bomber: {
+    zh: { name: '💥 自爆僵尸', desc: '被感染前是个喜欢拥抱别人的热心大哥。现在他依然热爱拥抱——只是拥抱附带 30 点爆炸伤害。', stats: ['HP 20', '速度 14 m/s', '自爆 AOE 30'] },
+    en: { name: '💥 Bomber Zombie', desc: 'Before the infection he was a very huggy guy. He still loves hugs — they just come with 30 points of explosive damage now.', stats: ['HP 20', 'Speed 14 m/s', 'Blast AoE 30'] },
+  },
+  ranged: {
+    zh: { name: '🎯 远程僵尸', desc: '生前是个铅球运动员，可惜现在只能扔石头了。它胆小怕事，喜欢躲在背后偷袭。', stats: ['HP 25', '速度 11 m/s', '弹道 20'] },
+    en: { name: '🎯 Ranged Zombie', desc: 'A shot-put athlete in a past life — now reduced to throwing rocks. Skittish, and loves attacking from behind.', stats: ['HP 25', 'Speed 11 m/s', 'Projectile 20'] },
+  },
+  shield: {
+    zh: { name: '🛡️ 盾兵僵尸', desc: '盾兵的遗体被感染后，还保留着举盾的本能。正面硬得像铁板，撞上去你的车可能会散架。', stats: ['HP 80', '正面减伤 70%', '撞击需绕后'] },
+    en: { name: '🛡️ Shield Zombie', desc: 'Even after infection, the shield-bearer still remembers how to raise its shield. The front is like a steel plate — ramming head-on may wreck your car.', stats: ['HP 80', 'Frontal DR 70%', 'Flank to ram'] },
+  },
+  elite: {
+    zh: { name: '💜 精英僵尸', desc: '健身教练的尸体。3 米高，会召唤小弟，还会举铁（举的其实是被感染的哑铃）。', stats: ['HP 300', '速度 12 m/s', '召唤小怪'] },
+    en: { name: '💜 Elite Zombie', desc: 'The corpse of a fitness coach. Three metres tall, summons minions, and lifts weights (which are actually infected dumbbells).', stats: ['HP 300', 'Speed 12 m/s', 'Summons mobs'] },
+  },
+  boss: {
+    zh: { name: '👑 僵尸之王', desc: '整容失败的前健美冠军，现在全身散发着红光。它是这一切的源头——把整个城市变成了他的健身房。', stats: ['HP 3000', '伤害 60/s', '三阶段狂暴'] },
+    en: { name: '👑 Zombie King', desc: 'A former bodybuilding champion with a botched surgery, now radiating red light. He is the source of all this — he turned the whole city into his gym.', stats: ['HP 3000', 'Damage 60/s', '3-phase frenzy'] },
+  },
+};
+function enemyInfo(type) {
+  const e = ENEMY_I18N[type];
+  return (e && e[lang]) || (e && e.en) || null;
+}
+
 const enemies = [];
 function resetEnemies() {
   enemies.length = 0;
@@ -4258,19 +4710,20 @@ const SKILL_TABLES = {
 };
 const ENEMY_LEVEL_MULT = { mob: 1, bomber: 1, ranged: 1, shield: 1, elite: 0.5, boss: 0.15 };
 function getSkillValueDesc(key, lv) {
-  if (lv <= 0) return '（未激活）';
+  if (lv <= 0) return T('skillInactive');
+  const zh = (lang === 'zh');
   switch (key) {
-    case 'basic': { const t = SKILL_TABLES.basic[Math.min(lv,15)-1]; return `伤害 ${t.d} · 冷却 ${t.cd}s`; }
-    case 'aoe': { const t = SKILL_TABLES.aoe[Math.min(lv,10)-1]; return `半径 ${t.r}m · ${t.n}目标 · 伤害 ${t.d}`; }
-    case 'shock': { const v = [0.20,0.30,0.35,0.50,0.60,0.70,0.85,1.0][lv-1] || 1.0; return `撞击溅射 ${Math.round(v*100)}%`; }
-    case 'heal': { const p = [0.10,0.12,0.15,0.18,0.20,0.22,0.24,0.25][lv-1] || 0.25; const a = [5,6,8,10,12,15,18,20][lv-1] || 20; return `${Math.round(p*100)}% 概率回 ${a} HP`; }
-    case 'crit': { const p = [0.05,0.05,0.10,0.10,0.15,0.15,0.15,0.20,0.20,0.25][lv-1] || 0.25; const m = [1.1,1.1,1.2,1.4,1.6,1.7,1.9,2.1,2.3,2.5][lv-1] || 2.5; return `${Math.round(p*100)}% 概率 · ${m}× 倍率`; }
-    case 'execute': { const p = [0.05,0.07,0.10,0.12,0.15,0.17,0.18,0.20][lv-1] || 0.20; return `${Math.round(p*100)}% 秒杀（精英减半）`; }
-    case 'luck': { const v = [0.03,0.06,0.09,0.12,0.15,0.18][lv-1] || 0.18; return `所有概率 +${Math.round(v*100)}%`; }
-    case 'thunder': { const t = SKILL_TABLES.thunder[Math.min(lv,8)-1]; return `${Math.round(t.p*100)}% 概率 · ${t.m}× 伤害 · CD ${t.cd}s`; }
-    case 'chain': { const r = [10,11,12,13,14,16,18,20][lv-1] || 20; return `溅射半径 ${r}m · 50% 伤害`; }
-    case 'freeze': { const v = [0.15,0.20,0.25,0.30,0.35,0.40][lv-1] || 0.40; return `减速 ${Math.round(v*100)}% · 持续 2s`; }
-    case 'energy': { const v = [0.20,0.30,0.40,0.50,0.60,0.70,0.80,0.90][lv-1] || 0.90; return `击杀积分 +${Math.round(v*100)}%`; }
+    case 'basic': { const t = SKILL_TABLES.basic[Math.min(lv,15)-1]; return zh ? `伤害 ${t.d} · 冷却 ${t.cd}s` : `DMG ${t.d} · CD ${t.cd}s`; }
+    case 'aoe': { const t = SKILL_TABLES.aoe[Math.min(lv,10)-1]; return zh ? `半径 ${t.r}m · ${t.n}目标 · 伤害 ${t.d}` : `Radius ${t.r}m · ${t.n} targets · DMG ${t.d}`; }
+    case 'shock': { const v = [0.20,0.30,0.35,0.50,0.60,0.70,0.85,1.0][lv-1] || 1.0; return zh ? `撞击溅射 ${Math.round(v*100)}%` : `Ram splash ${Math.round(v*100)}%`; }
+    case 'heal': { const p = [0.10,0.12,0.15,0.18,0.20,0.22,0.24,0.25][lv-1] || 0.25; const a = [5,6,8,10,12,15,18,20][lv-1] || 20; return zh ? `${Math.round(p*100)}% 概率回 ${a} HP` : `${Math.round(p*100)}% chance · heal ${a} HP`; }
+    case 'crit': { const p = [0.05,0.05,0.10,0.10,0.15,0.15,0.15,0.20,0.20,0.25][lv-1] || 0.25; const m = [1.1,1.1,1.2,1.4,1.6,1.7,1.9,2.1,2.3,2.5][lv-1] || 2.5; return zh ? `${Math.round(p*100)}% 概率 · ${m}× 倍率` : `${Math.round(p*100)}% chance · ${m}× mult`; }
+    case 'execute': { const p = [0.05,0.07,0.10,0.12,0.15,0.17,0.18,0.20][lv-1] || 0.20; return zh ? `${Math.round(p*100)}% 秒杀（精英减半）` : `${Math.round(p*100)}% instant kill (halved vs elites)`; }
+    case 'luck': { const v = [0.03,0.06,0.09,0.12,0.15,0.18][lv-1] || 0.18; return zh ? `所有概率 +${Math.round(v*100)}%` : `All proc chances +${Math.round(v*100)}%`; }
+    case 'thunder': { const t = SKILL_TABLES.thunder[Math.min(lv,8)-1]; return zh ? `${Math.round(t.p*100)}% 概率 · ${t.m}× 伤害 · CD ${t.cd}s` : `${Math.round(t.p*100)}% chance · ${t.m}× DMG · CD ${t.cd}s`; }
+    case 'chain': { const r = [10,11,12,13,14,16,18,20][lv-1] || 20; return zh ? `溅射半径 ${r}m · 50% 伤害` : `Splash radius ${r}m · 50% DMG`; }
+    case 'freeze': { const v = [0.15,0.20,0.25,0.30,0.35,0.40][lv-1] || 0.40; return zh ? `减速 ${Math.round(v*100)}% · 持续 2s` : `Slow ${Math.round(v*100)}% · lasts 2s`; }
+    case 'energy': { const v = [0.20,0.30,0.40,0.50,0.60,0.70,0.80,0.90][lv-1] || 0.90; return zh ? `击杀积分 +${Math.round(v*100)}%` : `Kill score +${Math.round(v*100)}%`; }
   }
   return '';
 }
@@ -4432,19 +4885,22 @@ function flashWhite(intensity = 0.3) {
    🎴 抽卡
    ============================================================ */
 const CARD_POOL_DEFS = [
-  { key: 'basic',   name: '平A',   icon: '⚔️',  numeral: 'I',      desc: '自动向前方扇形敌人发射能量针' },
-  { key: 'aoe',     name: '群攻',   icon: '💥',  numeral: 'II',     desc: '向锁定目标发射火球，爆炸成环形冲击波' },
-  { key: 'shock',   name: '冲击波', icon: '🌊',  numeral: 'III',    desc: '撞击时对周围敌人溅射伤害' },
-  { key: 'heal',    name: '治疗',   icon: '💚',  numeral: 'IV',     desc: '主动攻击命中时概率回血' },
-  { key: 'crit',    name: '暴击',   icon: '⚡',  numeral: 'V',      desc: '每次伤害概率暴击' },
-  { key: 'execute', name: '瞬杀',   icon: '💀',  numeral: 'VI',     desc: '概率秒杀非Boss（精英减半）' },
-  { key: 'luck',    name: '运气',   icon: '🍀',  numeral: 'VII',    desc: '所有概率被动 +%' },
-  { key: 'thunder', name: '天雷',   icon: '⛈',  numeral: 'VIII',   desc: '主动命中时概率触发全屏闪电' },
-  { key: 'chain',   name: '连锁',   icon: '🔗',  numeral: 'IX',     desc: '命中后对周围敌人溅射 50% 伤害' },
-  { key: 'freeze',  name: '冻结',   icon: '❄️',  numeral: 'X',      desc: '被攻击的敌人减速' },
-  { key: 'energy',  name: '蓄能',   icon: '🔋',  numeral: 'XI',     desc: '击杀积分加成（抽卡更快）' },
-  { key: 'healcard',name: '回复',   icon: '💖',  numeral: 'XII',    desc: '立即回复 30% 最大 HP', isHeal: true },
+  { key: 'basic',   icon: '⚔️',  numeral: 'I'    },
+  { key: 'aoe',     icon: '💥',  numeral: 'II'   },
+  { key: 'shock',   icon: '🌊',  numeral: 'III'  },
+  { key: 'heal',    icon: '💚',  numeral: 'IV'   },
+  { key: 'crit',    icon: '⚡',  numeral: 'V'    },
+  { key: 'execute', icon: '💀',  numeral: 'VI'   },
+  { key: 'luck',    icon: '🍀',  numeral: 'VII'  },
+  { key: 'thunder', icon: '⛈',  numeral: 'VIII' },
+  { key: 'chain',   icon: '🔗',  numeral: 'IX'   },
+  { key: 'freeze',  icon: '❄️',  numeral: 'X'    },
+  { key: 'energy',  icon: '🔋',  numeral: 'XI'   },
+  { key: 'healcard',icon: '💖',  numeral: 'XII',  isHeal: true },
 ];
+function cardName(key) { return T('card_' + key + '_name'); }
+function cardDesc(key) { return T('card_' + key + '_desc'); }
+
 let missedPicks = 0, lastPickHadNew = false;
 function buildCardPool() {
   const pool = [];
@@ -4498,10 +4954,10 @@ function triggerCardSelect() {
     const el = document.createElement('div');
     el.className = 'card';
     let effectHTML = '';
-    if (p.type === 'heal') effectHTML = `<div class="card-effect"><span class="next">立即回复 30% HP</span></div>`;
+    if (p.type === 'heal') effectHTML = `<div class="card-effect"><span class="next">${T('cardHealEffect')}</span></div>`;
     else {
       const nd = getSkillValueDesc(p.key, p.nextLv);
-      if (p.currentLv === 0) effectHTML = `<div class="card-effect"><span class="next">激活：${nd}</span></div>`;
+      if (p.currentLv === 0) effectHTML = `<div class="card-effect"><span class="next">${T('cardActivate')}${nd}</span></div>`;
       else {
         const cd = getSkillValueDesc(p.key, p.currentLv);
         effectHTML = `<div class="card-effect"><span class="cur">Lv.${p.currentLv}: ${cd}</span></div><div class="card-effect"><span class="arrow">▼</span></div><div class="card-effect"><span class="next">Lv.${p.nextLv}: ${nd}</span></div>`;
@@ -4510,11 +4966,11 @@ function triggerCardSelect() {
     el.innerHTML =
       `<div class="card-numeral">${p.numeral || ''}</div>` +
       `<div class="card-sigil"><span class="card-icon">${p.icon}</span></div>` +
-      `<div class="card-name">${p.name}</div>` +
+      `<div class="card-name">${cardName(p.key)}</div>` +
       `<div class="card-divider"></div>` +
-      `<div class="card-lv">${p.type === 'heal' ? '立即回复' : `Lv.${p.currentLv} → ${p.nextLv}`}</div>` +
+      `<div class="card-lv">${p.type === 'heal' ? T('cardImmediate') : `Lv.${p.currentLv} → ${p.nextLv}`}</div>` +
       effectHTML +
-      `<div class="card-desc">${p.desc}</div>`;
+      `<div class="card-desc">${cardDesc(p.key)}</div>`;
     bindTap(el, () => { initAudio(); pickCard(p); });
     row.appendChild(el);
   });
@@ -5114,8 +5570,8 @@ function triggerVictory() {
   const newCars = getNewlyUnlockedCars();
   const unlockEl = document.getElementById('victoryUnlock');
   const rewardParts = [];
-  if (newCars.length > 0) rewardParts.push('🔓 解锁新座驾：' + newCars.map(id => VEHICLES[id].name).join('、'));
-  if (lv === 15) rewardParts.push('🔓 解锁「无限模式」');
+  if (newCars.length > 0) rewardParts.push(T('newCarUnlocked', newCars.map(id => vehName(id)).join(lang === 'zh' ? '、' : ', ')));
+  if (lv === 15) rewardParts.push(T('endlessUnlocked'));
   if (rewardParts.length > 0) {
     unlockEl.style.display = 'block';
     unlockEl.innerHTML = rewardParts.join('<br>');
@@ -5123,7 +5579,7 @@ function triggerVictory() {
     unlockEl.style.display = 'none';
   }
 
-  document.getElementById('victoryLv').textContent = `第 ${lv} 关 · ${level.name}`;
+  document.getElementById('victoryLv').textContent = T('levelWithName', lv, getLevelName(lv));
   const starsEls = document.querySelectorAll('#victoryStars .star');
   starsEls.forEach((el, i) => { el.classList.toggle('filled', i < stars); });
   const m = Math.floor(time / 60), s = Math.floor(time % 60);
@@ -5132,8 +5588,8 @@ function triggerVictory() {
   document.getElementById('vicWaves').textContent = state.wavesCleared;
   document.getElementById('vicPoints').textContent = state.totalPoints;
   const nextBtn = document.getElementById('vicNextBtn');
-  if (lv < 15) { nextBtn.textContent = '下 一 关'; nextBtn.style.display = ''; }
-  else if (lv === 15) { nextBtn.textContent = '解 锁 无 限'; nextBtn.style.display = ''; }
+  if (lv < 15) { nextBtn.textContent = T('nextLevel'); nextBtn.style.display = ''; }
+  else if (lv === 15) { nextBtn.textContent = T('unlockEndlessBtn'); nextBtn.style.display = ''; }
   else { nextBtn.style.display = 'none'; }
   document.getElementById('victoryScreen').classList.add('show');
   state.screenShake = 18;
@@ -5154,7 +5610,7 @@ function gameOver() {
   const m = Math.floor(state.elapsed / 60), s = Math.floor(state.elapsed % 60);
   document.getElementById('ovTime').textContent = `${m}:${s.toString().padStart(2, '0')}`;
   document.getElementById('ovPoints').textContent = state.totalPoints;
-  document.getElementById('overSub').textContent = state.mode === 'infinite' ? '无限模式' : `第 ${state.currentLevel} 关`;
+  document.getElementById('overSub').textContent = state.mode === 'infinite' ? T('endlessLabel') : T('levelLabel', state.currentLevel);
   document.getElementById('overScreen').classList.add('show');
   stopBGM(); sfxGameOver(); state.screenShake = 20;
 }
@@ -5310,21 +5766,31 @@ function checkOrientation() {
 /* ============================================================
    🎬 剧情动画（3D 建模 + 文本）
    ============================================================ */
-const STORY_TEXTS = [
-  '一觉醒来……',
-  '城市已经被丧尸吞没，',
-  '只剩下你孤身一人，',
-  '与你的破旧二手车。',
-  '想要活下去的话，',
-  '就油门踩到底，杀出一条生路吧！',
-];
+const STORY_TEXTS = {
+  zh: [
+    '一觉醒来……',
+    '城市已经被丧尸吞没，',
+    '只剩下你孤身一人，',
+    '与你的破旧二手车。',
+    '想要活下去的话，',
+    '就油门踩到底，杀出一条生路吧！',
+  ],
+  en: [
+    'You wake up…',
+    'The city has been swallowed by the undead.',
+    'All that is left is you,',
+    'and your beat-up second-hand car.',
+    'If you want to live,',
+    'floor the gas and carve out a way!',
+  ],
+};
 
 const storyAnim = {
   renderer: null, scene: null, camera: null,
   car: null, zombies: [], buildings: [],
   active: false, t: 0,
   raf: null, textIndex: -1,
-  onDone: null, finished: false,
+  onDone: null, finished: false, texts: null,
 };
 
 function initStoryRenderer() {
@@ -5462,14 +5928,15 @@ function showStoryText(idx) {
   if (idx === storyAnim.textIndex) return;
   storyAnim.textIndex = idx;
   const el = document.getElementById('storyText');
-  if (idx < 0 || idx >= STORY_TEXTS.length) {
+  const texts = storyAnim.texts || STORY_TEXTS[lang] || STORY_TEXTS.en;
+  if (idx < 0 || idx >= texts.length) {
     el.style.opacity = '0';
     return;
   }
   el.style.opacity = '0';
   setTimeout(() => {
     if (storyAnim.textIndex !== idx) return;
-    el.textContent = STORY_TEXTS[idx];
+    el.textContent = texts[idx];
     el.style.opacity = '1';
   }, 180);
 }
@@ -5523,9 +5990,10 @@ function updateStory(now) {
   }
 
   /* 文本切换 */
+  const texts = storyAnim.texts || STORY_TEXTS[lang] || STORY_TEXTS.en;
   const total = 13.5;
-  const per = total / STORY_TEXTS.length;
-  const idx = Math.min(STORY_TEXTS.length - 1, Math.floor(t / per));
+  const per = total / texts.length;
+  const idx = Math.min(texts.length - 1, Math.floor(t / per));
   showStoryText(idx);
 
   if (t >= total) {
@@ -5558,6 +6026,7 @@ function playStory(onDone) {
   storyAnim.finished = false;
   storyAnim.t = 0;
   storyAnim.textIndex = -1;
+  storyAnim.texts = STORY_TEXTS[lang] || STORY_TEXTS.en;
   storyAnim.onDone = onDone;
   storyAnim.lastT = performance.now();
   showStoryText(0);
@@ -5594,7 +6063,7 @@ function renderLevelSelect() {
       const starHTML = id === 16
         ? `<div class="level-stars" style="font-size:clamp(12px,2vh,16px);font-weight:900;color:#A78BFA;letter-spacing:2px">∞</div>`
         : `<div class="level-stars">${[1,2,3].map(s => `<span class="star${s <= stars ? ' filled' : ''}">★</span>`).join('')}</div>`;
-      card.innerHTML = `<div class="level-num">${id === 16 ? '∞' : id}</div><div class="level-name">${level.name}</div>${starHTML}`;
+      card.innerHTML = `<div class="level-num">${id === 16 ? '∞' : id}</div><div class="level-name">${getLevelName(id)}</div>${starHTML}`;
       bindTap(card, () => openLevelGoal(id));
     }
     grid.appendChild(card);
@@ -5633,16 +6102,16 @@ let pendingLevelId = 1;
 function openLevelGoal(id) {
   initAudio(); pendingLevelId = id;
   const level = LEVELS[id - 1];
-  document.getElementById('goalLv').textContent = id === 16 ? '无 限 模 式' : `第 ${id} 关`;
-  document.getElementById('goalName').textContent = level.name;
+  document.getElementById('goalLv').textContent = id === 16 ? T('endlessLabel') : T('levelLabel', id);
+  document.getElementById('goalName').textContent = getLevelName(id);
   if (id === 16) {
-    document.getElementById('goalWaves').textContent = '无限波次，尽可能生存';
-    document.getElementById('goalMult').textContent = '正常';
-    document.getElementById('goalStars').textContent = '无上限挑战';
+    document.getElementById('goalWaves').textContent = T('goalEndless');
+    document.getElementById('goalMult').textContent = T('densityNormal');
+    document.getElementById('goalStars').textContent = T('starNone');
   } else {
-    document.getElementById('goalWaves').textContent = `通过 ${level.waves} 波僵尸`;
-    document.getElementById('goalMult').textContent = level.mult === 1.5 ? '×1.5 密集' : '正常';
-    document.getElementById('goalStars').textContent = `${level.times[0]}s内 ★★★ / ${level.times[1]}s内 ★★ / ${level.times[2]}s内 ★`;
+    document.getElementById('goalWaves').textContent = T('goalWavesN', level.waves);
+    document.getElementById('goalMult').textContent = level.mult === 1.5 ? T('densityDense') : T('densityNormal');
+    document.getElementById('goalStars').textContent = T('starTimes', level.times[0], level.times[1], level.times[2]);
   }
   document.getElementById('goalReward').textContent = getLevelRewardText(id);
   document.getElementById('levelGoalModal').classList.add('show');
@@ -5781,17 +6250,51 @@ bindTap(document.getElementById('vicNextBtn'), () => {
 });
 
 /* ============================================================
+   🌐 语言切换 & 应用
+   ============================================================ */
+function renderHelp() {
+  const box = document.getElementById('helpBody');
+  if (box) box.innerHTML = T('helpBody');
+}
+function applyLanguage() {
+  document.documentElement.lang = (lang === 'zh') ? 'zh-CN' : 'en';
+  document.title = T('gameTitlePlain');
+
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = T(el.dataset.i18n);
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    if (el.id === 'helpBody') return;
+    el.innerHTML = T(el.dataset.i18nHtml);
+  });
+  renderHelp();
+
+  document.querySelectorAll('.lang-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.lang === lang);
+  });
+
+  /* 刷新动态面板 */
+  if (document.getElementById('levelSelectScreen').classList.contains('show')) renderLevelSelect();
+  if (garageOpen) { renderGarageList(); garagePreview(garageCurrentId); }
+  if (document.getElementById('galleryScreen').classList.contains('show') && viewer.initialized) {
+    setViewerModel(viewer.modelType || 'car');
+  }
+}
+function setLang(l) {
+  if (l !== 'zh' && l !== 'en') return;
+  if (lang === l) return;
+  lang = l;
+  try { localStorage.setItem('myCarLang', l); } catch (e) {}
+  applyLanguage();
+}
+document.querySelectorAll('.lang-btn').forEach(btn => {
+  bindTap(btn, () => { initAudio(); sfxUI(); setLang(btn.dataset.lang); });
+});
+
+/* ============================================================
    🏆 鉴赏 viewer
    ============================================================ */
 const viewer = { renderer: null, scene: null, camera: null, model: null, modelType: 'car', initialized: false, yaw: 0.5, pitch: 0.15, dragging: false, lastX: 0, lastY: 0, phase: 0 };
-const GALLERY_INFO = {
-  mob: { name: '🧟 暴徒僵尸', desc: '最常见的僵尸，速度不快，但架不住人多。它们最爱做三件事：跑、嚎、撞车。腐烂的皮肤下几乎能看到骨头。', stats: ['HP 30', '速度 16 m/s', '伤害 25/s'] },
-  bomber: { name: '💥 自爆僵尸', desc: '被感染前是个喜欢拥抱别人的热心大哥。现在他依然热爱拥抱——只是拥抱附带 30 点爆炸伤害。', stats: ['HP 20', '速度 14 m/s', '自爆 AOE 30'] },
-  ranged: { name: '🎯 远程僵尸', desc: '生前是个铅球运动员，可惜现在只能扔石头了。它胆小怕事，喜欢躲在背后偷袭。', stats: ['HP 25', '速度 11 m/s', '弹道 20'] },
-  shield: { name: '🛡️ 盾兵僵尸', desc: '盾兵的遗体被感染后，还保留着举盾的本能。正面硬得像铁板，撞上去你的车可能会散架。', stats: ['HP 80', '正面减伤 70%', '撞击需绕后'] },
-  elite: { name: '💜 精英僵尸', desc: '健身教练的尸体。3 米高，会召唤小弟，还会举铁（举的其实是被感染的哑铃）。', stats: ['HP 300', '速度 12 m/s', '召唤小怪'] },
-  boss: { name: '👑 僵尸之王', desc: '整容失败的前健美冠军，现在全身散发着红光。它是这一切的源头——把整个城市变成了他的健身房。', stats: ['HP 3000', '伤害 60/s', '三阶段狂暴'] },
-};
 function buildViewerZombie(clothHex, skinHex, scaleVec) {
   const g = new THREE.Group();
   const clothMat = zombieClothMat.clone(); clothMat.color.setHex(clothHex);
@@ -5915,12 +6418,12 @@ function setViewerModel(type) {
     viewer.model = buildVehicleModel(selectedCarId);
     viewer.yaw = 0.6; viewer.pitch = 0.35;
     const veh = VEHICLES[selectedCarId];
-    document.getElementById('viewerName').textContent = veh.icon + ' ' + veh.name;
-    document.getElementById('viewerDesc').textContent = veh.desc;
+    document.getElementById('viewerName').textContent = veh.icon + ' ' + vehName(selectedCarId);
+    document.getElementById('viewerDesc').textContent = vehDesc(selectedCarId);
     document.getElementById('viewerStats').innerHTML = [
-      `极速 ${veh.maxSpeed}`,
-      `加速 ${veh.accel}`,
-      `冲撞 ${veh.ramBase}+`,
+      `${T('statSpeed')} ${veh.maxSpeed}`,
+      `${T('statAccel')} ${veh.accel}`,
+      `${T('statRam')} ${veh.ramBase}+`,
     ].map(s => `<span class="stat">${s}</span>`).join('');
     if (viewer.model) viewer.scene.add(viewer.model);
     return;
@@ -5932,7 +6435,7 @@ function setViewerModel(type) {
     viewer.yaw = 0.5; viewer.pitch = 0.15;
   }
   if (viewer.model) viewer.scene.add(viewer.model);
-  const info = GALLERY_INFO[type];
+  const info = enemyInfo(type);
   if (!info) return;
   document.getElementById('viewerName').textContent = info.name;
   document.getElementById('viewerDesc').textContent = info.desc;
@@ -6113,14 +6616,14 @@ function garagePreview(id) {
   garageViewer.yaw = 0.62;
   garageViewer.pitch = 0.26;
 
-  document.getElementById('garageName').textContent = veh.icon + ' ' + veh.name;
-  document.getElementById('garageDesc').textContent = veh.desc;
+  document.getElementById('garageName').textContent = veh.icon + ' ' + vehName(id);
+  document.getElementById('garageDesc').textContent = vehDesc(id);
 
   const bars = [
-    ['极速', veh.maxSpeed / 92],
-    ['加速', veh.accel / 32],
-    ['操控', veh.yawRateBase / 11],
-    ['冲撞', veh.ramBase / 46],
+    [T('statSpeed'), veh.maxSpeed / 92],
+    [T('statAccel'), veh.accel / 32],
+    [T('statHandling'), veh.yawRateBase / 11],
+    [T('statRam'), veh.ramBase / 46],
   ];
   document.getElementById('garageBars').innerHTML = bars.map(([label, v]) =>
     `<div class="gbar"><span>${label}</span><span class="track"><span class="fill" style="width:${Math.min(100, Math.round(v * 100))}%"></span></span></div>`
@@ -6128,10 +6631,10 @@ function garagePreview(id) {
 
   const selBtn = document.getElementById('garageSelectBtn');
   if (id === selectedCarId) {
-    selBtn.textContent = '使 用 中';
+    selBtn.textContent = T('inUse');
     selBtn.classList.remove('primary');
   } else {
-    selBtn.textContent = '选 用 此 车';
+    selBtn.textContent = T('useCar');
     selBtn.classList.add('primary');
   }
 }
@@ -6144,10 +6647,10 @@ function renderGarageList() {
     const unlocked = isVehicleUnlocked(id);
     const el = document.createElement('div');
     el.className = 'garage-item' + (unlocked ? '' : ' locked') + (id === garageCurrentId ? ' active' : '');
-    const ruleText = unlocked ? '' : (CAR_UNLOCK_RULES[id] ? CAR_UNLOCK_RULES[id].text : '');
-    el.innerHTML = `<span class="gi-icon">${v.icon}</span><span class="gi-name">${v.name}</span>` +
+    const ruleText = unlocked ? '' : (CAR_UNLOCK_RULES[id] ? T(CAR_UNLOCK_RULES[id].textKey) : '');
+    el.innerHTML = `<span class="gi-icon">${v.icon}</span><span class="gi-name">${vehName(id)}</span>` +
       (unlocked
-        ? (id === selectedCarId ? '<span class="gi-badge">使用中</span>' : '')
+        ? (id === selectedCarId ? `<span class="gi-badge">${T('inUse')}</span>` : '')
         : `<span class="gi-lock" title="${ruleText}">🔒</span>`);
     if (unlocked) {
       bindTap(el, () => { sfxUI(); garagePreview(id); renderGarageList(); });
@@ -6386,6 +6889,7 @@ currentMapType = 'park';
 buildTerrain();
 resetEnemies();
 rebuildCarMesh();
+applyLanguage();
 animate();
 checkOrientation();
 </script>
